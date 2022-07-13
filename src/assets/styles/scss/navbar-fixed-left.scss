@@ -1,0 +1,68 @@
+@import 'navbar-fixed';
+
+body {
+	@include media-breakpoint-up($navbar-sidebar-breakpoint) {
+		margin-left: $navbar-sidebar-width;
+	}
+}
+
+.navbar {
+	&.fixed-left {
+		@include navbar-sidebar;
+		@include media-breakpoint-up($navbar-sidebar-breakpoint) {
+			right: auto;
+
+			.navbar-nav {
+				.nav-item {
+					.dropdown-toggle {
+						&:after {
+							border-top: $caret-width solid transparent;
+							border-left: $caret-width solid;
+							border-bottom: $caret-width solid transparent;
+							border-right: none;
+							vertical-align: baseline;
+						}
+					}
+
+					.dropdown-menu {
+						left: 100%;
+					}
+				}
+			}
+		}
+		.nav-item {
+			.nav-link {
+				font-size: 0.85em;
+				padding: 0.75rem 1.15rem 0;
+				opacity: 0.75;
+				color: $nero;
+				position: relative;
+
+				&.active {
+					color: $nero;
+					-webkit-text-stroke: 0.045rem $nero;
+					opacity: 1;
+
+					&::before {
+						font-family: FontAwesome;
+						content: '\f058';
+						position: absolute;
+						left: 0;
+						top: 10px;
+						color: $navy-blue;
+						font-size: 1.25em;
+						-webkit-text-stroke: 0;
+					}
+				}
+
+				&::before {
+					@extend .active::before;
+					content: '\f10c';
+				}
+			}
+		}
+	}
+	h5 {
+		color: $nero;
+	}
+}

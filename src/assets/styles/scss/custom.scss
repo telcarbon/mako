@@ -1,0 +1,269 @@
+$navy-blue: #334c6e;
+$dark-blue: #0f2430;
+$light-blue: #e9f3ff;
+$sky-blue: #d1e6ff;
+$nero: #333333;
+$white: #fff;
+$danger: #ed4f32;
+
+$input-placeholder-color: rgba(51, 51, 51, 0.85);
+
+$btn-disabled-opacity: 0.45;
+
+$theme-colors: (
+	'primary': $light-blue,
+	'secondary': $navy-blue,
+	'danger': $danger,
+	'dark': $nero,
+);
+
+$breakpoints: (
+	xs: 576px,
+	sm: 768px,
+	md: 992px,
+	lg: 1200px,
+);
+
+@import '~bootstrap/scss/bootstrap';
+@import 'navbar-fixed-left';
+
+html {
+	position: relative;
+	min-height: 100%;
+}
+body {
+	margin-bottom: 70px;
+}
+.footer {
+	position: absolute;
+	bottom: 0;
+	// right: 3rem;
+	height: 70px;
+
+	.progress {
+		margin-left: 5rem;
+	}
+}
+
+.btn {
+	min-width: 135px;
+	font-weight: 600;
+	padding: 0.5rem 1.5rem;
+}
+
+.btn-primary {
+	color: $navy-blue;
+	&:hover,
+	&:active,
+	&:focus {
+		color: $dark-blue;
+		background-color: $sky-blue;
+	}
+}
+
+.icon-only {
+	background-color: transparent;
+	border: 0;
+	padding: 0 0.5rem;
+}
+
+.input-group {
+	&:not(.has-validation) {
+		> :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu),
+		> .dropdown-toggle:nth-last-child(n + 3) {
+			border-radius: 0.25rem;
+		}
+	}
+	position: relative;
+	.icon-only {
+		position: absolute;
+		right: 0.25rem;
+		top: 0.6rem;
+		.fa-1x {
+			font-size: 1.3em;
+		}
+	}
+}
+
+.card {
+	padding: 0.5rem 0.85rem 2.5rem;
+	margin: 0 1.5rem;
+}
+
+//tabs
+.nav-tabs {
+	border-bottom: 0;
+	.nav-link {
+		color: $nero;
+		border: 0;
+		margin: 0 1.5rem;
+		&.active {
+			border-bottom: 3px solid $navy-blue;
+			color: $navy-blue;
+			-webkit-text-stroke: 0.045rem $navy-blue;
+		}
+		&:hover {
+			color: $navy-blue;
+			-webkit-text-stroke: 0.045rem $navy-blue;
+		}
+	}
+	.nav-item {
+		display: inline-block;
+		&:first-child {
+			.nav-link {
+				margin-left: 0;
+			}
+		}
+	}
+}
+
+.tab-content {
+	border-radius: 0.25rem;
+	border: 1px solid $nero;
+	padding: 1.3rem 1.75rem;
+	height: 55vh;
+	overflow-y: auto;
+
+	&::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	&::-webkit-scrollbar-track {
+		box-shadow: 0 0 0 200px rgba(233, 243, 255, 1) inset;
+		border-radius: 10px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background-color: #fff;
+		box-shadow: 0 0 0 200px rgba(51, 76, 110, 1) inset;
+		border-radius: 2rem;
+	}
+
+	p {
+		line-height: 2;
+		text-align: justify;
+	}
+}
+
+// FORMS
+.form-group {
+	margin-bottom: 1rem;
+}
+
+.form-label {
+	color: $nero;
+	font-weight: 500;
+}
+
+.form-control,
+.form-select {
+	border-color: $nero;
+	border-width: 2px;
+
+	&:focus {
+		border-color: $nero;
+		box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
+	}
+}
+
+.form-radio-wrap {
+	padding: 0.85rem 0.25rem 0.55rem;
+	justify-content: space-between;
+	border: 2px solid $nero;
+	flex-wrap: wrap;
+	.form-label {
+		align-self: center;
+	}
+}
+
+.custom-select {
+	.placeholder {
+		background-color: transparent;
+	}
+}
+
+input[type='radio'] {
+	display: none;
+	&:checked {
+		+ .box {
+			background-color: $navy-blue;
+			border-color: $navy-blue;
+			span {
+				color: $white;
+			}
+		}
+	}
+}
+.box {
+	width: 85px;
+	height: 35px;
+	background-color: $white;
+	transition: all 250ms ease;
+	will-change: transition;
+	display: inline-block;
+	text-align: center;
+	cursor: pointer;
+	position: relative;
+	border: 2px solid $nero;
+	border-radius: 0.25rem;
+	margin: 0 0.25rem;
+	&:active {
+		transform: translateY(5px);
+	}
+	span {
+		position: absolute;
+		transform: translate(0, 3px);
+		left: 0;
+		right: 0;
+		transition: all 300ms ease;
+		font-size: 1rem;
+		user-select: none;
+		color: $nero;
+		&:before {
+			font-size: 1.2em;
+			display: block;
+			transform: translateY(-80px);
+			opacity: 0;
+			transition: all 300ms ease-in-out;
+			font-weight: normal;
+			color: white;
+		}
+	}
+}
+
+.form-group,
+.form-radio-wrap {
+	&.error-highlight .form-control,
+	&.error-highlight .form-select,
+	&.error-highlight {
+		border-color: $danger;
+		animation: shake 0.1s ease-in-out 0s 1;
+
+		@keyframes shake {
+			0% {
+				margin-left: 0rem;
+			}
+			25% {
+				margin-left: 0.5rem;
+			}
+			75% {
+				margin-left: -0.5rem;
+			}
+			100% {
+				margin-left: 0rem;
+			}
+		}
+		&:focus {
+			border-color: $danger;
+			box-shadow: 0 0 0 0.2rem rgba(193, 84, 54, 0.25);
+		}
+	}
+}
+
+// FORMS
+
+.content-header {
+	a {
+		text-decoration: none;
+	}
+}
