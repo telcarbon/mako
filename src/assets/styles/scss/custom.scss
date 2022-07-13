@@ -34,6 +34,7 @@ html {
 body {
 	margin-bottom: 70px;
 }
+
 .footer {
 	position: absolute;
 	bottom: 0;
@@ -266,4 +267,8 @@ input[type='radio'] {
 	a {
 		text-decoration: none;
 	}
+}
+
+.register-success {
+	height: calc(100vh - 70px);
 }

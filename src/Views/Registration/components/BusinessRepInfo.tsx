@@ -7,7 +7,7 @@ import {
 	FormSelect,
 	Button,
 } from 'components'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
@@ -15,6 +15,9 @@ import { options } from './BusinessInfo'
 import { useMatch, useNavigate } from 'react-router-dom'
 
 export const BusinessRepInfo = () => {
+	const match = useMatch('registration/*')
+	const navigate = useNavigate()
+
 	const validationSchema = Yup.object().shape({
 		email: Yup.string()
 			.email('Must be a valid email address')
@@ -37,7 +40,7 @@ export const BusinessRepInfo = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -50,6 +53,7 @@ export const BusinessRepInfo = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
+		navigate(`${match?.pathnameBase}/banking-info`)
 	}
 	return (
 		<>
@@ -60,7 +64,7 @@ export const BusinessRepInfo = () => {
 					backLink={-1}
 				/>
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center">
+					<Row className="justify-content-center mb-5">
 						<Col lg={5} className="px-3">
 							<Row className="justify-content-center">
 								<Col className="px-3">
@@ -130,10 +134,16 @@ export const BusinessRepInfo = () => {
 							</Row>
 						</Col>
 					</Row>
-					<div className="footer">
+					<div className="footer w-75">
+						<ProgressBar
+							variant="secondary"
+							now={40}
+							className="col-lg-7 pull-left mt-3"
+						/>
 						<Button
 							type="submit"
 							disabled={!isDirty}
+							className="col-lg-auto pull-right"
 						>
 							Next
 						</Button>

@@ -7,12 +7,13 @@ import {
 	FormRadioGroup,
 	FormTextInput,
 } from 'components'
-import { Container, Row, Col } from 'react-bootstrap'
+import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { useMatch, useNavigate, } from 'react-router-dom'
 
 export enum RadioOptionsLabel {
 	YES = 'Yes',
@@ -30,6 +31,9 @@ const OptionsLabel: RadioOptionsLabel[] = [
 ]
 
 export const BusinessQuestionnaire = () => {
+	const match = useMatch('registration/*')
+	const navigate = useNavigate()
+	
 	const validationSchema = Yup.object().shape({
 		offerPhlebotomy: Yup.string().required('Please select an option'),
 		isLicensedPhlebotomist: Yup.string().when('offerPhlebotomy', {
@@ -69,7 +73,7 @@ export const BusinessQuestionnaire = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -107,6 +111,8 @@ export const BusinessQuestionnaire = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
+		navigate(`${match?.pathnameBase}/terms`)
+		
 	}
 	return (
 		<Container fluid>
@@ -116,7 +122,7 @@ export const BusinessQuestionnaire = () => {
 				backLink={-1}
 			/>
 			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-				<Row className="justify-content-center">
+				<Row className="justify-content-center mb-5">
 					<Col lg={10}>
 						<FormField
 							name="offerPhlebotomy"
@@ -268,13 +274,19 @@ export const BusinessQuestionnaire = () => {
 									</button>
 								</div>
 							</FormField>
-						)}						
+						)}
 					</Col>
 				</Row>
-				<div className='footer'>
+				<div className="footer w-75">
+					<ProgressBar
+						variant="secondary"
+						now={80}
+						className="col-lg-7 pull-left mt-3"
+					/>
 					<Button
 						type="submit"
 						disabled={!isDirty}
+						className="col-lg-auto pull-right"
 					>
 						Next
 					</Button>

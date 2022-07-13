@@ -42,7 +42,7 @@ export const FormField = ({
 				<ContentWrapper useWrapper={useWrapper}>
 					{label && (
 						<label
-							className={classNames('form-label', {
+							className={classNames('form-label w-75', {
 								'text-center': centered,
 							})}
 							htmlFor={name}

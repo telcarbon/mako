@@ -1,13 +1,17 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { ContentHeader } from 'components/ContentHeader'
-import { Container, Row, Col, Card } from 'react-bootstrap'
+import { Container, Row, Col, Card, ProgressBar } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { Button, Form, FormField, FormSelect, FormTextInput } from 'components'
 import { options } from './BusinessInfo'
+import { useMatch, useNavigate } from 'react-router-dom'
 
 export const BankingInfo = () => {
+	const match = useMatch('registration/*')
+	const navigate = useNavigate()
+
 	const validationSchema = Yup.object().shape({
 		nameOnCreditCard: Yup.string().required(
 			'Name on Credit Card is required'
@@ -37,7 +41,7 @@ export const BankingInfo = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -50,6 +54,7 @@ export const BankingInfo = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
+		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
 	return (
@@ -62,7 +67,7 @@ export const BankingInfo = () => {
 					backLink={-1}
 				/>
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center">
+					<Row className="justify-content-center mb-5">
 						<Col lg={12}>
 							<Row className="justify-content-center">
 								<Col
@@ -151,11 +156,16 @@ export const BankingInfo = () => {
 							</Row>
 						</Col>
 					</Row>
-					<div className="footer">
+					<div className="footer w-75">
+						<ProgressBar
+							variant="secondary"
+							now={60}
+							className="col-lg-7 pull-left mt-3"
+						/>
 						<Button
 							type="submit"
-							className="pull-right me-5"
 							disabled={!isDirty}
+							className="col-lg-auto pull-right"
 						>
 							Next
 						</Button>

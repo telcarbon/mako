@@ -44,7 +44,7 @@ const locationTypeOptions = [
 ]
 
 export const BusinessInfo = () => {
-	const match = useMatch('registration')
+	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
@@ -78,7 +78,7 @@ export const BusinessInfo = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -99,7 +99,7 @@ export const BusinessInfo = () => {
 			<Container fluid>
 				<ContentHeader title="Business Information" />
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center">
+					<Row className="justify-content-center mb-5">
 						<Col lg={10}>
 							<Row className="justify-content-center">
 								<Col lg={6} className="px-3">
