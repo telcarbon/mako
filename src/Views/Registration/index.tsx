@@ -1,3 +1,4 @@
+import { createContext, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router-dom'
 import { SideNav } from 'components'
 import { BankingInfo } from './components/BankingInfo'
@@ -8,21 +9,32 @@ import { RegistrationNav } from './components/NavBar/RegistrationNav'
 import { TermsAndAgreement } from './components/TermsAndAgreement'
 import { RegistrationSuccess } from './components/RegistrationSuccess'
 
+interface IBusinessInfo {
+	name: ''
+	location: ''
+}
+
+type RegisterContextType = {
+	businessInfo: IBusinessInfo | undefined
+	saveBusinessInfo: (info: IBusinessInfo) => void
+}
+
+const RegisterContext = createContext<RegisterContextType | null>(null)
 export const Registration = () => {
 	const location = useLocation()
+	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>()
+
 	return (
 		<>
 			<SideNav
 				className={
-					!location.pathname.includes('success')
-						? 'bg-primary'
-						: ''
+					!location.pathname.includes('success') ? 'bg-primary' : ''
 				}
 			>
 				{!location.pathname.includes('success') && <RegistrationNav />}
 			</SideNav>
 			<Routes>
-				<Route path={'/'} element={<BusinessInfo />} />
+				<Route path={'/'} element={<BusinessInfo  />} />
 				<Route
 					path={'/busines-rep-info'}
 					element={<BusinessRepInfo />}

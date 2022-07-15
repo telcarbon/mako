@@ -13,7 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
-import { useMatch, useNavigate, } from 'react-router-dom'
+import { useMatch, useNavigate } from 'react-router-dom'
 
 export enum RadioOptionsLabel {
 	YES = 'Yes',
@@ -33,7 +33,7 @@ const OptionsLabel: RadioOptionsLabel[] = [
 export const BusinessQuestionnaire = () => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
-	
+
 	const validationSchema = Yup.object().shape({
 		offerPhlebotomy: Yup.string().required('Please select an option'),
 		isLicensedPhlebotomist: Yup.string().when('offerPhlebotomy', {
@@ -61,6 +61,16 @@ export const BusinessQuestionnaire = () => {
 				offerCliaCollapse === RadioOptionsLabel.YES,
 			then: Yup.string().required('Please select an option'),
 		}),
+		hasParkingLot: Yup.string().when('offerClia', {
+			is: (isCliaWaivedSite: RadioOptionsLabel) =>
+				isCliaWaivedSite === RadioOptionsLabel.YES,
+			then: Yup.string().required('Please select an option'),
+		}),
+		offerPrescription: Yup.string().when('offerClia', {
+			is: (hasParkingLot: RadioOptionsLabel) =>
+				hasParkingLot === RadioOptionsLabel.YES,
+			then: Yup.string().required('Please select an option'),
+		}),
 	})
 
 	const initialValues = {
@@ -70,10 +80,12 @@ export const BusinessQuestionnaire = () => {
 		trainExistingStaff: '',
 		offerClia: '',
 		isCliaWaivedSite: '',
+		hasParkingLot: '',
+		offerPrescription: '',
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -89,6 +101,8 @@ export const BusinessQuestionnaire = () => {
 	const licensedPhlebotomistCollapse = watch('isLicensedPhlebotomist')
 	const trainExistingStaffCollapse = watch('trainExistingStaff')
 	const offerCliaCollapse = watch('offerClia')
+	const isCliaWaivedSiteCollapse = watch('isCliaWaivedSite')
+	const hasParkingLotCollapse = watch('hasParkingLot')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -112,7 +126,6 @@ export const BusinessQuestionnaire = () => {
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
 		navigate(`${match?.pathnameBase}/terms`)
-		
 	}
 	return (
 		<Container fluid>
@@ -227,6 +240,7 @@ export const BusinessQuestionnaire = () => {
 								useWrapper={false}
 								className="form-radio-wrap rounded-2 d-flex ps-3"
 								isRadio
+								labelClassName='w-75'
 							>
 								<div className="d-flex">
 									{OptionsLabel.map((option, index) => (
@@ -260,18 +274,64 @@ export const BusinessQuestionnaire = () => {
 										/>
 									))}
 								</div>
-								<div style={{ flexBasis: '100%' }}>
-									<button className="btn btn-outline-dark border-2 col-	-4">
-										Upload CLIA certification
-										<FontAwesomeIcon
-											icon={faCloudArrowUp}
-											className="text-secondary ps-2"
-											size="1x"
-											style={{
-												fontSize: '1.25em',
-											}}
+								{isCliaWaivedSiteCollapse ===
+									RadioOptionsLabel.YES && (
+									<div style={{ flexBasis: '100%' }}>
+										<button className="btn btn-outline-dark border-2 col-	-4">
+											Upload CLIA certification
+											<FontAwesomeIcon
+												icon={faCloudArrowUp}
+												className="text-secondary ps-2"
+												size="1x"
+												style={{
+													fontSize: '1.25em',
+												}}
+											/>
+										</button>
+									</div>
+								)}
+							</FormField>
+						)}
+						{isCliaWaivedSiteCollapse === RadioOptionsLabel.YES && (
+							<FormField
+								name="hasParkingLot"
+								label="Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?"
+								useWrapper={false}
+								className="form-radio-wrap rounded-2 d-flex ps-3"
+								isRadio
+								labelClassName='w-75'
+							>
+								<div className="d-flex">
+									{OptionsLabel.map((option, index) => (
+										<FormRadioGroup
+											name={'hasParkingLot'}
+											register={register}
+											value={option}
+											required={false}
+											key={index}
 										/>
-									</button>
+									))}
+								</div>
+							</FormField>
+						)}
+						{hasParkingLotCollapse === RadioOptionsLabel.YES && (
+							<FormField
+								name="offerPrescription"
+								label="Does your business offer prescription delivery via company driver or courier service?"
+								useWrapper={false}
+								className="form-radio-wrap rounded-2 d-flex ps-3"
+								isRadio
+							>
+								<div className="d-flex">
+									{OptionsLabel.map((option, index) => (
+										<FormRadioGroup
+											name={'offerPrescription'}
+											register={register}
+											value={option}
+											required={false}
+											key={index}
+										/>
+									))}
 								</div>
 							</FormField>
 						)}

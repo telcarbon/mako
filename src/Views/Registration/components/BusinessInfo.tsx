@@ -12,6 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
 
+
 export const options = [
 	{
 		value: 'Option 1',
@@ -25,21 +26,27 @@ export const options = [
 	},
 ]
 
+export enum LocationType{
+	PHARMACY ='Pharmacy',
+	CLINIC ='Clinic',
+	MOBILE ='Mobile',
+}
+
 const locationTypeOptions = [
 	{
 		id: 1,
-		label: 'Pharmacy',
-		value: 'Pharmacy',
+		label: LocationType.PHARMACY,
+		value: 1,
 	},
 	{
 		id: 2,
-		label: 'Clinic',
-		value: 'Clinic',
+		label: LocationType.CLINIC,
+		value: 2,
 	},
 	{
 		id: 1,
-		label: 'Mobile',
-		value: 'Mobile',
+		label: LocationType.PHARMACY,
+		value: 3,
 	},
 ]
 

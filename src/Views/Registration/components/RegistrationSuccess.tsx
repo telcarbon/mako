@@ -4,10 +4,12 @@ import { Col, Container, Row, Button } from 'react-bootstrap'
 
 export const RegistrationSuccess = () => {
 	return (
-		<Container fluid className='register-success'>
+		<Container fluid className="register-success">
 			<Row className="justify-content-center align-items-center vh-100">
-				<Col lg={6} className="text-center my-auto">
-					<h5 className="text-center mb-4">Registration Succesful!</h5>
+				<Col lg={6} className="text-center">
+					<h5 className="text-center mb-4">
+						Registration Succesful!
+					</h5>
 					<p>
 						We’ve also sent a copy of the contract as well as next
 						steps to your e-mail{' '}
@@ -16,13 +18,13 @@ export const RegistrationSuccess = () => {
 						</strong>
 						.
 					</p>
-					<Button
+					{/* <Button
 						className="rounded-pill mt-5"
 						variant="outline-secondary"
 					>
-		                <FontAwesomeIcon icon={faDownload} className="me-2" />
+						<FontAwesomeIcon icon={faDownload} className="me-2" />
 						Download Contract
-					</Button>
+					</Button> */}
 				</Col>
 			</Row>
 		</Container>

@@ -8,6 +8,7 @@ export interface FormFieldProps {
 	label?: string
 	children: React.ReactNode
 	className?: string
+	labelClassName?: string
 	useWrapper?: boolean
 	hidden?: boolean
 	isRadio?: boolean
@@ -23,6 +24,7 @@ export const FormField = ({
 	hidden = false,
 	isRadio,
 	centered,
+	labelClassName,
 }: FormFieldProps) => {
 	const {
 		formState: { errors },
@@ -42,9 +44,12 @@ export const FormField = ({
 				<ContentWrapper useWrapper={useWrapper}>
 					{label && (
 						<label
-							className={classNames('form-label w-75', {
-								'text-center': centered,
-							})}
+							className={classNames(
+								`form-label ${labelClassName || ''}`,
+								{
+									'text-center': centered,
+								}
+							)}
 							htmlFor={name}
 						>
 							{label}
