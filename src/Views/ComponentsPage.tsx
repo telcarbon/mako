@@ -127,13 +127,11 @@ export const ComponentsPage = () => {
 										<FormRadioGroup
 											name={'islicensedPhlebotomist'}
 											register={register}
-											required
 											value={'Yes'}
 										/>
 										<FormRadioGroup
 											name={'islicensedPhlebotomist'}
 											register={register}
-											required
 											value={'No'}
 										/>
 									</div>

@@ -1,10 +1,9 @@
 import React from 'react'
-import { useFormContext, UseFormRegister } from 'react-hook-form'
+import { Controller, useFormContext, UseFormRegister } from 'react-hook-form'
 
 type FormRadioGroupProps = {
 	name: string
 	register: UseFormRegister<any>
-	required: boolean
 	className?: string
 	disabled?: boolean
 	children?: React.ReactNode
@@ -14,25 +13,31 @@ type FormRadioGroupProps = {
 export const FormRadioGroup = ({
 	name,
 	register,
-	required,
 	className,
 	value,
 	children,
 }: FormRadioGroupProps) => {
+	const { control } = useFormContext()
 	return (
-		<div>
-			<label key={value}>
-				<input
-					type="radio"
-					className={className}
-					value={value}
-					{...register(name, { required })}
-				/>
-				<div className="box">
-					<span>{value}</span>
-				</div>
-				{children}
-			</label>
-		</div>
+		<Controller
+			control={control}
+			name={name}
+			render={({ field: { onChange, onBlur } }) => (
+				<label key={value}>
+					<input
+						type="radio"
+						className={className}
+						value={value}
+						{...register(name)}
+						onBlur={onBlur} // notify when input is touched
+						onChange={() => onChange(value)} // send value to hook form
+					/>
+					<div className="box">
+						<span>{value === true ? 'Yes' : 'No'}</span>
+					</div>
+					{children}
+				</label>
+			)}
+		/>
 	)
 }

@@ -35,49 +35,55 @@ export const BusinessQuestionnaire = () => {
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
-		offerPhlebotomy: Yup.string().required('Please select an option'),
-		isLicensedPhlebotomist: Yup.string().when('offerPhlebotomy', {
+		offerPhlebotomy: Yup.boolean()
+			.required('Please select an option')
+			.nullable(),
+		// ...{isLicensedPhlebotomist: Yup.boolean().required('Please select an option').nullable(),
+
+		isLicensedPhlebotomist: Yup.boolean().when('offerPhlebotomy', {
 			is: (offerPhlebotomyCollapse: RadioOptionsLabel) =>
-				offerPhlebotomyCollapse === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
-		}),
-		// phlebotomistName: Yup.string().when('isLicensedPhlebotomist', {
-		// 	is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
-		//     islicensedPhlebotomistCollapse === RadioOptionsLabel.YES,
-		// 	then: Yup.string().required('Please select an option'),
-		// }),
-		trainExistingStaff: Yup.string().when('isLicensedPhlebotomist', {
-			is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
-				islicensedPhlebotomistCollapse === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
-		}),
-		offerClia: Yup.string().when('trainExistingStaff', {
-			is: (trainExistingStaffCollapse: RadioOptionsLabel) =>
-				trainExistingStaffCollapse === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
-		}),
-		isCliaWaivedSite: Yup.string().when('offerClia', {
-			is: (offerCliaCollapse: RadioOptionsLabel) =>
-				offerCliaCollapse === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
-		}),
-		hasParkingLot: Yup.string().when('offerClia', {
-			is: (isCliaWaivedSite: RadioOptionsLabel) =>
-				isCliaWaivedSite === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
-		}),
-		offerPrescription: Yup.string().when('offerClia', {
-			is: (hasParkingLot: RadioOptionsLabel) =>
-				hasParkingLot === RadioOptionsLabel.YES,
-			then: Yup.string().required('Please select an option'),
+				offerPhlebotomyCollapse,
+			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
 	})
+	// isLicensedPhlebotomist: Yup.boolean().when('offerPhlebotomy', {
+	// 	is: (offerPhlebotomyCollapse: RadioOptionsLabel) =>
+	// 		offerPhlebotomyCollapse,
+	// 	then: Yup.boolean().required('Please select an option').nullable(),
+	// }),
+	// phlebotomistName: Yup.string().when('isLicensedPhlebotomist', {
+	// 	is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
+	//     islicensedPhlebotomistCollapse === RadioOptionsLabel.YES,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
+	// trainExistingStaff: Yup.string().when('isLicensedPhlebotomist', {
+	// 	is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
+	// 		islicensedPhlebotomistCollapse,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
+	// offerClia: Yup.string().when('trainExistingStaff', {
+	// 	is: (trainExistingStaffCollapse: RadioOptionsLabel) =>
+	// 		trainExistingStaffCollapse,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
+	// isCliaWaivedSite: Yup.string().when('offerClia', {
+	// 	is: (offerCliaCollapse: RadioOptionsLabel) => offerCliaCollapse,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
+	// hasParkingLot: Yup.string().when('offerClia', {
+	// 	is: (isCliaWaivedSite: RadioOptionsLabel) => isCliaWaivedSite,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
+	// offerPrescription: Yup.string().when('offerClia', {
+	// 	is: (hasParkingLot: RadioOptionsLabel) => hasParkingLot,
+	// 	then: Yup.string().required('Please select an option'),
+	// }),
 
 	const initialValues = {
-		offerPhlebotomy: '',
-		isLicensedPhlebotomist: '',
+		offerPhlebotomy: null,
+		isLicensedPhlebotomist: null,
 		phlebotomist: [{ phlebotomistName: '' }],
-		trainExistingStaff: '',
+		trainExistingStaff: null,
 		offerClia: '',
 		isCliaWaivedSite: '',
 		hasParkingLot: '',
@@ -103,6 +109,8 @@ export const BusinessQuestionnaire = () => {
 	const offerCliaCollapse = watch('offerClia')
 	const isCliaWaivedSiteCollapse = watch('isCliaWaivedSite')
 	const hasParkingLotCollapse = watch('hasParkingLot')
+
+	console.log(offerPhlebotomyCollapse, 'watch')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -145,18 +153,17 @@ export const BusinessQuestionnaire = () => {
 							isRadio
 						>
 							<div className="d-flex">
-								{OptionsLabel.map((option, index) => (
+								{RadioLabelOptions.map((option, index) => (
 									<FormRadioGroup
 										name={'offerPhlebotomy'}
 										register={register}
-										value={option}
-										required={false}
+										value={option.value}
 										key={index}
 									/>
 								))}
 							</div>
 						</FormField>
-						{offerPhlebotomyCollapse === RadioOptionsLabel.YES && (
+						{offerPhlebotomyCollapse && (
 							<FormField
 								name="isLicensedPhlebotomist"
 								label="Do you have a licensed phlebotomist?"
@@ -165,18 +172,16 @@ export const BusinessQuestionnaire = () => {
 								isRadio
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'isLicensedPhlebotomist'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
 								</div>
-								{licensedPhlebotomistCollapse ===
-									RadioOptionsLabel.YES && (
+								{licensedPhlebotomistCollapse && (
 									<div style={{ flexBasis: '100%' }}>
 										{fields.map((item, index) => {
 											return (
@@ -209,8 +214,7 @@ export const BusinessQuestionnaire = () => {
 								)}
 							</FormField>
 						)}
-						{licensedPhlebotomistCollapse ===
-							RadioOptionsLabel.YES && (
+						{licensedPhlebotomistCollapse && (
 							<FormField
 								name="trainExistingStaff"
 								label="Would you like to train your existing staff in phlebotomy?"
@@ -219,20 +223,18 @@ export const BusinessQuestionnaire = () => {
 								isRadio
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'trainExistingStaff'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
 								</div>
 							</FormField>
 						)}
-						{trainExistingStaffCollapse ===
-							RadioOptionsLabel.YES && (
+						{trainExistingStaffCollapse && (
 							<FormField
 								name="offerClia"
 								label="Would you like to offer CLIA waived point of care testing
@@ -240,22 +242,21 @@ export const BusinessQuestionnaire = () => {
 								useWrapper={false}
 								className="form-radio-wrap rounded-2 d-flex ps-3"
 								isRadio
-								labelClassName='w-75'
+								labelClassName="w-75"
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'offerClia'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
 								</div>
 							</FormField>
 						)}
-						{offerCliaCollapse === RadioOptionsLabel.YES && (
+						{offerCliaCollapse && (
 							<FormField
 								name="isCliaWaivedSite"
 								label="Is your business a CLIA WAIVED site?"
@@ -264,18 +265,16 @@ export const BusinessQuestionnaire = () => {
 								isRadio
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'isCliaWaivedSite'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
 								</div>
-								{isCliaWaivedSiteCollapse ===
-									RadioOptionsLabel.YES && (
+								{isCliaWaivedSiteCollapse && (
 									<div style={{ flexBasis: '100%' }}>
 										<button className="btn btn-outline-dark border-2 col-	-4">
 											Upload CLIA certification
@@ -292,29 +291,28 @@ export const BusinessQuestionnaire = () => {
 								)}
 							</FormField>
 						)}
-						{isCliaWaivedSiteCollapse === RadioOptionsLabel.YES && (
+						{isCliaWaivedSiteCollapse && (
 							<FormField
 								name="hasParkingLot"
 								label="Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?"
 								useWrapper={false}
 								className="form-radio-wrap rounded-2 d-flex ps-3"
 								isRadio
-								labelClassName='w-75'
+								labelClassName="w-75"
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'hasParkingLot'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
 								</div>
 							</FormField>
 						)}
-						{hasParkingLotCollapse === RadioOptionsLabel.YES && (
+						{hasParkingLotCollapse && (
 							<FormField
 								name="offerPrescription"
 								label="Does your business offer prescription delivery via company driver or courier service?"
@@ -323,12 +321,11 @@ export const BusinessQuestionnaire = () => {
 								isRadio
 							>
 								<div className="d-flex">
-									{OptionsLabel.map((option, index) => (
+									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'offerPrescription'}
 											register={register}
-											value={option}
-											required={false}
+											value={option.value}
 											key={index}
 										/>
 									))}
@@ -345,7 +342,7 @@ export const BusinessQuestionnaire = () => {
 					/>
 					<Button
 						type="submit"
-						disabled={!isDirty}
+						// disabled={!isDirty}
 						className="col-lg-auto pull-right"
 					>
 						Next
