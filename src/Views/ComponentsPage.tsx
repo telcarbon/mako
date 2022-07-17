@@ -7,6 +7,8 @@ import {
 	Form,
 	FormField,
 	FormRadioGroup,
+	FormSelect,
+	FormSelectNew,
 	FormTextInput,
 } from 'components'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -14,6 +16,7 @@ import { Col, Container, Row } from 'react-bootstrap'
 import * as Yup from 'yup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
+import { LocationType } from './Registration/components/BusinessInfo'
 
 export enum RadioOptionsLabel {
 	YES = 'Yes',
@@ -39,6 +42,7 @@ export const ComponentsPage = () => {
 		name: '',
 		islicensedPhlebotomist: '',
 		phlebotomist: [{ phlebotomistName: '' }],
+		test: '',
 	}
 
 	const useFormInstance = useForm({
@@ -80,7 +84,7 @@ export const ComponentsPage = () => {
 
 	const islicensedPhlebotomist = watch('islicensedPhlebotomist')
 
-	console.log(fields.length, 'length')
+	// console.log(fields.length, 'length')
 
 	return (
 		<Container fluid>
@@ -169,6 +173,26 @@ export const ComponentsPage = () => {
 											})}
 										</div>
 									)}
+								</FormField>
+								<FormField name='test'>
+									<FormSelectNew
+										name="test"
+										register={register}
+										options={[
+											{
+												label: LocationType.PHARMACY,
+												value: 1,
+											},
+											{
+												label: LocationType.CLINIC,
+												value: 2,
+											},
+											{
+												label: LocationType.PHARMACY,
+												value: 3,
+											},
+										]}
+									/>
 								</FormField>
 								<div>
 									<Button type="submit">Submit</Button>

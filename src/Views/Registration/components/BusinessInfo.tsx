@@ -6,12 +6,13 @@ import {
 	Form,
 	FormSelect,
 	Button,
+	FormSelectNew,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
-
+import { IBusinessInfo } from '../types'
 
 export const options = [
 	{
@@ -26,10 +27,10 @@ export const options = [
 	},
 ]
 
-export enum LocationType{
-	PHARMACY ='Pharmacy',
-	CLINIC ='Clinic',
-	MOBILE ='Mobile',
+export enum LocationType {
+	PHARMACY = 'Pharmacy',
+	CLINIC = 'Clinic',
+	MOBILE = 'Mobile',
 }
 
 const locationTypeOptions = [
@@ -45,18 +46,28 @@ const locationTypeOptions = [
 	},
 	{
 		id: 1,
-		label: LocationType.PHARMACY,
+		label: LocationType.MOBILE,
 		value: 3,
 	},
 ]
 
-export const BusinessInfo = () => {
+interface IBusinessInfoProps {
+	businessInfo: IBusinessInfo | undefined
+	setBusinessInfo: (value: IBusinessInfo) => void
+}
+
+export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
+	businessInfo,
+	setBusinessInfo,
+}) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
 		businessName: Yup.string().required('Business Name is required'),
-		typeOfLocation: Yup.string().required('Please select an option'),
+		typeOfLocation: Yup.string()
+			.required('Please select an option')
+			.nullable(),
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
@@ -69,9 +80,9 @@ export const BusinessInfo = () => {
 		ncpdpNumber: Yup.string().required('NCPDP Number is required'),
 	})
 
-	const initialValues = {
+	const initialValues: IBusinessInfo = {
 		businessName: '',
-		typeOfLocation: '',
+		typeOfLocation: 0,
 		addressLineOne: '',
 		addressLineTwo: '',
 		email: '',
@@ -80,25 +91,27 @@ export const BusinessInfo = () => {
 		state: '',
 		zip: '',
 		country: '',
-		npiNumber: '',
-		ncpdpNumber: '',
+		npiNumber: 0,
+		ncpdpNumber: 0,
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
 	const {
 		getValues,
+		setValue,
 		register,
 		formState: { isDirty },
 		watch,
+		control,
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
-		navigate(`${match?.pathnameBase}/busines-rep-info`)
+		//navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 
 	return (
@@ -119,12 +132,21 @@ export const BusinessInfo = () => {
 									</FormField>
 								</Col>
 								<Col lg={6} className="px-3">
-									<FormField name="typeOfLocation">
+									{/* <FormField name="typeOfLocation">
 										<FormSelect
 											name="typeOfLocation"
 											register={register}
 											options={locationTypeOptions}
 											placeholder={'Type of Location'}
+										/>
+									</FormField> */}
+									<FormField name="typeOfLocation">
+										<FormSelectNew
+											name="typeOfLocation"
+											register={register}
+											// setValue={setValue}
+											control={control}
+											options={locationTypeOptions}
 										/>
 									</FormField>
 								</Col>
@@ -196,6 +218,7 @@ export const BusinessInfo = () => {
 											placeholder="Phone Number"
 											name="phoneNumber"
 											register={register}
+											type='number'
 										/>
 									</FormField>
 									<FormField

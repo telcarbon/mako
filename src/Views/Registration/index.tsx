@@ -8,18 +8,8 @@ import { BusinessRepInfo } from './components/BusinessRepInfo'
 import { RegistrationNav } from './components/NavBar/RegistrationNav'
 import { TermsAndAgreement } from './components/TermsAndAgreement'
 import { RegistrationSuccess } from './components/RegistrationSuccess'
+import { IBusinessInfo } from './types'
 
-interface IBusinessInfo {
-	name: ''
-	location: ''
-}
-
-type RegisterContextType = {
-	businessInfo: IBusinessInfo | undefined
-	saveBusinessInfo: (info: IBusinessInfo) => void
-}
-
-const RegisterContext = createContext<RegisterContextType | null>(null)
 export const Registration = () => {
 	const location = useLocation()
 	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>()
@@ -34,7 +24,15 @@ export const Registration = () => {
 				{!location.pathname.includes('success') && <RegistrationNav />}
 			</SideNav>
 			<Routes>
-				<Route path={'/'} element={<BusinessInfo  />} />
+				<Route
+					path={'/'}
+					element={
+						<BusinessInfo
+							businessInfo={businessInfo}
+							setBusinessInfo={setBusinessInfo}
+						/>
+					}
+				/>
 				<Route
 					path={'/busines-rep-info'}
 					element={<BusinessRepInfo />}

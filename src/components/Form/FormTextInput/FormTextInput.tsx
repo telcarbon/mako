@@ -13,6 +13,7 @@ type InputProps = {
 	onClickAppend?: React.MouseEventHandler<HTMLButtonElement>
 	fieldCount?: any
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
+	type?: 'text' | 'number' | 'date' | 'time'
 }
 
 export const FormTextInput = ({
@@ -23,11 +24,13 @@ export const FormTextInput = ({
 	onClickAppend,
 	fieldCount,
 	onClickRemove,
+	type = 'text',
 }: InputProps) => {
 	return (
 		<>
 			<div className="input-group rounded-left">
 				<input
+					type={type}
 					className="form-control rounded-right"
 					{...register(name)}
 					placeholder={placeholder}
