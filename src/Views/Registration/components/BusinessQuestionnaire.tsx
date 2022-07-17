@@ -15,19 +15,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { useMatch, useNavigate } from 'react-router-dom'
 
-export enum RadioOptionsLabel {
-	YES = 'Yes',
-	NO = 'No',
-}
-
 export const RadioLabelOptions = [
 	{ value: true, name: 'YES' },
 	{ value: false, name: 'NO' },
-]
-
-const OptionsLabel: RadioOptionsLabel[] = [
-	RadioOptionsLabel.YES,
-	RadioOptionsLabel.NO,
 ]
 
 export const BusinessQuestionnaire = () => {
@@ -35,14 +25,36 @@ export const BusinessQuestionnaire = () => {
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
-		offerPhlebotomy: Yup.boolean()
+		offerPhlebotomy: Yup.mixed()
 			.required('Please select an option')
 			.nullable(),
-		// ...{isLicensedPhlebotomist: Yup.boolean().required('Please select an option').nullable(),
 
-		isLicensedPhlebotomist: Yup.boolean().when('offerPhlebotomy', {
-			is: (offerPhlebotomyCollapse: RadioOptionsLabel) =>
-				offerPhlebotomyCollapse,
+		isLicensedPhlebotomist: Yup.mixed().when('offerPhlebotomy', {
+			is: true,
+			then: Yup.boolean().required('Please select an option').nullable(),
+		}),
+		// phlebotomistName: Yup.mixed().when('isLicensedPhlebotomist', {
+		// 	is: true,
+		// 	then: Yup.string().required('Please select an option'),
+		// }),
+		trainExistingStaff: Yup.mixed().when('isLicensedPhlebotomist', {
+			is: true,
+			then: Yup.boolean().required('Please select an option').nullable(),
+		}),
+		offerClia: Yup.mixed().when('trainExistingStaff', {
+			is: true,
+			then: Yup.boolean().required('Please select an option').nullable(),
+		}),
+		isCliaWaivedSite: Yup.mixed().when('offerClia', {
+			is: true,
+			then: Yup.boolean().required('Please select an option').nullable(),
+		}),
+		hasParkingLot: Yup.mixed().when('isCliaWaivedSite', {
+			is: true,
+			then: Yup.boolean().required('Please select an option').nullable(),
+		}),
+		offerPrescription: Yup.mixed().when('hasParkingLot', {
+			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
 	})
@@ -84,10 +96,10 @@ export const BusinessQuestionnaire = () => {
 		isLicensedPhlebotomist: null,
 		phlebotomist: [{ phlebotomistName: '' }],
 		trainExistingStaff: null,
-		offerClia: '',
-		isCliaWaivedSite: '',
-		hasParkingLot: '',
-		offerPrescription: '',
+		offerClia: null,
+		isCliaWaivedSite: null,
+		hasParkingLot: null,
+		offerPrescription: null,
 	}
 
 	const useFormInstance = useForm({
