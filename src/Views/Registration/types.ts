@@ -1,5 +1,5 @@
-interface IOption {
-	id:number
+export interface IOption {
+	id?: number
 	label: string
 	value: number
 }
@@ -37,6 +37,4 @@ export interface IBankDetailsInfo {
 	abaRoutingNumber: number // might change to string
 }
 
-export interface IQuestionnareInfo {
-
-}
+export interface IQuestionnareInfo {}

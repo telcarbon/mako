@@ -13,17 +13,19 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessInfo } from '../types'
+import stateAndCitiesData from '../../../common/state_cities.json'
 
+const ifNullOrEmpty = (val: any): boolean => {
+	return val === '' || val === null
+}
 export const options = [
 	{
 		value: 'Option 1',
 		label: 'Option 1',
-		id: 1,
 	},
 	{
 		value: 'Option 2',
 		label: 'Option 2',
-		id: 2,
 	},
 ]
 
@@ -67,7 +69,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		businessName: Yup.string().required('Business Name is required'),
 		typeOfLocation: Yup.string()
 			.required('Please select an option')
-			.nullable(),
+			.nullable(), // may mali pa naka array kasi
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
@@ -102,7 +104,6 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 
 	const {
 		getValues,
-		setValue,
 		register,
 		formState: { isDirty },
 		watch,
@@ -110,8 +111,30 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues(), 'values')
+		console.log('============', getValues())
 		//navigate(`${match?.pathnameBase}/busines-rep-info`)
+	}
+
+	const stateWatch: any = watch('state')
+	const ifEmptyState = ifNullOrEmpty(stateWatch)
+
+	const restructureCities = (): any => {
+		if (!ifEmptyState && typeof stateWatch === 'object') {
+			var res: string[] | undefined
+			res = stateAndCitiesData.find(
+				(f) => f.name === stateWatch?.value
+			)?.cities
+			if (res && res.length > 0) {
+				const restructured = res?.map((m) => {
+					return {
+						label: m,
+						value: m,
+					}
+				})
+				return restructured
+			}
+			return []
+		}
 	}
 
 	return (
@@ -144,7 +167,6 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 										<FormSelectNew
 											name="typeOfLocation"
 											register={register}
-											// setValue={setValue}
 											control={control}
 											options={locationTypeOptions}
 										/>
@@ -170,20 +192,28 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											register={register}
 										/>
 									</FormField>
-									<FormField name="city">
-										<FormSelect
-											name="city"
-											register={register}
-											options={options}
-											placeholder={'City'}
-										/>
-									</FormField>
 									<FormField name="state">
-										<FormSelect
+										<FormSelectNew
 											name="state"
 											register={register}
-											options={options}
-											placeholder={'State'}
+											options={stateAndCitiesData.map(
+												(m: any) => {
+													return {
+														label: m.name,
+														value: m.name,
+													}
+												}
+											)}
+											control={control}
+										/>
+									</FormField>
+									<FormField name="city">
+										<FormSelectNew
+											name="city"
+											register={register}
+											options={restructureCities()}
+											control={control}
+											disabled={ifEmptyState}
 										/>
 									</FormField>
 									<FormField name="zip">
@@ -218,7 +248,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="Phone Number"
 											name="phoneNumber"
 											register={register}
-											type='number'
+											type="number"
 										/>
 									</FormField>
 									<FormField

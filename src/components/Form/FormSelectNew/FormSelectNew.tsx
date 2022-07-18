@@ -1,16 +1,14 @@
-import {
-	Control, Controller, UseFormRegister
-} from 'react-hook-form'
+import { Control, Controller, UseFormRegister } from 'react-hook-form'
 import Select from 'react-select'
 import { IBusinessInfo } from 'Views/Registration/types'
 
 interface FormSelectNewProps {
 	options: any[]
 	register: UseFormRegister<any>
-	// setValue: UseFormSetValue<IBusinessInfo>
 	control?: Control<IBusinessInfo, object>
 	name: any
 	defaultValue?: any
+	disabled?: boolean
 }
 
 const selectStyles = {
@@ -42,21 +40,13 @@ export const FormSelectNew = ({
 	options,
 	name,
 	control,
+	disabled = false,
 }: FormSelectNewProps) => {
-	console.log(name, );
-	
 	return (
 		<Controller
 			control={control}
-			name={name}
+			name={name as any}
 			render={({ field }) => {
-				console.log(field)
-
-				// const props = {
-				// 	name: field.name,
-				// 	value: field.value || '',
-				// 	on
-				// }
 				return (
 					<Select
 						{...field}
@@ -67,11 +57,9 @@ export const FormSelectNew = ({
 						// classNamePrefix="select"
 						// classNamePrefix="filter"
 						styles={selectStyles}
+						isDisabled={disabled}
 						onChange={(e: any) => {
-							console.log('ee', e)
 							field.onChange(e)
-							// field.onChange(e.value)
-							// sample.onChange(e)
 						}}
 					/>
 				)

@@ -25,6 +25,7 @@ export const FormSelect = ({
 		<select
 			className={`form-select custom-select ${className || ''}`}
 			{...register(name)}
+			disabled={disabled}
 		>
 			{placeholder && (
 				<option className="placeholder" value="" disabled>
@@ -32,7 +33,9 @@ export const FormSelect = ({
 				</option>
 			)}
 			{options.map(({ label, value }) => (
-				<option value={value} key={value}>{label}</option>
+				<option value={value} key={value}>
+					{label}
+				</option>
 			))}
 		</select>
 	)
