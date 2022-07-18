@@ -67,13 +67,15 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 
 	const validationSchema = Yup.object().shape({
 		businessName: Yup.string().required('Business Name is required'),
-		typeOfLocation: Yup.string()
+		typeOfLocation: Yup.number()
 			.required('Please select an option')
+			.moreThan(1, 'Please select an option')
 			.nullable(), // may mali pa naka array kasi
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
 		country: Yup.string().required('Country is required'),
+		zip: Yup.string().required('Zip Code is required'),
 		email: Yup.string()
 			.email('Must be a valid email address')
 			.required('Enter a valid email address'),
@@ -92,9 +94,9 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		city: '',
 		state: '',
 		zip: '',
-		country: '',
-		npiNumber: 0,
-		ncpdpNumber: 0,
+		country: 'US',
+		npiNumber: '',
+		ncpdpNumber: '',
 	}
 
 	const useFormInstance = useForm({
@@ -112,6 +114,8 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 
 	const handleSubmit = async (values: any) => {
 		console.log('============', getValues())
+		// const formValues = getValues()
+		// setBusinessInfo(formValues)
 		//navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 
@@ -155,20 +159,14 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 									</FormField>
 								</Col>
 								<Col lg={6} className="px-3">
-									{/* <FormField name="typeOfLocation">
-										<FormSelect
-											name="typeOfLocation"
-											register={register}
-											options={locationTypeOptions}
-											placeholder={'Type of Location'}
-										/>
-									</FormField> */}
 									<FormField name="typeOfLocation">
 										<FormSelectNew
 											name="typeOfLocation"
 											register={register}
+											placeholder="Type of Location"
 											control={control}
 											options={locationTypeOptions}
+											defaultValue={0}
 										/>
 									</FormField>
 								</Col>
@@ -196,6 +194,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 										<FormSelectNew
 											name="state"
 											register={register}
+											placeholder="State"
 											options={stateAndCitiesData.map(
 												(m: any) => {
 													return {
@@ -211,6 +210,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 										<FormSelectNew
 											name="city"
 											register={register}
+											placeholder="City"
 											options={restructureCities()}
 											control={control}
 											disabled={ifEmptyState}
@@ -221,13 +221,19 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="Zip Code"
 											name="zip"
 											register={register}
+											type="number"
 										/>
 									</FormField>
 									<FormField name="country">
-										<FormSelect
+										<FormSelectNew
 											name="country"
 											register={register}
-											options={options}
+											options={[
+												{
+													label: 'United States',
+													value: 'US',
+												},
+											]}
 											placeholder={'Country'}
 										/>
 									</FormField>
@@ -260,6 +266,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="NPI Number"
 											name="npiNumber"
 											register={register}
+											type="number"
 										/>
 									</FormField>
 									<FormField name="ncpdpNumber">
@@ -267,6 +274,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="NCPDP Number"
 											name="ncpdpNumber"
 											register={register}
+											type="number"
 										/>
 									</FormField>
 								</Col>
@@ -281,7 +289,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 						/>
 						<Button
 							type="submit"
-							disabled={!isDirty}
+							// disabled={!isDirty}
 							className="col-lg-auto pull-right"
 						>
 							Next

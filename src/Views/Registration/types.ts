@@ -13,10 +13,10 @@ export interface IBusinessInfo {
 	phoneNumber: string // temporary with + sign???
 	city: string
 	state: string
-	zip: string
+	zip: string // same npiNumber
 	country: string
-	npiNumber: number
-	ncpdpNumber: number
+	npiNumber: string // changed to string so defualt value of 0 will not be seen
+	ncpdpNumber: string // same with npiNumber
 }
 
 export interface IBusinessRepInfo {

@@ -9,6 +9,7 @@ interface FormSelectNewProps {
 	name: any
 	defaultValue?: any
 	disabled?: boolean
+	placeholder?: string
 }
 
 const selectStyles = {
@@ -40,6 +41,8 @@ export const FormSelectNew = ({
 	options,
 	name,
 	control,
+	placeholder = '',
+	defaultValue = null,
 	disabled = false,
 }: FormSelectNewProps) => {
 	return (
@@ -50,16 +53,23 @@ export const FormSelectNew = ({
 				return (
 					<Select
 						{...field}
+						getOptionValue={(opt) => opt.value}
+						getOptionLabel={(opt) => opt.label}
 						options={options}
-						placeholder="Type of Location"
+						placeholder={placeholder}
 						isClearable
+						value={
+							(options &&
+								options.find((f) => f.value === field.value)) ||
+							defaultValue
+						}
 						// className="filter"
 						// classNamePrefix="select"
 						// classNamePrefix="filter"
 						styles={selectStyles}
 						isDisabled={disabled}
 						onChange={(e: any) => {
-							field.onChange(e)
+							field.onChange((e && e.value) || defaultValue)
 						}}
 					/>
 				)
