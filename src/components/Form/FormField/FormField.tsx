@@ -95,7 +95,7 @@ const ContentWrapper = ({
 		return <>{children}</>
 	}
 	return (
-		<div className="form-element-wrap" style={{ display: 'grid' }}>
+		<div className="form-element-wrap">
 			{children}
 		</div>
 	)

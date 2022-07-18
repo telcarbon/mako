@@ -1,10 +1,5 @@
-import React, { useState } from 'react'
 import {
-	Controller,
-	useForm,
-	UseFormRegister,
-	UseFormSetValue,
-	Control,
+	Control, Controller, UseFormRegister
 } from 'react-hook-form'
 import Select from 'react-select'
 import { IBusinessInfo } from 'Views/Registration/types'
@@ -14,7 +9,7 @@ interface FormSelectNewProps {
 	register: UseFormRegister<any>
 	// setValue: UseFormSetValue<IBusinessInfo>
 	control?: Control<IBusinessInfo, object>
-	name: string
+	name: any
 	defaultValue?: any
 }
 
@@ -43,28 +38,17 @@ const selectStyles = {
 	}),
 }
 
-const theme = (theme: any) => ({
-	...theme,
-	colors: {
-		...theme.colors,
-		primary25: '#f3f3f3',
-		primary: '#333333',
-	},
-})
-
 export const FormSelectNew = ({
 	options,
-	register,
-	//setValue,
 	name,
 	control,
-	defaultValue,
 }: FormSelectNewProps) => {
-	// const [selectedValue, setSelectedValue] = useState('')
+	console.log(name, );
+	
 	return (
 		<Controller
 			control={control}
-			name={'typeOfLocation'}
+			name={name}
 			render={({ field }) => {
 				console.log(field)
 
@@ -79,20 +63,16 @@ export const FormSelectNew = ({
 						options={options}
 						placeholder="Type of Location"
 						isClearable
-						// getOptionValue={opt => opt.value}
-						// getOptionLabel={opt => opt.label}
 						// className="filter"
 						// classNamePrefix="select"
 						// classNamePrefix="filter"
 						styles={selectStyles}
-						// value={selectedValue}
 						onChange={(e: any) => {
 							console.log('ee', e)
 							field.onChange(e)
 							// field.onChange(e.value)
 							// sample.onChange(e)
 						}}
-						// theme={theme}
 					/>
 				)
 			}}

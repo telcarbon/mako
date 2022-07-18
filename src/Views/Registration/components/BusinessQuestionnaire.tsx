@@ -37,6 +37,13 @@ export const BusinessQuestionnaire = () => {
 		// 	is: true,
 		// 	then: Yup.string().required('Please select an option'),
 		// }),
+		phlebotomist: Yup.array().of(
+			Yup.object().shape({
+				phlebotomistName: Yup.string().required(
+					'This field is required'
+				),
+			})
+		),
 		trainExistingStaff: Yup.mixed().when('isLicensedPhlebotomist', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
@@ -58,38 +65,6 @@ export const BusinessQuestionnaire = () => {
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
 	})
-	// isLicensedPhlebotomist: Yup.boolean().when('offerPhlebotomy', {
-	// 	is: (offerPhlebotomyCollapse: RadioOptionsLabel) =>
-	// 		offerPhlebotomyCollapse,
-	// 	then: Yup.boolean().required('Please select an option').nullable(),
-	// }),
-	// phlebotomistName: Yup.string().when('isLicensedPhlebotomist', {
-	// 	is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
-	//     islicensedPhlebotomistCollapse === RadioOptionsLabel.YES,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
-	// trainExistingStaff: Yup.string().when('isLicensedPhlebotomist', {
-	// 	is: (islicensedPhlebotomistCollapse: RadioOptionsLabel) =>
-	// 		islicensedPhlebotomistCollapse,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
-	// offerClia: Yup.string().when('trainExistingStaff', {
-	// 	is: (trainExistingStaffCollapse: RadioOptionsLabel) =>
-	// 		trainExistingStaffCollapse,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
-	// isCliaWaivedSite: Yup.string().when('offerClia', {
-	// 	is: (offerCliaCollapse: RadioOptionsLabel) => offerCliaCollapse,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
-	// hasParkingLot: Yup.string().when('offerClia', {
-	// 	is: (isCliaWaivedSite: RadioOptionsLabel) => isCliaWaivedSite,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
-	// offerPrescription: Yup.string().when('offerClia', {
-	// 	is: (hasParkingLot: RadioOptionsLabel) => hasParkingLot,
-	// 	then: Yup.string().required('Please select an option'),
-	// }),
 
 	const initialValues = {
 		offerPhlebotomy: null,
@@ -201,24 +176,32 @@ export const BusinessQuestionnaire = () => {
 													key={item.id}
 													className="col-lg-7 d-flex mb-1 align-items-center"
 												>
-													<FormTextInput
+													<FormField
 														name={`phlebotomist[${index}].phlebotomistName`}
-														register={register}
-														placeholder="Phlebotomist Name"
-														hasAppendButton={true}
-														onClickAppend={() =>
-															handleAppend({
-																phlebotomistName:
-																	'',
-															})
-														}
-														fieldCount={
-															fields?.length
-														}
-														onClickRemove={() =>
-															handleRemove(index)
-														}
-													/>
+													className="d-flex">
+														<FormTextInput
+															name={`phlebotomist[${index}].phlebotomistName`}
+															register={register}
+															placeholder="Phlebotomist Name"
+															hasAppendButton={
+																true
+															}
+															onClickAppend={() =>
+																handleAppend({
+																	phlebotomistName:
+																		'',
+																})
+															}
+															fieldCount={
+																fields?.length
+															}
+															onClickRemove={() =>
+																handleRemove(
+																	index
+																)
+															}
+														/>
+													</FormField>
 												</div>
 											)
 										})}
