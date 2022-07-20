@@ -70,18 +70,24 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		typeOfLocation: Yup.number()
 			.required('Please select an option')
 			.moreThan(1, 'Please select an option')
-			.nullable(), // may mali pa naka array kasi
+			.nullable(),
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
-		country: Yup.string().required('Country is required'),
-		zip: Yup.string().required('Zip Code is required'),
+		// country: Yup.string().required('Country is required'), Note: Since it has default value
+		zip: Yup.string()
+			.required('Zip Code is required')
+			.length(5, 'Should be compose of 5 digits'),
 		email: Yup.string()
 			.email('Must be a valid email address')
 			.required('Enter a valid email address'),
-		phoneNumber: Yup.string().required('Phone Number is required'),
-		npiNumber: Yup.string().required('NPI Number is required'),
-		ncpdpNumber: Yup.string().required('NCPDP Number is required'),
+		phoneNumber: Yup.string().required('Phone Number is required'), // problem with format tskk
+		npiNumber: Yup.string()
+			.required('NPI Number is required')
+			.length(10, 'Should be compose of 10 digits'),
+		ncpdpNumber: Yup.string()
+			.required('NCPDP Number is required')
+			.length(7, 'Should be compose of 7 digits'),
 	})
 
 	const initialValues: IBusinessInfo = {
@@ -100,7 +106,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -114,6 +120,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 
 	const handleSubmit = async (values: any) => {
 		console.log('============', getValues())
+		// console.log('testing', (123).toString('D16'))
 		// const formValues = getValues()
 		// setBusinessInfo(formValues)
 		//navigate(`${match?.pathnameBase}/busines-rep-info`)
@@ -123,11 +130,11 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
 
 	const restructureCities = (): any => {
-		if (!ifEmptyState && typeof stateWatch === 'object') {
+		console.log('aa', !ifEmptyState)
+		console.log('typeof', stateWatch)
+		if (!ifEmptyState) {
 			var res: string[] | undefined
-			res = stateAndCitiesData.find(
-				(f) => f.name === stateWatch?.value
-			)?.cities
+			res = stateAndCitiesData.find((f) => f.name === stateWatch)?.cities
 			if (res && res.length > 0) {
 				const restructured = res?.map((m) => {
 					return {
@@ -227,10 +234,11 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 									<FormField name="country">
 										<FormSelectNew
 											name="country"
+											disabled
 											register={register}
 											options={[
 												{
-													label: 'United States',
+													label: 'United States of America',
 													value: 'US',
 												},
 											]}

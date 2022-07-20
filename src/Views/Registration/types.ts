@@ -13,17 +13,20 @@ export interface IBusinessInfo {
 	phoneNumber: string // temporary with + sign???
 	city: string
 	state: string
-	zip: string // same npiNumber
+	zip: string
 	country: string
-	npiNumber: string // changed to string so defualt value of 0 will not be seen
-	ncpdpNumber: string // same with npiNumber
+	npiNumber: string
+	ncpdpNumber: string
 }
 
 export interface IBusinessRepInfo {
 	firstName: string
+	middleName: string
 	lastName: string
 	phoneNumber: string // temporary with + sign???
 	salutation: string
+	email: string
+	password: string
 }
 
 export interface IBankDetailsInfo {
