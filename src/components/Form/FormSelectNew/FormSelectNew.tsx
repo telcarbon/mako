@@ -1,12 +1,11 @@
 import { Control, Controller, UseFormRegister } from 'react-hook-form'
 import Select from 'react-select'
-import { IBusinessInfo } from 'Views/Registration/types'
 
 interface FormSelectNewProps {
 	options: any[]
 	register: UseFormRegister<any>
-	control?: Control<IBusinessInfo, object>
-	name: any
+	control?: any
+	name: string
 	defaultValue?: any
 	disabled?: boolean
 	placeholder?: string
