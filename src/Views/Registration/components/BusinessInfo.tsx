@@ -4,54 +4,19 @@ import {
 	FormTextInput,
 	FormField,
 	Form,
-	FormSelect,
 	Button,
-	FormSelectNew,
+	FormSearchSelect,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { IBusinessInfo } from '../types'
+import { IBusinessInfo, locationTypeOptions } from '../types'
 import stateAndCitiesData from '../../../common/state_cities.json'
 
 const ifNullOrEmpty = (val: any): boolean => {
 	return val === '' || val === null
 }
-export const options = [
-	{
-		value: 'Option 1',
-		label: 'Option 1',
-	},
-	{
-		value: 'Option 2',
-		label: 'Option 2',
-	},
-]
-
-export enum LocationType {
-	PHARMACY = 'Pharmacy',
-	CLINIC = 'Clinic',
-	MOBILE = 'Mobile',
-}
-
-const locationTypeOptions = [
-	{
-		id: 1,
-		label: LocationType.PHARMACY,
-		value: 1,
-	},
-	{
-		id: 2,
-		label: LocationType.CLINIC,
-		value: 2,
-	},
-	{
-		id: 1,
-		label: LocationType.MOBILE,
-		value: 3,
-	},
-]
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -75,9 +40,10 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
-		zip: Yup.string()
-			.required('Zip Code is required')
-			.length(5, 'Should be compose of 5 digits'),
+		zip: Yup.string().matches(
+			/^(|.{5,})$/,
+			'Numeric digits only, max. 5 characters'
+		),
 		email: Yup.string()
 			.email('Must be a valid email address')
 			.required('Enter a valid email address'),
@@ -106,7 +72,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -167,7 +133,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 								</Col>
 								<Col lg={6} className="px-3">
 									<FormField name="typeOfLocation">
-										<FormSelectNew
+										<FormSearchSelect
 											name="typeOfLocation"
 											register={register}
 											placeholder="Type of Location"
@@ -198,7 +164,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 										/>
 									</FormField>
 									<FormField name="state">
-										<FormSelectNew
+										<FormSearchSelect
 											name="state"
 											register={register}
 											placeholder="State"
@@ -214,7 +180,7 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 										/>
 									</FormField>
 									<FormField name="city">
-										<FormSelectNew
+										<FormSearchSelect
 											name="city"
 											register={register}
 											placeholder="City"
@@ -228,11 +194,10 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="Zip Code"
 											name="zip"
 											register={register}
-											type="number"
 										/>
 									</FormField>
 									<FormField name="country">
-										<FormSelectNew
+										<FormSearchSelect
 											name="country"
 											disabled
 											register={register}

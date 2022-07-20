@@ -4,15 +4,15 @@ import {
 	FormField,
 	FormTextInput,
 	Form,
-	FormSelect,
 	Button,
+	FormSearchSelect,
 } from 'components'
 import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
-import { options } from './BusinessInfo'
 import { useMatch, useNavigate } from 'react-router-dom'
+import { salutationOptions } from '../types'
 
 export const BusinessRepInfo = () => {
 	const match = useMatch('registration/*')
@@ -40,7 +40,7 @@ export const BusinessRepInfo = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -49,6 +49,7 @@ export const BusinessRepInfo = () => {
 		register,
 		formState: { isDirty },
 		watch,
+		control,
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
@@ -95,11 +96,12 @@ export const BusinessRepInfo = () => {
 										label="Personal Information"
 										centered
 									>
-										<FormSelect
+										<FormSearchSelect
 											name="salutation"
 											register={register}
-											options={options}
-											placeholder={'Salutation'}
+											placeholder="Salutation"
+											control={control}
+											options={salutationOptions}
 										/>
 									</FormField>
 									<FormField name="firstName">

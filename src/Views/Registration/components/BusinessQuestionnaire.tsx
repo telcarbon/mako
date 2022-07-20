@@ -1,19 +1,19 @@
-import React from 'react'
+import { useState } from 'react'
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { yupResolver } from '@hookform/resolvers/yup'
 import {
 	Button,
 	ContentHeader,
 	Form,
 	FormField,
 	FormRadioGroup,
-	FormTextInput,
+	FormTextInput
 } from 'components'
-import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
+import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as Yup from 'yup'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { useMatch, useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 
 export const RadioLabelOptions = [
 	{ value: true, name: 'YES' },
@@ -23,8 +23,9 @@ export const RadioLabelOptions = [
 export const BusinessQuestionnaire = () => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
+	const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
-	const validationSchema = Yup.object().shape({
+	const questionnaireValidationSchema = Yup.object().shape({
 		offerPhlebotomy: Yup.mixed()
 			.required('Please select an option')
 			.nullable(),
@@ -33,17 +34,16 @@ export const BusinessQuestionnaire = () => {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
-		// phlebotomistName: Yup.mixed().when('isLicensedPhlebotomist', {
-		// 	is: true,
-		// 	then: Yup.string().required('Please select an option'),
-		// }),
-		phlebotomist: Yup.array().of(
-			Yup.object().shape({
-				phlebotomistName: Yup.string().required(
-					'This field is required'
-				),
-			})
-		),
+		phlebotomist: Yup.array().when('isLicensedPhlebotomist', {
+			is: true,
+			then: Yup.array().of(
+				Yup.object({
+					phlebotomistName: Yup.string().required(
+						'Phlebotomist Name is required'
+					),
+				})
+			),
+		}),
 		trainExistingStaff: Yup.mixed().when('isLicensedPhlebotomist', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
@@ -78,7 +78,7 @@ export const BusinessQuestionnaire = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		resolver: yupResolver(questionnaireValidationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -172,44 +172,38 @@ export const BusinessQuestionnaire = () => {
 									<div style={{ flexBasis: '100%' }}>
 										{fields.map((item, index) => {
 											return (
-												<div
+												<FormField
+													name={`phlebotomist[${index}].phlebotomistName`}
 													key={item.id}
-													className="col-lg-7 d-flex mb-1 align-items-center"
+													className="col-lg-5 mb-2"
+													isRadio
 												>
-													<FormField
+													<FormTextInput
 														name={`phlebotomist[${index}].phlebotomistName`}
-													className="d-flex">
-														<FormTextInput
-															name={`phlebotomist[${index}].phlebotomistName`}
-															register={register}
-															placeholder="Phlebotomist Name"
-															hasAppendButton={
-																true
-															}
-															onClickAppend={() =>
-																handleAppend({
-																	phlebotomistName:
-																		'',
-																})
-															}
-															fieldCount={
-																fields?.length
-															}
-															onClickRemove={() =>
-																handleRemove(
-																	index
-																)
-															}
-														/>
-													</FormField>
-												</div>
+														register={register}
+														placeholder="Phlebotomist Name"
+														hasAppendButton={true}
+														onClickAppend={() =>
+															handleAppend({
+																phlebotomistName:
+																	'',
+															})
+														}
+														fieldCount={
+															fields?.length
+														}
+														onClickRemove={() =>
+															handleRemove(index)
+														}
+													/>
+												</FormField>
 											)
 										})}
 									</div>
 								)}
 							</FormField>
 						)}
-						{licensedPhlebotomistCollapse && (
+						{licensedPhlebotomistCollapse && offerPhlebotomyCollapse && (
 							<FormField
 								name="trainExistingStaff"
 								label="Would you like to train your existing staff in phlebotomy?"
@@ -229,7 +223,7 @@ export const BusinessQuestionnaire = () => {
 								</div>
 							</FormField>
 						)}
-						{trainExistingStaffCollapse && (
+						{trainExistingStaffCollapse && licensedPhlebotomistCollapse && offerPhlebotomyCollapse &&(
 							<FormField
 								name="offerClia"
 								label="Would you like to offer CLIA waived point of care testing
@@ -251,7 +245,7 @@ export const BusinessQuestionnaire = () => {
 								</div>
 							</FormField>
 						)}
-						{offerCliaCollapse && (
+						{offerCliaCollapse && trainExistingStaffCollapse && licensedPhlebotomistCollapse && offerPhlebotomyCollapse &&(
 							<FormField
 								name="isCliaWaivedSite"
 								label="Is your business a CLIA WAIVED site?"
@@ -271,7 +265,11 @@ export const BusinessQuestionnaire = () => {
 								</div>
 								{isCliaWaivedSiteCollapse && (
 									<div style={{ flexBasis: '100%' }}>
-										<button className="btn btn-outline-dark border-2 col-	-4">
+										{!isUploaded ? (<button
+											className="btn btn-outline-dark border-2 col-lg-5"
+											type="button"
+											onClick={() => setIsUploaded(true)}
+										>
 											Upload CLIA certification
 											<FontAwesomeIcon
 												icon={faCloudArrowUp}
@@ -281,7 +279,22 @@ export const BusinessQuestionnaire = () => {
 													fontSize: '1.25em',
 												}}
 											/>
-										</button>
+										</button>) : (<button
+											className="btn btn-outline-dark border-2 col-lg-5"
+											type="button"
+											onClick={() => setIsUploaded(false)}
+										>
+											Upload CLIA certificationsasa
+											<FontAwesomeIcon
+												icon={faCloudArrowUp}
+												className="text-secondary ps-2"
+												size="1x"
+												style={{
+													fontSize: '1.25em',
+												}}
+											/>
+										</button>)}
+										
 									</div>
 								)}
 							</FormField>

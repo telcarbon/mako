@@ -1,12 +1,18 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { ContentHeader } from 'components/ContentHeader'
-import { Container, Row, Col, Card, ProgressBar } from 'react-bootstrap'
+import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
-import { Button, Form, FormField, FormSelect, FormTextInput } from 'components'
-import { options } from './BusinessInfo'
+import {
+	Button,
+	Form,
+	FormField,
+	FormSearchSelect,
+	FormTextInput,
+} from 'components'
 import { useMatch, useNavigate } from 'react-router-dom'
+import { bankingTypeOptions } from '../types'
 
 export const BankingInfo = () => {
 	const match = useMatch('registration/*')
@@ -21,7 +27,9 @@ export const BankingInfo = () => {
 		),
 		expiration: Yup.string().required('Expiration Date is required'),
 		bankName: Yup.string().required('Bank Name is required'),
-		bankAccountType: Yup.string().required('Please select an option'),
+		bankAccountType: Yup.string()
+			.required('Please select an option')
+			.nullable(),
 		accountName: Yup.string().required('Account Name is required'),
 		accountNumber: Yup.string().required('Account Number is required'),
 		abaRoutingNumber: Yup.string().required(
@@ -50,6 +58,7 @@ export const BankingInfo = () => {
 		register,
 		formState: { isDirty },
 		watch,
+		control,
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
@@ -120,13 +129,12 @@ export const BankingInfo = () => {
 											/>
 										</FormField>
 										<FormField name="bankAccountType">
-											<FormSelect
+											<FormSearchSelect
 												name="bankAccountType"
 												register={register}
-												options={options}
-												placeholder={
-													'Bank Account Type'
-												}
+												placeholder="Bank Account Type"
+												control={control}
+												options={bankingTypeOptions}
 											/>
 										</FormField>
 										<FormField name="accountName">

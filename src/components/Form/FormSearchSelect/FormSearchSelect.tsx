@@ -1,7 +1,7 @@
-import { Control, Controller, UseFormRegister } from 'react-hook-form'
+import { Controller, UseFormRegister } from 'react-hook-form'
 import Select from 'react-select'
 
-interface FormSelectNewProps {
+interface FormSearchSelectProps {
 	options: any[]
 	register: UseFormRegister<any>
 	control?: any
@@ -11,39 +11,14 @@ interface FormSelectNewProps {
 	placeholder?: string
 }
 
-const selectStyles = {
-	control: (base: any) => ({
-		...base,
-		fontSize: '16px',
-		borderRadius: '0.25em',
-		border: '2px solid #333333',
-		boxShadow: 'none',
-		'&:focus': {
-			border: '0 !important',
-		},
-		'&:focus-within': {
-			borderColor: '#333333',
-			boxShadow: '0 0 0 0.2rem rgba(51, 51, 51, 0.25)',
-		},
-		'&:hover': {
-			opacity: 1,
-		},
-	}),
-	multiValue: (base: any) => ({
-		...base,
-		backgroundColor: 'blue',
-		color: 'white',
-	}),
-}
-
-export const FormSelectNew = ({
+export const FormSearchSelect = ({
 	options,
 	name,
 	control,
 	placeholder = '',
 	defaultValue = null,
 	disabled = false,
-}: FormSelectNewProps) => {
+}: FormSearchSelectProps) => {
 	return (
 		<Controller
 			control={control}
@@ -62,10 +37,8 @@ export const FormSelectNew = ({
 								options.find((f) => f.value === field.value)) ||
 							defaultValue
 						}
-						// className="filter"
-						// classNamePrefix="select"
-						// classNamePrefix="filter"
-						styles={selectStyles}
+						className="select"
+						classNamePrefix="select"
 						isDisabled={disabled}
 						onChange={(e: any) => {
 							field.onChange((e && e.value) || defaultValue)

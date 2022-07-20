@@ -41,7 +41,7 @@ export const FormField = ({
 				})}
 				style={{ display: hidden ? 'none' : 'block' }}
 			>
-				<ContentWrapper useWrapper={useWrapper}>
+				<ContentWrapper useWrapper={useWrapper} isTypeRadio={isRadio}>
 					{label && (
 						<label
 							className={classNames(
@@ -87,15 +87,19 @@ export const FormField = ({
 const ContentWrapper = ({
 	useWrapper,
 	children,
+	isTypeRadio,
 }: {
 	useWrapper: boolean
 	children: React.ReactNode
+	isTypeRadio?: boolean
 }) => {
 	if (!useWrapper) {
 		return <>{children}</>
 	}
 	return (
-		<div className="form-element-wrap">
+		<div
+			className={`form-element-wrap ${isTypeRadio ? 'd-flex' : 'd-grid'}`}
+		>
 			{children}
 		</div>
 	)

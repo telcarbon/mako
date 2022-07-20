@@ -1,0 +1,42 @@
+{
+	"partner": {
+		"street": "Fortune Drive",
+		"unit_floor_building": "141 Unit A",
+		"state": "PR",
+		"city": "Valenzula",
+		"zip_code": 14400,
+		"country": "PH",
+		"name": "qweadf",
+		"email": "cmqwe@asdfasdf.com",
+		"phone_number": "+12025550180",
+		"npi": 1234567890,
+		"ncpdp": 1234567,
+		"type": 1
+	},
+	"auth_credentials": {
+		"email": "ralph.subrio@doodlepress.com.ph",
+		"password": "Letmein12@"
+	},
+	"business_representative": {
+		"first_name": "Ralph",
+		"last_name": "Subrio",
+		"phone_number": "+12025550180",
+		"salutation": "Mr"
+	},
+	"bank_details": {
+		"stripe_response": {},
+		"bank_name": "Visa",
+		"bank_account_type": "Checking",
+		"account_name": "Ralph Christian Subrio",
+		"account_number": "000123456789",
+		"aba_routing_number": "110000000"
+	},
+	"questionnaires": [
+		{
+			"plebotomy": true
+		},
+		{
+			"licensed": true
+		}
+	]
+}

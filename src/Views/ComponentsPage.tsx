@@ -7,8 +7,8 @@ import {
 	Form,
 	FormField,
 	FormRadioGroup,
-	FormSelect,
-	FormSelectNew,
+	FormPlainSelect,
+	FormSearchSelect,
 	FormTextInput,
 } from 'components'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -16,7 +16,8 @@ import { Col, Container, Row } from 'react-bootstrap'
 import * as Yup from 'yup'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
-import { LocationType } from './Registration/components/BusinessInfo'
+import { LocationType } from './Registration/types'
+
 
 export enum RadioOptionsLabel {
 	YES = 'Yes',
@@ -173,7 +174,7 @@ export const ComponentsPage = () => {
 									)}
 								</FormField>
 								<FormField name='test'>
-									<FormSelectNew
+									<FormSearchSelect
 										name="test"
 										register={register}
 										options={[

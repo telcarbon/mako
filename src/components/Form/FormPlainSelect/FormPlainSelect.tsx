@@ -1,9 +1,6 @@
-import React, { MouseEventHandler } from 'react'
-import { faCirclePlus } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Path, useForm, UseFormRegister } from 'react-hook-form'
+import { UseFormRegister } from 'react-hook-form'
 
-type FormSelectProps = {
+type FormPlainSelectProps = {
 	name: string
 	register: UseFormRegister<any>
 	required?: boolean
@@ -13,14 +10,14 @@ type FormSelectProps = {
 	disabled?: boolean
 }
 
-export const FormSelect = ({
+export const FormPlainSelect = ({
 	name,
 	register,
 	placeholder,
 	className,
 	options,
 	disabled,
-}: FormSelectProps) => {
+}: FormPlainSelectProps) => {
 	return (
 		<select
 			className={`form-select custom-select ${className || ''}`}
