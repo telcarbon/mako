@@ -13,7 +13,7 @@ type InputProps = {
 	onClickAppend?: React.MouseEventHandler<HTMLButtonElement>
 	fieldCount?: any
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
-	type?: 'text' | 'number' | 'date' | 'time'
+	type?: 'text' | 'number' | 'date' | 'time' | 'password'
 }
 
 export const FormTextInput = ({
@@ -26,6 +26,12 @@ export const FormTextInput = ({
 	onClickRemove,
 	type = 'text',
 }: InputProps) => {
+	const formRegister = register(name)
+	// console.log('reg', register(name))
+	const onHandleChange = (e: any) => {
+		const { value } = e.target
+	}
+
 	return (
 		<>
 			<div className="input-group rounded-left">

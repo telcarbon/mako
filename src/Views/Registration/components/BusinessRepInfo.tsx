@@ -12,10 +12,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { salutationOptions } from '../types'
-
+import { IBusinessRepInfo, salutationOptions } from '../types'
+import { isNumericDigits } from 'common/Util'
 export const BusinessRepInfo = () => {
-	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
@@ -26,17 +25,21 @@ export const BusinessRepInfo = () => {
 		salutation: Yup.string().required('Salutation is required'),
 		firstName: Yup.string().required('First Name is required'),
 		lastName: Yup.string().required('Last Name is required'),
-		mobile: Yup.string().required('Mobile Number is required'),
+		phoneNumber: Yup.string()
+			.required('Mobile Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return value ? (!isNumericDigits(value) ? false : true) : true
+			}),
 	})
 
-	const initialValues = {
+	const initialValues: IBusinessRepInfo = {
 		email: '',
 		password: '',
 		salutation: '',
 		firstName: '',
 		middleName: '',
 		lastName: '',
-		mobile: '',
+		phoneNumber: '',
 	}
 
 	const useFormInstance = useForm({
@@ -54,7 +57,7 @@ export const BusinessRepInfo = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
-		navigate(`${match?.pathnameBase}/banking-info`)
+		// navigate(`${match?.pathnameBase}/banking-info`)
 	}
 	return (
 		<>
@@ -85,6 +88,7 @@ export const BusinessRepInfo = () => {
 											placeholder="Password"
 											name="password"
 											register={register}
+											type="password"
 										/>
 									</FormField>
 								</Col>
@@ -128,8 +132,9 @@ export const BusinessRepInfo = () => {
 									<FormField name="mobile">
 										<FormTextInput
 											placeholder="Mobile Number"
-											name="mobile"
+											name="phoneNumber"
 											register={register}
+											type="number"
 										/>
 									</FormField>
 								</Col>

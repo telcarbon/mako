@@ -13,10 +13,7 @@ import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessInfo, locationTypeOptions } from '../types'
 import stateAndCitiesData from '../../../common/state_cities.json'
-
-const ifNullOrEmpty = (val: any): boolean => {
-	return val === '' || val === null
-}
+import { isNumericDigits, checkLength, ifNullOrEmpty } from 'common/Util'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -40,19 +37,41 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		city: Yup.string().required('City is required'),
 		state: Yup.string().required('State is required'),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
-		zip: Yup.string().matches(
-			/^(|.{5,})$/,
-			'Numeric digits only, max. 5 characters'
-		),
+		zip: Yup.string()
+			.nullable()
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return value ? (!isNumericDigits(value) ? false : true) : true
+			})
+			.test(
+				'length-test',
+				'Should be compose of 5 digits',
+				function (value) {
+					return value
+						? !checkLength(value, 5)
+							? false
+							: true
+						: true
+				}
+			),
 		email: Yup.string()
 			.email('Must be a valid email address')
 			.required('Enter a valid email address'),
-		phoneNumber: Yup.string().required('Phone Number is required'), // problem with format tskk
+		phoneNumber: Yup.string()
+			.required('Phone Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return value ? (!isNumericDigits(value) ? false : true) : true
+			}), // problem with format tskk
 		npiNumber: Yup.string()
 			.required('NPI Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return value ? (!isNumericDigits(value) ? false : true) : true
+			})
 			.length(10, 'Should be compose of 10 digits'),
 		ncpdpNumber: Yup.string()
 			.required('NCPDP Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return value ? (!isNumericDigits(value) ? false : true) : true
+			})
 			.length(7, 'Should be compose of 7 digits'),
 	})
 
@@ -227,7 +246,6 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="Phone Number"
 											name="phoneNumber"
 											register={register}
-											type="number"
 										/>
 									</FormField>
 									<FormField
@@ -239,7 +257,6 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="NPI Number"
 											name="npiNumber"
 											register={register}
-											type="number"
 										/>
 									</FormField>
 									<FormField name="ncpdpNumber">
@@ -247,7 +264,6 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 											placeholder="NCPDP Number"
 											name="ncpdpNumber"
 											register={register}
-											type="number"
 										/>
 									</FormField>
 								</Col>
