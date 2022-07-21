@@ -15,6 +15,10 @@ import { IBusinessInfo, locationTypeOptions } from '../types'
 import stateAndCitiesData from '../../../common/state_cities.json'
 import { isNumericDigits, checkLength, ifNullOrEmpty } from 'common/Util'
 
+const yupShortTest = (val: any, checker: boolean) => {
+	return val ? (!checker ? false : true) : true
+}
+
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
 	setBusinessInfo: (value: IBusinessInfo) => void
@@ -40,17 +44,13 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		zip: Yup.string()
 			.nullable()
 			.test('numeric-test', 'Numeric digits only', function (value) {
-				return value ? (!isNumericDigits(value) ? false : true) : true
+				return yupShortTest(value, isNumericDigits(value))
 			})
 			.test(
 				'length-test',
 				'Should be compose of 5 digits',
 				function (value) {
-					return value
-						? !checkLength(value, 5)
-							? false
-							: true
-						: true
+					return yupShortTest(value, checkLength(value, 5))
 				}
 			),
 		email: Yup.string()
@@ -59,12 +59,12 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
-				return value ? (!isNumericDigits(value) ? false : true) : true
+				return yupShortTest(value, isNumericDigits(value))
 			}), // problem with format tskk
 		npiNumber: Yup.string()
 			.required('NPI Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
-				return value ? (!isNumericDigits(value) ? false : true) : true
+				return yupShortTest(value, isNumericDigits(value))
 			})
 			.length(10, 'Should be compose of 10 digits'),
 		ncpdpNumber: Yup.string()
