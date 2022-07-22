@@ -1,13 +1,17 @@
-import { SideNav } from 'components'
-import { ComponentsPage } from 'Views/ComponentsPage'
+import { useEffect } from 'react'
+import {
+	BrowserRouter as Router,
+	useNavigate,
+	useRoutes,
+} from 'react-router-dom'
 import { Registration } from 'Views/Registration'
-import { BrowserRouter as Router, useRoutes } from 'react-router-dom'
-import classNames from 'classnames'
-import { RegistrationNav } from 'Views/Registration/components/NavBar/RegistrationNav'
 
 function AppRoutes() {
+	const navigate = useNavigate()
+
+	useEffect(() => navigate(`/registration`), [])
+
 	const routes = useRoutes([
-		{ path: '/', element: <ComponentsPage /> },
 		{ path: '/registration/*', element: <Registration /> },
 	])
 	return routes
@@ -15,17 +19,6 @@ function AppRoutes() {
 function App() {
 	return (
 		<Router>
-			{/* <SideNav
-				className={classNames(
-					location.pathname.includes('registration')
-						? 'bg-primary'
-						: ''
-				)}
-			>
-				{location.pathname.includes('registration') && (
-					<RegistrationNav />
-				)}
-			</SideNav> */}
 			<AppRoutes />
 		</Router>
 	)

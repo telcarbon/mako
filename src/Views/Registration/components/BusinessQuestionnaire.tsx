@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { useEffect, useState } from 'react'
+import { faChain, faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -8,7 +8,7 @@ import {
 	Form,
 	FormField,
 	FormRadioGroup,
-	FormTextInput
+	FormTextInput,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -25,7 +25,7 @@ export const BusinessQuestionnaire = () => {
 	const navigate = useNavigate()
 	const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
-	const questionnaireValidationSchema = Yup.object().shape({
+	const validationSchema = Yup.object().shape({
 		offerPhlebotomy: Yup.mixed()
 			.required('Please select an option')
 			.nullable(),
@@ -78,7 +78,7 @@ export const BusinessQuestionnaire = () => {
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(questionnaireValidationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -122,6 +122,7 @@ export const BusinessQuestionnaire = () => {
 		console.log(getValues(), 'values')
 		navigate(`${match?.pathnameBase}/terms`)
 	}
+
 	return (
 		<Container fluid>
 			<ContentHeader
@@ -203,7 +204,7 @@ export const BusinessQuestionnaire = () => {
 								)}
 							</FormField>
 						)}
-						{licensedPhlebotomistCollapse && offerPhlebotomyCollapse && (
+						{licensedPhlebotomistCollapse && (
 							<FormField
 								name="trainExistingStaff"
 								label="Would you like to train your existing staff in phlebotomy?"
@@ -223,7 +224,7 @@ export const BusinessQuestionnaire = () => {
 								</div>
 							</FormField>
 						)}
-						{trainExistingStaffCollapse && licensedPhlebotomistCollapse && offerPhlebotomyCollapse &&(
+						{trainExistingStaffCollapse && (
 							<FormField
 								name="offerClia"
 								label="Would you like to offer CLIA waived point of care testing
@@ -245,7 +246,7 @@ export const BusinessQuestionnaire = () => {
 								</div>
 							</FormField>
 						)}
-						{offerCliaCollapse && trainExistingStaffCollapse && licensedPhlebotomistCollapse && offerPhlebotomyCollapse &&(
+						{offerCliaCollapse && (
 							<FormField
 								name="isCliaWaivedSite"
 								label="Is your business a CLIA WAIVED site?"
@@ -265,36 +266,51 @@ export const BusinessQuestionnaire = () => {
 								</div>
 								{isCliaWaivedSiteCollapse && (
 									<div style={{ flexBasis: '100%' }}>
-										{!isUploaded ? (<button
-											className="btn btn-outline-dark border-2 col-lg-5"
-											type="button"
-											onClick={() => setIsUploaded(true)}
-										>
-											Upload CLIA certification
-											<FontAwesomeIcon
-												icon={faCloudArrowUp}
-												className="text-secondary ps-2"
-												size="1x"
-												style={{
-													fontSize: '1.25em',
-												}}
-											/>
-										</button>) : (<button
-											className="btn btn-outline-dark border-2 col-lg-5"
-											type="button"
-											onClick={() => setIsUploaded(false)}
-										>
-											Upload CLIA certificationsasa
-											<FontAwesomeIcon
-												icon={faCloudArrowUp}
-												className="text-secondary ps-2"
-												size="1x"
-												style={{
-													fontSize: '1.25em',
-												}}
-											/>
-										</button>)}
-										
+										{!isUploaded ? (
+											<button
+												className="btn btn-outline-dark border-2 col-lg-5"
+												type="button"
+												onClick={() =>
+													setIsUploaded(true)
+												}
+											>
+												Upload CLIA certification
+												<FontAwesomeIcon
+													icon={faCloudArrowUp}
+													className="text-secondary ps-2"
+													size="1x"
+													style={{
+														fontSize: '1.25em',
+													}}
+												/>
+											</button>
+										) : (
+											<button
+												className="btn btn-outline-dark border-2 col-lg-5"
+												type="button"
+												onClick={() =>
+													setIsUploaded(false)
+												}
+											>
+												<FontAwesomeIcon
+													icon={faChain}
+													className="text-secondary pe-2"
+													size="1x"
+													style={{
+														fontSize: '1.25em',
+													}}
+												/>
+												Filename
+												<FontAwesomeIcon
+													icon={faTrash}
+													className="text-secondary pull-right"
+													size="1x"
+													style={{
+														fontSize: '1.25em',
+													}}
+												/>
+											</button>
+										)}
 									</div>
 								)}
 							</FormField>

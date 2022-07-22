@@ -24,10 +24,10 @@ interface IBusinessInfoProps {
 	setBusinessInfo: (value: IBusinessInfo) => void
 }
 
-export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
+export const BusinessInfo = ({
 	businessInfo,
 	setBusinessInfo,
-}) => {
+}: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
@@ -38,8 +38,11 @@ export const BusinessInfo: React.FunctionComponent<IBusinessInfoProps> = ({
 			.moreThan(1, 'Please select an option')
 			.nullable(),
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
-		city: Yup.string().required('City is required'),
-		state: Yup.string().required('State is required'),
+		state: Yup.string().required('State is required').nullable(),
+		city: Yup.mixed().when('state', {
+			is: (state: string) => state !== '',
+			then: Yup.string().required('City is required').nullable(),
+		}),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
 		zip: Yup.string()
 			.nullable()
