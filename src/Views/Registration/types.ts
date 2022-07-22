@@ -58,7 +58,6 @@ export const bankingTypeOptions = [
 	},
 ]
 
-
 export interface IBusinessInfo {
 	businessName: string
 	typeOfLocation: number
@@ -85,14 +84,14 @@ export interface IBusinessRepInfo {
 }
 
 export interface IBankDetailsInfo {
-	creditCardNumber: number
+	creditCardNumber: string
 	creditCardName: string
-	expirationDate: Date // temporary month and year????
-	bankName: string // payment network?? or type of payment??
+	expirationDate: string
+	bankName: string // payment network
 	bankAccountType: string
 	accountName: string
-	accountNumber: number // might change to string
-	abaRoutingNumber: number // might change to string
+	accountNumber: string
+	abaRoutingNumber: string
 }
 
 export interface IQuestionnareInfo {}

@@ -12,35 +12,44 @@ import {
 	FormTextInput,
 } from 'components'
 import { useMatch, useNavigate } from 'react-router-dom'
-import { bankingTypeOptions } from '../types'
+import { bankingTypeOptions, IBankDetailsInfo } from '../types'
+import { isNumericDigits, yupShortTest } from 'common/Util'
 
 export const BankingInfo = () => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
-		nameOnCreditCard: Yup.string().required(
+		creditCardName: Yup.string().required(
 			'Name on Credit Card is required'
 		),
-		creditCardNumber: Yup.string().required(
-			'Credit Card Number is required'
+		creditCardNumber: Yup.string()
+			.required('Credit Card Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return yupShortTest(value, isNumericDigits(value))
+			}),
+		expirationDate: Yup.string().required(
+			'expirationDate Date is required'
 		),
-		expiration: Yup.string().required('Expiration Date is required'),
 		bankName: Yup.string().required('Bank Name is required'),
-		bankAccountType: Yup.string()
-			.required('Please select an option')
-			.nullable(),
+		bankAccountType: Yup.string().required('Please select an option'),
 		accountName: Yup.string().required('Account Name is required'),
-		accountNumber: Yup.string().required('Account Number is required'),
-		abaRoutingNumber: Yup.string().required(
-			'ABA Routing Number is required'
-		),
+		accountNumber: Yup.string()
+			.required('Account Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return yupShortTest(value, isNumericDigits(value))
+			}),
+		abaRoutingNumber: Yup.string()
+			.required('ABA Routing Number is required')
+			.test('numeric-test', 'Numeric digits only', function (value) {
+				return yupShortTest(value, isNumericDigits(value))
+			}),
 	})
 
-	const initialValues = {
-		nameOnCreditCard: '',
+	const initialValues: IBankDetailsInfo = {
+		creditCardName: '',
 		creditCardNumber: '',
-		expiration: '',
+		expirationDate: '',
 		bankName: '',
 		bankAccountType: '',
 		accountName: '',
@@ -95,17 +104,17 @@ export const BankingInfo = () => {
 												register={register}
 											/>
 										</FormField>
-										<FormField name="nameOnCreditCard">
+										<FormField name="creditCardName">
 											<FormTextInput
 												placeholder="Name on Credit Card"
-												name="nameOnCreditCard"
+												name="creditCardName"
 												register={register}
 											/>
 										</FormField>
-										<FormField name="expiration">
+										<FormField name="expirationDate">
 											<FormTextInput
-												placeholder="Expiration Date"
-												name="expiration"
+												placeholder="expirationDate Date"
+												name="expirationDate"
 												register={register}
 											/>
 										</FormField>

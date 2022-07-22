@@ -20,3 +20,7 @@ export const checkLength = (val: any, len: number): boolean => {
 export const ifNullOrEmpty = (val: any): boolean => {
 	return val === '' || val === null
 }
+
+export const yupShortTest = (val: any, checker: boolean) => {
+	return val ? (!checker ? false : true) : true
+}

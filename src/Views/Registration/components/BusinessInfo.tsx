@@ -13,11 +13,12 @@ import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessInfo, locationTypeOptions } from '../types'
 import stateAndCitiesData from '../../../common/state_cities.json'
-import { isNumericDigits, checkLength, ifNullOrEmpty } from 'common/Util'
-
-const yupShortTest = (val: any, checker: boolean) => {
-	return val ? (!checker ? false : true) : true
-}
+import {
+	isNumericDigits,
+	checkLength,
+	ifNullOrEmpty,
+	yupShortTest,
+} from 'common/Util'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
