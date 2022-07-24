@@ -44,7 +44,15 @@ export const BusinessInfo = ({
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		state: Yup.string().required('State is required').nullable(),
 		city: Yup.mixed().when('state', {
-			is: (state: string) => state !== '',
+			is: (state: string) => {
+				if (state !== '') {
+					const cities = stateAndCitiesData.find(
+						(f) => f.name === state
+					)?.cities
+					return cities && cities.length > 0
+				}
+				return false
+			},
 			then: Yup.string().required('City is required').nullable(),
 		}),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
@@ -85,9 +93,8 @@ export const BusinessInfo = ({
 	const initialValues: IBusinessInfo = {
 		name: '',
 		type: 0,
-		// addressLineOne: '',
-		// addressLineTwo: '',
-		// unitFloorBuilding: '',
+		addressLineOne: '',
+		addressLineTwo: '',
 		email: '',
 		phoneNumber: '',
 		city: '',
@@ -99,7 +106,7 @@ export const BusinessInfo = ({
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -117,7 +124,7 @@ export const BusinessInfo = ({
 		// console.log('testing', (123).toString('D16'))
 		const formValues = getValues()
 		setBusinessInfo(formValues)
-		navigate(`${match?.pathnameBase}/busines-rep-info`)
+		// navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 
 	const stateWatch: any = watch('state')
@@ -287,7 +294,7 @@ export const BusinessInfo = ({
 						/>
 						<Button
 							type="submit"
-							// disabled={!isDirty}
+							disabled={!isDirty}
 							className="col-lg-auto pull-right"
 						>
 							Next

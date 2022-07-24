@@ -32,89 +32,98 @@ export const Registration = () => {
 	}
 
 	const handleSubmit = () => {
-		const credentials = {
-			email: businessRepInfo?.email,
-			password: businessRepInfo?.password,
-		}
+		if (businessInfo && businessInfo && businessQs && bankingInfo) {
+			const credentials = {
+				email: businessRepInfo?.email,
+				password: businessRepInfo?.password,
+			}
 
-		const personalInfo = {
-			lastName: businessRepInfo?.lastName,
-			firstName: businessRepInfo?.firstName,
-			phoneNumber: businessRepInfo?.phoneNumber,
-			salutation: businessRepInfo?.salutation,
-			middleName: businessRepInfo?.middleName,
-		}
-		const config = {
-			partner: camelToUnderscore(businessInfo),
-			business_representative: camelToUnderscore(personalInfo),
-			auth_credentials: camelToUnderscore(credentials),
-			bank_details: {
-				stripe_response: {},
-				...camelToUnderscore(bankingInfo),
-			},
-			questionnaires: [
-				{
-					plebotomy: true,
+			const newPartner = {
+				...businessInfo,
+				unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
+			}
+			delete newPartner.addressLineOne
+			delete newPartner.addressLineTwo
+
+			const personalInfo = {
+				lastName: businessRepInfo?.lastName,
+				firstName: businessRepInfo?.firstName,
+				phoneNumber: businessRepInfo?.phoneNumber,
+				salutation: businessRepInfo?.salutation,
+				middleName: businessRepInfo?.middleName,
+			}
+			const config = {
+				partner: camelToUnderscore(newPartner),
+				business_representative: camelToUnderscore(personalInfo),
+				auth_credentials: camelToUnderscore(credentials),
+				bank_details: {
+					stripe_response: {},
+					...camelToUnderscore(bankingInfo),
 				},
-				{
-					licensed: true,
-				},
-			],
-			// partner: {
-			// 	street: 'Fortune Drive',
-			// 	unit_floor_building: '141 Unit A',
-			// 	state: 'PR',
-			// 	city: 'Valenzula',
-			// 	zip_code: 14400,
-			// 	country: 'PH',
-			// 	name: 'qweadf',
-			// 	email: 'cmqwe@asdfasdf.com',
-			// 	phone_number: '+12025550180',
-			// 	npi: 1234567890,
-			// 	ncpdp: 1234567,
-			// 	type: 1,
-			// },
-			// auth_credentials: {
-			// 	email: 'ralph.subrio@doodlepress.com.ph',
-			// 	password: 'Letmein12@',
-			// },
-			// business_representative: {
-			// 	first_name: 'Ralph',
-			// 	last_name: 'Subrio',
-			// 	phone_number: '+12025550180',
-			// 	salutation: 'Mr',
-			// },
-			// bank_details: {
-			// 	stripe_response: {},
-			// 	bank_name: 'Visa',
-			// 	bank_account_type: 'Checking',
-			// 	account_name: 'Ralph Christian Subrio',
-			// 	account_number: '000123456789',
-			// 	aba_routing_number: '110000000',
-			// },
-			// questionnaires: [
-			// 	{
-			// 		plebotomy: true,
-			// 	},
-			// 	{
-			// 		licensed: true,
-			// 	},
-			// ],
-			//
+				questionnaires: [
+					{
+						plebotomy: true,
+					},
+					{
+						licensed: true,
+					},
+				],
+				// partner: {
+				// 	street: 'Fortune Drive',
+				// 	unit_floor_building: '141 Unit A',
+				// 	state: 'PR',
+				// 	city: 'Valenzula',
+				// 	zip_code: 14400,
+				// 	country: 'PH',
+				// 	name: 'qweadf',
+				// 	email: 'cmqwe@asdfasdf.com',
+				// 	phone_number: '+12025550180',
+				// 	npi: 1234567890,
+				// 	ncpdp: 1234567,
+				// 	type: 1,
+				// },
+				// auth_credentials: {
+				// 	email: 'ralph.subrio@doodlepress.com.ph',
+				// 	password: 'Letmein12@',
+				// },
+				// business_representative: {
+				// 	first_name: 'Ralph',
+				// 	last_name: 'Subrio',
+				// 	phone_number: '+12025550180',
+				// 	salutation: 'Mr',
+				// },
+				// bank_details: {
+				// 	stripe_response: {},
+				// 	bank_name: 'Visa',
+				// 	bank_account_type: 'Checking',
+				// 	account_name: 'Ralph Christian Subrio',
+				// 	account_number: '000123456789',
+				// 	aba_routing_number: '110000000',
+				// },
+				// questionnaires: [
+				// 	{
+				// 		plebotomy: true,
+				// 	},
+				// 	{
+				// 		licensed: true,
+				// 	},
+				// ],
+				//
+			}
+
+			console.log(config, 'config')
+
+			// axios
+			// 	.post(
+			// 		'http://localhost:8000/api/registration/',
+
+			// 		config,
+			// 		{ headers }
+			// 	)
+			// 	.then((response) => {
+			// 		console.log(response, ' response')
+			// 	})
 		}
-
-		console.log(config, 'config')
-
-		axios
-			.post(
-				'http://localhost:8000/api/registration/',
-
-				config,
-				{ headers }
-			)
-			.then((response) => {
-				console.log(response, ' response')
-			})
 	}
 
 	return (
