@@ -13,7 +13,7 @@ import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessRepInfo, salutationOptions } from '../types'
-import { isNumericDigits } from 'common/Util'
+import { isNumericDigits, yupShortTest } from 'common/Util'
 interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
 	setBusinessRepInfo: (value: IBusinessRepInfo) => void
@@ -28,6 +28,16 @@ export const BusinessRepInfo = ({
 	const navigate = useNavigate()
 	const match = useMatch('registration/*')
 
+	const initialValues: IBusinessRepInfo = {
+		email: '',
+		password: '',
+		salutation: '',
+		firstName: '',
+		middleName: '',
+		lastName: '',
+		phoneNumber: '',
+	}
+
 	const validationSchema = Yup.object().shape({
 		email: Yup.string()
 			.email('Must be a valid email address')
@@ -39,23 +49,13 @@ export const BusinessRepInfo = ({
 		phoneNumber: Yup.string()
 			.required('Mobile Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
-				return value ? (!isNumericDigits(value) ? false : true) : true
+				return yupShortTest(value, isNumericDigits(value))
 			}),
 	})
 
-	const initialValues: IBusinessRepInfo = {
-		email: '',
-		password: '',
-		salutation: '',
-		firstName: '',
-		middleName: '',
-		lastName: '',
-		phoneNumber: '',
-	}
-
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: initialValues,
+		defaultValues: businessRepInfo,
 	})
 
 	const {
@@ -67,7 +67,6 @@ export const BusinessRepInfo = ({
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessRepInfo(formValues)
 		setCurrentStep(2)

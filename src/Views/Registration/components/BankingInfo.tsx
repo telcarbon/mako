@@ -69,7 +69,7 @@ export const BankingInfo = ({
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: initialValues,
+		defaultValues: bankingInfo,
 	})
 
 	const {
@@ -81,7 +81,6 @@ export const BankingInfo = ({
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBankingInfo(formValues)
 		setCurrentStep(3)

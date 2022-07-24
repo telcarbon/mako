@@ -92,7 +92,7 @@ export const BusinessQuestionnaire = ({
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: initialValues,
+		defaultValues: businessQs,
 	})
 
 	const {
@@ -124,16 +124,13 @@ export const BusinessQuestionnaire = ({
 			| Partial<{ phlebotomistName: string }>[]
 	) => {
 		append(value)
-		console.log('add: ', getValues())
 	}
 
 	const handleRemove = (index: number | number[] | undefined) => {
 		remove(index)
-		console.log('remove: ', getValues())
 	}
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessQs(formValues)
 		setCurrentStep(4)

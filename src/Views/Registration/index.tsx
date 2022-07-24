@@ -118,8 +118,6 @@ export const Registration = () => {
 				//
 			}
 
-			console.log(config, 'config')
-
 			// axios
 			// 	.post(
 			// 		'http://localhost:8000/api/registration/',
@@ -132,8 +130,6 @@ export const Registration = () => {
 			// 	})
 		}
 	}
-
-	console.log('steppppp', currentStep)
 
 	return (
 		<>

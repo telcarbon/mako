@@ -34,7 +34,6 @@ export const BusinessInfo = ({
 }: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
-	const [addressLineOne, setAddressLineOne] = useState<string>('')
 
 	const validationSchema = Yup.object().shape({
 		name: Yup.string().required('Business Name is required'),
@@ -109,7 +108,7 @@ export const BusinessInfo = ({
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: initialValues,
+		defaultValues: businessInfo,
 	})
 
 	const {
