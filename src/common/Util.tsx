@@ -24,3 +24,28 @@ export const ifNullOrEmpty = (val: any): boolean => {
 export const yupShortTest = (val: any, checker: boolean) => {
 	return val ? (!checker ? false : true) : true
 }
+
+// export const camelToUnderscore = (oldObj: any) => {
+// 	const convertKey = (key: any) => key.replace(/([A-Z])/g, '_$1').toLowerCase()
+// 	const newObject = {}
+// 	Object.keys(oldObj).forEach(k => {
+// 		newObject[convertKey(camel)] = oldObj[camel]
+// 	});
+// 	for (var camel in oldObj) {
+// 		newObject[convertKey(camel)] = oldObj[camel]
+// 	}
+// }
+
+export const camelToUnderscore = (oldObject: any) => {
+	if (oldObject !== undefined) {
+		const convertKey = (key: any) =>
+			key.replace(/([A-Z])/g, '_$1').toLowerCase()
+		const newObject: any = {}
+		for (var camel in oldObject) {
+			newObject[convertKey(camel)] = oldObject[camel]
+		}
+
+		return newObject
+	}
+	return oldObject
+}

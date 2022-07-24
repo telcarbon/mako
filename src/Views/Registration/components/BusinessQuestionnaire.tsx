@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
-import { faChain, faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons'
+import {
+	faChain,
+	faCloudArrowUp,
+	faTrash,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -14,23 +18,30 @@ import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
+import { IQuestionnareInfo } from '../types'
 
 export const RadioLabelOptions = [
 	{ value: true, name: 'YES' },
 	{ value: false, name: 'NO' },
 ]
 
-export const BusinessQuestionnaire = () => {
+interface IBusinessQuestionnaireProps {
+	businessQs: IQuestionnareInfo | undefined
+	setBusinessQs: (value: IQuestionnareInfo) => void
+}
+
+export const BusinessQuestionnaire = ({
+	businessQs,
+	setBusinessQs,
+}: IBusinessQuestionnaireProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 	const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
 	const validationSchema = Yup.object().shape({
-		offerPhlebotomy: Yup.mixed()
-			.required('Please select an option')
-			.nullable(),
+		plebotomy: Yup.mixed().required('Please select an option').nullable(),
 
-		isLicensedPhlebotomist: Yup.mixed().when('offerPhlebotomy', {
+		licensed: Yup.mixed().when('plebotomy', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
@@ -66,9 +77,9 @@ export const BusinessQuestionnaire = () => {
 		}),
 	})
 
-	const initialValues = {
-		offerPhlebotomy: null,
-		isLicensedPhlebotomist: null,
+	const initialValues: IQuestionnareInfo = {
+		plebotomy: null,
+		licensed: null,
 		phlebotomist: [{ phlebotomistName: '' }],
 		trainExistingStaff: null,
 		offerClia: null,
@@ -88,16 +99,17 @@ export const BusinessQuestionnaire = () => {
 		formState: { isDirty },
 		watch,
 		control,
+		reset,
+		setValue,
 	} = useFormInstance
 
-	const offerPhlebotomyCollapse = watch('offerPhlebotomy')
-	const licensedPhlebotomistCollapse = watch('isLicensedPhlebotomist')
+	const offerPhlebotomyCollapse = watch('plebotomy')
+	const licensedPhlebotomistCollapse = watch('licensed')
 	const trainExistingStaffCollapse = watch('trainExistingStaff')
 	const offerCliaCollapse = watch('offerClia')
 	const isCliaWaivedSiteCollapse = watch('isCliaWaivedSite')
 	const hasParkingLotCollapse = watch('hasParkingLot')
-
-	console.log(offerPhlebotomyCollapse, 'watch')
+	const offerPrescriptionCollapse = watch('offerPrescription')
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -120,8 +132,46 @@ export const BusinessQuestionnaire = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
+		const formValues = getValues()
+		setBusinessQs(formValues)
 		navigate(`${match?.pathnameBase}/terms`)
 	}
+
+	useEffect(() => {
+		if (!offerPhlebotomyCollapse) {
+			setValue('licensed', null)
+		}
+	}, [offerPhlebotomyCollapse])
+
+	useEffect(() => {
+		if (!licensedPhlebotomistCollapse) {
+			setValue('trainExistingStaff', null)
+		}
+	}, [licensedPhlebotomistCollapse])
+
+	useEffect(() => {
+		if (!trainExistingStaffCollapse) {
+			setValue('offerClia', null)
+		}
+	}, [trainExistingStaffCollapse])
+
+	useEffect(() => {
+		if (!offerCliaCollapse) {
+			setValue('isCliaWaivedSite', null)
+		}
+	}, [offerCliaCollapse])
+
+	useEffect(() => {
+		if (!isCliaWaivedSiteCollapse) {
+			setValue('hasParkingLot', null)
+		}
+	}, [isCliaWaivedSiteCollapse])
+
+	useEffect(() => {
+		if (!hasParkingLotCollapse) {
+			setValue('offerPrescription', null)
+		}
+	}, [hasParkingLotCollapse])
 
 	return (
 		<Container fluid>
@@ -134,7 +184,7 @@ export const BusinessQuestionnaire = () => {
 				<Row className="justify-content-center mb-5">
 					<Col lg={10}>
 						<FormField
-							name="offerPhlebotomy"
+							name="plebotomy"
 							label="Would you like to offer phlebotomy/blood draw services?"
 							useWrapper={false}
 							className="form-radio-wrap rounded-2 d-flex ps-3"
@@ -143,7 +193,7 @@ export const BusinessQuestionnaire = () => {
 							<div className="d-flex">
 								{RadioLabelOptions.map((option, index) => (
 									<FormRadioGroup
-										name={'offerPhlebotomy'}
+										name={'plebotomy'}
 										register={register}
 										value={option.value}
 										key={index}
@@ -153,7 +203,7 @@ export const BusinessQuestionnaire = () => {
 						</FormField>
 						{offerPhlebotomyCollapse && (
 							<FormField
-								name="isLicensedPhlebotomist"
+								name="licensed"
 								label="Do you have a licensed phlebotomist?"
 								useWrapper={false}
 								className="form-radio-wrap rounded-2 d-flex ps-3"
@@ -162,7 +212,7 @@ export const BusinessQuestionnaire = () => {
 								<div className="d-flex">
 									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
-											name={'isLicensedPhlebotomist'}
+											name={'licensed'}
 											register={register}
 											value={option.value}
 											key={index}
@@ -204,26 +254,29 @@ export const BusinessQuestionnaire = () => {
 								)}
 							</FormField>
 						)}
-						{licensedPhlebotomistCollapse && (
-							<FormField
-								name="trainExistingStaff"
-								label="Would you like to train your existing staff in phlebotomy?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'trainExistingStaff'}
-											register={register}
-											value={option.value}
-											key={index}
-										/>
-									))}
-								</div>
-							</FormField>
-						)}
+						{licensedPhlebotomistCollapse &&
+							offerPhlebotomyCollapse && (
+								<FormField
+									name="trainExistingStaff"
+									label="Would you like to train your existing staff in phlebotomy?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'trainExistingStaff'}
+													register={register}
+													value={option.value}
+													key={index}
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+							)}
 						{trainExistingStaffCollapse && (
 							<FormField
 								name="offerClia"

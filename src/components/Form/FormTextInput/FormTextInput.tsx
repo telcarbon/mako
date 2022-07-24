@@ -14,6 +14,7 @@ type InputProps = {
 	fieldCount?: any
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
 	type?: 'text' | 'number' | 'date' | 'time' | 'password'
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const FormTextInput = ({
@@ -25,6 +26,7 @@ export const FormTextInput = ({
 	fieldCount,
 	onClickRemove,
 	type = 'text',
+	onChange
 }: InputProps) => {
 	const formRegister = register(name)
 	// console.log('reg', register(name))
@@ -40,6 +42,7 @@ export const FormTextInput = ({
 					className="form-control rounded-right"
 					{...register(name)}
 					placeholder={placeholder}
+					onChange={() => onChange}
 				/>
 				{fieldCount > 1 && (
 					<button

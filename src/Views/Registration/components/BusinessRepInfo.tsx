@@ -14,8 +14,17 @@ import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessRepInfo, salutationOptions } from '../types'
 import { isNumericDigits } from 'common/Util'
-export const BusinessRepInfo = () => {
+interface IBusinessRepInfoProps {
+	businessRepInfo: IBusinessRepInfo | undefined
+	setBusinessRepInfo: (value: IBusinessRepInfo) => void
+}
+
+export const BusinessRepInfo = ({
+	businessRepInfo,
+	setBusinessRepInfo,
+}: IBusinessRepInfoProps) => {
 	const navigate = useNavigate()
+	const match = useMatch('registration/*')
 
 	const validationSchema = Yup.object().shape({
 		email: Yup.string()
@@ -43,7 +52,7 @@ export const BusinessRepInfo = () => {
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -57,7 +66,9 @@ export const BusinessRepInfo = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
-		// navigate(`${match?.pathnameBase}/banking-info`)
+		const formValues = getValues()
+		setBusinessRepInfo(formValues)
+		navigate(`${match?.pathnameBase}/banking-info`)
 	}
 	return (
 		<>

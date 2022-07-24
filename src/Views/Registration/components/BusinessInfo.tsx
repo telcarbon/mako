@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import {
 	ContentHeader,
 	FormTextInput,
@@ -19,6 +19,7 @@ import {
 	ifNullOrEmpty,
 	yupShortTest,
 } from 'common/Util'
+import { useState } from 'react'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -31,13 +32,15 @@ export const BusinessInfo = ({
 }: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
+	const [addressLineOne, setAddressLineOne] = useState<string>('')
 
 	const validationSchema = Yup.object().shape({
-		businessName: Yup.string().required('Business Name is required'),
-		typeOfLocation: Yup.number()
+		name: Yup.string().required('Business Name is required'),
+		type: Yup.number()
 			.required('Please select an option')
-			.moreThan(1, 'Please select an option')
-			.nullable(),
+			.test('check-test', 'Please select an option', function (value) {
+				return value !== 0
+			}),
 		addressLineOne: Yup.string().required('Address Line 1 is required'),
 		state: Yup.string().required('State is required').nullable(),
 		city: Yup.mixed().when('state', {
@@ -45,7 +48,7 @@ export const BusinessInfo = ({
 			then: Yup.string().required('City is required').nullable(),
 		}),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
-		zip: Yup.string()
+		zipCode: Yup.string()
 			.nullable()
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
@@ -65,13 +68,13 @@ export const BusinessInfo = ({
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
 			}), // problem with format tskk
-		npiNumber: Yup.string()
+		npi: Yup.string()
 			.required('NPI Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
 			})
 			.length(10, 'Should be compose of 10 digits'),
-		ncpdpNumber: Yup.string()
+		ncpdp: Yup.string()
 			.required('NCPDP Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return value ? (!isNumericDigits(value) ? false : true) : true
@@ -80,22 +83,23 @@ export const BusinessInfo = ({
 	})
 
 	const initialValues: IBusinessInfo = {
-		businessName: '',
-		typeOfLocation: 0,
-		addressLineOne: '',
-		addressLineTwo: '',
+		name: '',
+		type: 0,
+		// addressLineOne: '',
+		// addressLineTwo: '',
+		// unitFloorBuilding: '',
 		email: '',
 		phoneNumber: '',
 		city: '',
 		state: '',
-		zip: '',
+		zipCode: '',
 		country: 'US',
-		npiNumber: '',
-		ncpdpNumber: '',
+		npi: '',
+		ncpdp: '',
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -105,22 +109,23 @@ export const BusinessInfo = ({
 		formState: { isDirty },
 		watch,
 		control,
+		setValue,
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		console.log('============', getValues())
+		// console.log('============', getValues())
 		// console.log('testing', (123).toString('D16'))
-		// const formValues = getValues()
-		// setBusinessInfo(formValues)
-		//navigate(`${match?.pathnameBase}/busines-rep-info`)
+		const formValues = getValues()
+		setBusinessInfo(formValues)
+		navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 
 	const stateWatch: any = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
 
+	const addressOne = watch('addressLineOne')
+
 	const restructureCities = (): any => {
-		console.log('aa', !ifEmptyState)
-		console.log('typeof', stateWatch)
 		if (!ifEmptyState) {
 			var res: string[] | undefined
 			res = stateAndCitiesData.find((f) => f.name === stateWatch)?.cities
@@ -146,18 +151,18 @@ export const BusinessInfo = ({
 						<Col lg={10}>
 							<Row className="justify-content-center">
 								<Col lg={6} className="px-3">
-									<FormField name="businessName">
+									<FormField name="name">
 										<FormTextInput
 											placeholder="Business Name"
-											name="businessName"
+											name="name"
 											register={register}
 										/>
 									</FormField>
 								</Col>
 								<Col lg={6} className="px-3">
-									<FormField name="typeOfLocation">
+									<FormField name="type">
 										<FormSearchSelect
-											name="typeOfLocation"
+											name="type"
 											register={register}
 											placeholder="Type of Location"
 											control={control}
@@ -212,10 +217,10 @@ export const BusinessInfo = ({
 											disabled={ifEmptyState}
 										/>
 									</FormField>
-									<FormField name="zip">
+									<FormField name="zipCode">
 										<FormTextInput
 											placeholder="Zip Code"
-											name="zip"
+											name="zipCode"
 											register={register}
 										/>
 									</FormField>
@@ -253,20 +258,20 @@ export const BusinessInfo = ({
 										/>
 									</FormField>
 									<FormField
-										name="npiNumber"
+										name="npi"
 										label="Licenses"
 										className="mt-5"
 									>
 										<FormTextInput
 											placeholder="NPI Number"
-											name="npiNumber"
+											name="npi"
 											register={register}
 										/>
 									</FormField>
-									<FormField name="ncpdpNumber">
+									<FormField name="ncpdp">
 										<FormTextInput
 											placeholder="NCPDP Number"
-											name="ncpdpNumber"
+											name="ncpdp"
 											register={register}
 										/>
 									</FormField>

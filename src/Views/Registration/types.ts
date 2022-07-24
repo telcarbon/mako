@@ -22,7 +22,7 @@ export const locationTypeOptions = [
 		value: 2,
 	},
 	{
-		id: 1,
+		id: 3,
 		label: LocationType.MOBILE,
 		value: 3,
 	},
@@ -59,18 +59,19 @@ export const bankingTypeOptions = [
 ]
 
 export interface IBusinessInfo {
-	businessName: string
-	typeOfLocation: number
-	addressLineOne: string
-	addressLineTwo: string
+	name: string
+	type: number
+	addressLineOne?: string // balikan
+	addressLineTwo?: string // balikan
+	// unitFloorBuilding: string
 	email: string
 	phoneNumber: string // temporary with + sign???
 	city: string
 	state: string
-	zip: string
+	zipCode: string
 	country: string
-	npiNumber: string
-	ncpdpNumber: string
+	npi: string
+	ncpdp: string
 }
 
 export interface IBusinessRepInfo {
@@ -84,9 +85,9 @@ export interface IBusinessRepInfo {
 }
 
 export interface IBankDetailsInfo {
-	creditCardNumber: string
-	creditCardName: string
-	expirationDate: string
+	// creditCardNumber: string
+	// creditCardName: string
+	// expirationDate: string
 	bankName: string // payment network
 	bankAccountType: string
 	accountName: string
@@ -94,4 +95,17 @@ export interface IBankDetailsInfo {
 	abaRoutingNumber: string
 }
 
-export interface IQuestionnareInfo {}
+export interface IQuestionnareInfo {
+	plebotomy: boolean | null
+	licensed: boolean | null
+	phlebotomist?: [
+		{
+			phlebotomistName?: string
+		}
+	]
+	trainExistingStaff?: boolean | null
+	offerClia?: boolean | null
+	isCliaWaivedSite?: boolean | null
+	hasParkingLot?: boolean | null
+	offerPrescription?: boolean | null
+}

@@ -15,22 +15,30 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
 import { isNumericDigits, yupShortTest } from 'common/Util'
 
-export const BankingInfo = () => {
+interface IBankingInfoProps {
+	bankingInfo: IBankDetailsInfo | undefined
+	setBankingInfo: (value: IBankDetailsInfo) => void
+}
+
+export const BankingInfo = ({
+	bankingInfo,
+	setBankingInfo,
+}: IBankingInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
-		creditCardName: Yup.string().required(
-			'Name on Credit Card is required'
-		),
-		creditCardNumber: Yup.string()
-			.required('Credit Card Number is required')
-			.test('numeric-test', 'Numeric digits only', function (value) {
-				return yupShortTest(value, isNumericDigits(value))
-			}),
-		expirationDate: Yup.string().required(
-			'expirationDate Date is required'
-		),
+		// creditCardName: Yup.string().required(
+		// 	'Name on Credit Card is required'
+		// ),
+		// creditCardNumber: Yup.string()
+		// 	.required('Credit Card Number is required')
+		// 	.test('numeric-test', 'Numeric digits only', function (value) {
+		// 		return yupShortTest(value, isNumericDigits(value))
+		// 	}),
+		// expirationDate: Yup.string().required(
+		// 	'Expiration Date is required'
+		// ),
 		bankName: Yup.string().required('Bank Name is required'),
 		bankAccountType: Yup.string().required('Please select an option'),
 		accountName: Yup.string().required('Account Name is required'),
@@ -47,9 +55,9 @@ export const BankingInfo = () => {
 	})
 
 	const initialValues: IBankDetailsInfo = {
-		creditCardName: '',
-		creditCardNumber: '',
-		expirationDate: '',
+		// creditCardName: '',
+		// creditCardNumber: '',
+		// expirationDate: '',
 		bankName: '',
 		bankAccountType: '',
 		accountName: '',
@@ -72,6 +80,8 @@ export const BankingInfo = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues(), 'values')
+		const formValues = getValues()
+		setBankingInfo(formValues)
 		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
@@ -88,11 +98,10 @@ export const BankingInfo = () => {
 					<Row className="justify-content-center mb-5">
 						<Col lg={12}>
 							<Row className="justify-content-center">
-								<Col
+								{/* <Col
 									lg={5}
 									className="d-flex align-items-stretch card border-2 border-dark rounded-2"
 								>
-									{/* <div className="card border-2 border-dark rounded-2"> */}
 									<div className="card-body d-flex flex-column">
 										<FormField
 											name="creditCardNumber"
@@ -113,19 +122,17 @@ export const BankingInfo = () => {
 										</FormField>
 										<FormField name="expirationDate">
 											<FormTextInput
-												placeholder="expirationDate Date"
+												placeholder="Expiration Date"
 												name="expirationDate"
 												register={register}
 											/>
 										</FormField>
-										{/* </div> */}
 									</div>
-								</Col>
+								</Col> */}
 								<Col
 									lg={5}
 									className="d-flex align-items-stretch card border-2 border-dark rounded-2"
 								>
-									{/* <div className="card border-2 border-dark rounded-2 w-100"> */}
 									<div className="card-body d-flex flex-column">
 										<FormField
 											name="bankName"
