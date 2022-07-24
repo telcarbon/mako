@@ -29,7 +29,7 @@ const navList = [
 	},
 ]
 
-export const RegistrationNav = () => {
+export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
 	const match = useMatch('registration/*')
 	return (
 		<Nav className="mt-4 flex-column">
@@ -37,8 +37,14 @@ export const RegistrationNav = () => {
 			{navList.map((list) => (
 				<Nav.Item as="li" key={list.id}>
 					<Nav.Link
+						disabled={currentStep === 0 || currentStep < list.id}
 						as={NavLink}
 						to={`${match?.pathnameBase}${list.url}`}
+						className={
+							currentStep !== 0 && currentStep >= list.id
+								? 'active'
+								: ''
+						}
 					>
 						{list.label}
 					</Nav.Link>

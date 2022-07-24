@@ -24,11 +24,13 @@ import { useState } from 'react'
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
 	setBusinessInfo: (value: IBusinessInfo) => void
+	setCurrentStep: (value: Number) => void
 }
 
 export const BusinessInfo = ({
 	businessInfo,
 	setBusinessInfo,
+	setCurrentStep,
 }: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
@@ -124,6 +126,7 @@ export const BusinessInfo = ({
 		// console.log('testing', (123).toString('D16'))
 		const formValues = getValues()
 		setBusinessInfo(formValues)
+		setCurrentStep(1)
 		// navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 

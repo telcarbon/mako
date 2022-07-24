@@ -23,12 +23,19 @@ export const Registration = () => {
 	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>()
 	const [bankingInfo, setBankingInfo] = useState<IBankDetailsInfo>()
 	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>()
+	const [currentStep, setCurrentStep] = useState<Number>(0)
 
-	console.log(camelToUnderscore(businessInfo), 'test')
+	// console.log(camelToUnderscore(businessInfo), 'test')
 
 	const headers = {
 		'Content-Type': 'application/json',
 		Authorization: 'Token 6590266c4ebaac0637ce259f741d462270075c65',
+	}
+
+	const handleChangeStep = (value: any) => {
+		if (value > currentStep) {
+			setCurrentStep(value)
+		}
 	}
 
 	const handleSubmit = () => {
@@ -126,6 +133,8 @@ export const Registration = () => {
 		}
 	}
 
+	console.log('steppppp', currentStep)
+
 	return (
 		<>
 			<button onClick={() => handleSubmit()}>test</button>
@@ -134,7 +143,9 @@ export const Registration = () => {
 					!location.pathname.includes('success') ? 'bg-primary' : ''
 				}
 			>
-				{!location.pathname.includes('success') && <RegistrationNav />}
+				{!location.pathname.includes('success') && (
+					<RegistrationNav currentStep={currentStep} />
+				)}
 			</SideNav>
 			<Routes>
 				<Route
@@ -143,6 +154,7 @@ export const Registration = () => {
 						<BusinessInfo
 							businessInfo={businessInfo}
 							setBusinessInfo={setBusinessInfo}
+							setCurrentStep={handleChangeStep}
 						/>
 					}
 				/>
@@ -152,6 +164,7 @@ export const Registration = () => {
 						<BusinessRepInfo
 							businessRepInfo={businessRepInfo}
 							setBusinessRepInfo={setBusinessRepInfo}
+							setCurrentStep={handleChangeStep}
 						/>
 					}
 				/>
@@ -161,6 +174,7 @@ export const Registration = () => {
 						<BankingInfo
 							bankingInfo={bankingInfo}
 							setBankingInfo={setBankingInfo}
+							setCurrentStep={handleChangeStep}
 						/>
 					}
 				/>
@@ -170,6 +184,7 @@ export const Registration = () => {
 						<BusinessQuestionnaire
 							businessQs={businessQs}
 							setBusinessQs={setBusinessQs}
+							setCurrentStep={setCurrentStep}
 						/>
 					}
 				/>

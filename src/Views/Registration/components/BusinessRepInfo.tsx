@@ -17,11 +17,13 @@ import { isNumericDigits } from 'common/Util'
 interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
 	setBusinessRepInfo: (value: IBusinessRepInfo) => void
+	setCurrentStep: (value: Number) => void
 }
 
 export const BusinessRepInfo = ({
 	businessRepInfo,
 	setBusinessRepInfo,
+	setCurrentStep,
 }: IBusinessRepInfoProps) => {
 	const navigate = useNavigate()
 	const match = useMatch('registration/*')
@@ -68,6 +70,7 @@ export const BusinessRepInfo = ({
 		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessRepInfo(formValues)
+		setCurrentStep(2)
 		navigate(`${match?.pathnameBase}/banking-info`)
 	}
 	return (

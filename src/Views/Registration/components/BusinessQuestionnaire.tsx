@@ -28,11 +28,13 @@ export const RadioLabelOptions = [
 interface IBusinessQuestionnaireProps {
 	businessQs: IQuestionnareInfo | undefined
 	setBusinessQs: (value: IQuestionnareInfo) => void
+	setCurrentStep: (value: Number) => void
 }
 
 export const BusinessQuestionnaire = ({
 	businessQs,
 	setBusinessQs,
+	setCurrentStep,
 }: IBusinessQuestionnaireProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
@@ -134,6 +136,7 @@ export const BusinessQuestionnaire = ({
 		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessQs(formValues)
+		setCurrentStep(4)
 		navigate(`${match?.pathnameBase}/terms`)
 	}
 

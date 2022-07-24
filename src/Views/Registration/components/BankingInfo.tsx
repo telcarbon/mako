@@ -18,11 +18,13 @@ import { isNumericDigits, yupShortTest } from 'common/Util'
 interface IBankingInfoProps {
 	bankingInfo: IBankDetailsInfo | undefined
 	setBankingInfo: (value: IBankDetailsInfo) => void
+	setCurrentStep: (value: Number) => void
 }
 
 export const BankingInfo = ({
 	bankingInfo,
 	setBankingInfo,
+	setCurrentStep,
 }: IBankingInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
@@ -82,6 +84,7 @@ export const BankingInfo = ({
 		console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBankingInfo(formValues)
+		setCurrentStep(3)
 		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
