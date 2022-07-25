@@ -8,6 +8,7 @@ type FormRadioGroupProps = {
 	disabled?: boolean
 	children?: React.ReactNode
 	value: any
+	control?: any
 }
 
 export const FormRadioGroup = ({
@@ -15,22 +16,24 @@ export const FormRadioGroup = ({
 	register,
 	className,
 	value,
+	control,
 	children,
 }: FormRadioGroupProps) => {
-	const { control } = useFormContext()
+	// const { control } = useFormContext()
 	return (
 		<Controller
 			control={control}
 			name={name}
-			render={({ field: { onChange, onBlur } }) => (
+			render={({ field }) => (
 				<label key={value}>
 					<input
 						type="radio"
 						className={className}
+						{...field}
+						checked={field.value === value}
 						value={value}
-						{...register(name)}
-						onBlur={onBlur} // notify when input is touched
-						onChange={() => onChange(value)} // send value to hook form
+						onBlur={field.onBlur} // notify when input is touched
+						onChange={() => field.onChange(value)} // send value to hook form
 					/>
 					<div className="box">
 						<span>{value === true ? 'Yes' : 'No'}</span>

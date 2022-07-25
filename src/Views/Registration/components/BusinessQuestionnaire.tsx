@@ -104,7 +104,6 @@ export const BusinessQuestionnaire = ({
 		reset,
 		setValue,
 	} = useFormInstance
-
 	const offerPhlebotomyCollapse = watch('plebotomy')
 	const licensedPhlebotomistCollapse = watch('licensed')
 	const trainExistingStaffCollapse = watch('trainExistingStaff')
@@ -200,6 +199,7 @@ export const BusinessQuestionnaire = ({
 										register={register}
 										value={option.value}
 										key={index}
+										// control={control}
 									/>
 								))}
 							</div>

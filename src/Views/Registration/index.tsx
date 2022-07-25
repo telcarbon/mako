@@ -15,14 +15,23 @@ import {
 	IBusinessRepInfo,
 	IQuestionnareInfo,
 } from './types'
-import { camelToUnderscore } from 'common/Util'
+import { camelToUnderscore, convertQs } from 'common/Util'
 
 export const Registration = () => {
 	const location = useLocation()
 	const [businessRepInfo, setBusinessRepInfo] = useState<IBusinessRepInfo>()
 	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>()
 	const [bankingInfo, setBankingInfo] = useState<IBankDetailsInfo>()
-	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>()
+	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>({
+		plebotomy: true,
+		licensed: null,
+		phlebotomist: [{ phlebotomistName: '' }],
+		trainExistingStaff: null,
+		offerClia: null,
+		isCliaWaivedSite: null,
+		hasParkingLot: null,
+		offerPrescription: null,
+	})
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 
 	// console.log(camelToUnderscore(businessInfo), 'test')
@@ -145,7 +154,6 @@ export const Registration = () => {
 			// ],
 			//
 		}
-		console.log(config, 'test')
 
 		// axios
 		// 	.post(
