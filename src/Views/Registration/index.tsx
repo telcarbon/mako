@@ -34,8 +34,6 @@ export const Registration = () => {
 	})
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 
-	// console.log(camelToUnderscore(businessInfo), 'test')
-
 	const headers = {
 		'Content-Type': 'application/json',
 		Authorization: 'Token 6590266c4ebaac0637ce259f741d462270075c65',
@@ -48,70 +46,36 @@ export const Registration = () => {
 	}
 
 	const handleSubmit = () => {
-		// if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
-		const credentials = {
-			email: businessRepInfo?.email,
-			password: businessRepInfo?.password,
-		}
-
-		const newPartner = {
-			...businessInfo,
-			unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
-		}
-		delete newPartner.addressLineOne
-		delete newPartner.addressLineTwo
-
-		const personalInfo = {
-			lastName: businessRepInfo?.lastName,
-			firstName: businessRepInfo?.firstName,
-			phoneNumber: businessRepInfo?.phoneNumber,
-			salutation: businessRepInfo?.salutation,
-			middleName: businessRepInfo?.middleName,
-		}
-
-		let questionnaireFields = [
-			{
-				id: 1,
-				label: 'plebotomy',
-				value: businessQs?.plebotomy,
-			},
-			{
-				id: 2,
-				label: 'licensed',
-				value: businessQs?.licensed,
-			},
-			{
-				id: 3,
-				label: 'trainExistingStaff',
-				value: businessQs?.trainExistingStaff,
-			},
-		]
-		const newQuestionnaires: any = []
-
-		for (let i = 0; i < questionnaireFields.length; i++) {
-			if (questionnaireFields[i]?.value !== null) {
-				newQuestionnaires.push(questionnaireFields[i]?.value)
+		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
+			const credentials = {
+				email: businessRepInfo?.email,
+				password: businessRepInfo?.password,
 			}
-		}
 
-		// newQuestionnaires.push(
-		// 	{ plebotomy: businessQs?.plebotomy },
-		// 	{
-		// 		...(businessQs?.licensed !== null && {
-		// 			licensed: businessQs?.licensed,
-		// 		}),
-		// 	}
-		// )
+			const newPartner = {
+				...businessInfo,
+				unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
+			}
+			delete newPartner.addressLineOne
+			delete newPartner.addressLineTwo
 
-		const config = {
-			partner: camelToUnderscore(newPartner),
-			business_representative: camelToUnderscore(personalInfo),
-			auth_credentials: camelToUnderscore(credentials),
-			bank_details: {
-				stripe_response: {},
-				...camelToUnderscore(bankingInfo),
-			},
-			questionnaires: camelToUnderscore(newQuestionnaires),
+			const personalInfo = {
+				lastName: businessRepInfo?.lastName,
+				firstName: businessRepInfo?.firstName,
+				phoneNumber: businessRepInfo?.phoneNumber,
+				salutation: businessRepInfo?.salutation,
+				middleName: businessRepInfo?.middleName,
+			}
+			const config = {
+				partner: camelToUnderscore(newPartner),
+				business_representative: camelToUnderscore(personalInfo),
+				auth_credentials: camelToUnderscore(credentials),
+				bank_details: {
+					stripe_response: {},
+					...camelToUnderscore(bankingInfo),
+				},
+				questionnaires: [],
+			}
 			// partner: {
 			// 	street: 'Fortune Drive',
 			// 	unit_floor_building: '141 Unit A',
@@ -155,17 +119,17 @@ export const Registration = () => {
 			//
 		}
 
-		// axios
-		// 	.post(
-		// 		'http://localhost:8000/api/registration/',
+			// axios
+			// 	.post(
+			// 		'http://localhost:8000/api/registration/',
 
-		// 		config,
-		// 		{ headers }
-		// 	)
-		// 	.then((response) => {
-		// 		console.log(response, ' response')
-		// 	})
-		// }
+			// 		config,
+			// 		{ headers }
+			// 	)
+			// 	.then((response) => {
+			// 		console.log(response, ' response')
+			// 	})
+		}
 	}
 
 	return (

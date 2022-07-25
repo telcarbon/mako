@@ -79,17 +79,6 @@ export const BusinessQuestionnaire = ({
 		}),
 	})
 
-	// const initialValues: IQuestionnareInfo = {
-	// 	plebotomy: null,
-	// 	licensed: null,
-	// 	phlebotomist: [{ phlebotomistName: '' }],
-	// 	trainExistingStaff: null,
-	// 	offerClia: null,
-	// 	isCliaWaivedSite: null,
-	// 	hasParkingLot: null,
-	// 	offerPrescription: null,
-	// }
-
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
 		defaultValues: businessQs,
@@ -101,7 +90,6 @@ export const BusinessQuestionnaire = ({
 		formState: { isDirty },
 		watch,
 		control,
-		reset,
 		setValue,
 	} = useFormInstance
 	const offerPhlebotomyCollapse = watch('plebotomy')
@@ -123,20 +111,17 @@ export const BusinessQuestionnaire = ({
 			| Partial<{ phlebotomistName: string }>[]
 	) => {
 		append(value)
-		console.log('add: ', getValues())
 	}
 
 	const handleRemove = (index: number | number[] | undefined) => {
 		remove(index)
-		console.log('remove: ', getValues())
 	}
 
 	const handleSubmit = async (values: any) => {
-		// console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessQs(formValues)
 		setCurrentStep(4)
-		// navigate(`${match?.pathnameBase}/terms`)
+		navigate(`${match?.pathnameBase}/terms`)
 	}
 
 	useEffect(() => {
