@@ -25,8 +25,6 @@ export const Registration = () => {
 	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>()
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 
-	// console.log(camelToUnderscore(businessInfo), 'test')
-
 	const headers = {
 		'Content-Type': 'application/json',
 		Authorization: 'Token 6590266c4ebaac0637ce259f741d462270075c65',
@@ -39,125 +37,50 @@ export const Registration = () => {
 	}
 
 	const handleSubmit = () => {
-		// if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
-		const credentials = {
-			email: businessRepInfo?.email,
-			password: businessRepInfo?.password,
-		}
-
-		const newPartner = {
-			...businessInfo,
-			unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
-		}
-		delete newPartner.addressLineOne
-		delete newPartner.addressLineTwo
-
-		const personalInfo = {
-			lastName: businessRepInfo?.lastName,
-			firstName: businessRepInfo?.firstName,
-			phoneNumber: businessRepInfo?.phoneNumber,
-			salutation: businessRepInfo?.salutation,
-			middleName: businessRepInfo?.middleName,
-		}
-
-		let questionnaireFields = [
-			{
-				id: 1,
-				label: 'plebotomy',
-				value: businessQs?.plebotomy,
-			},
-			{
-				id: 2,
-				label: 'licensed',
-				value: businessQs?.licensed,
-			},
-			{
-				id: 3,
-				label: 'trainExistingStaff',
-				value: businessQs?.trainExistingStaff,
-			},
-		]
-		const newQuestionnaires: any = []
-
-		for (let i = 0; i < questionnaireFields.length; i++) {
-			if (questionnaireFields[i]?.value !== null) {
-				newQuestionnaires.push(questionnaireFields[i]?.value)
+		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
+			const credentials = {
+				email: businessRepInfo?.email,
+				password: businessRepInfo?.password,
 			}
+
+			const newPartner = {
+				...businessInfo,
+				unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
+			}
+			delete newPartner.addressLineOne
+			delete newPartner.addressLineTwo
+
+			const personalInfo = {
+				lastName: businessRepInfo?.lastName,
+				firstName: businessRepInfo?.firstName,
+				phoneNumber: businessRepInfo?.phoneNumber,
+				salutation: businessRepInfo?.salutation,
+				middleName: businessRepInfo?.middleName,
+			}
+			const config = {
+				partner: camelToUnderscore(newPartner),
+				business_representative: camelToUnderscore(personalInfo),
+				auth_credentials: camelToUnderscore(credentials),
+				bank_details: {
+					stripe_response: {},
+					...camelToUnderscore(bankingInfo),
+				},
+				questionnaires: [],
+			}
+
+			console.log(config, 'config')
+
+			// axios
+			// 	.post(
+			// 		'http://localhost:8000/api/registration/',
+
+			// 		config,
+			// 		{ headers }
+			// 	)
+			// 	.then((response) => {
+			// 		console.log(response, ' response')
+			// 	})
 		}
-
-		// newQuestionnaires.push(
-		// 	{ plebotomy: businessQs?.plebotomy },
-		// 	{
-		// 		...(businessQs?.licensed !== null && {
-		// 			licensed: businessQs?.licensed,
-		// 		}),
-		// 	}
-		// )
-
-		const config = {
-			partner: camelToUnderscore(newPartner),
-			business_representative: camelToUnderscore(personalInfo),
-			auth_credentials: camelToUnderscore(credentials),
-			bank_details: {
-				stripe_response: {},
-				...camelToUnderscore(bankingInfo),
-			},
-			questionnaires: camelToUnderscore(newQuestionnaires),
-			// partner: {
-			// 	street: 'Fortune Drive',
-			// 	unit_floor_building: '141 Unit A',
-			// 	state: 'PR',
-			// 	city: 'Valenzula',
-			// 	zip_code: 14400,
-			// 	country: 'PH',
-			// 	name: 'qweadf',
-			// 	email: 'cmqwe@asdfasdf.com',
-			// 	phone_number: '+12025550180',
-			// 	npi: 1234567890,
-			// 	ncpdp: 1234567,
-			// 	type: 1,
-			// },
-			// auth_credentials: {
-			// 	email: 'ralph.subrio@doodlepress.com.ph',
-			// 	password: 'Letmein12@',
-			// },
-			// business_representative: {
-			// 	first_name: 'Ralph',
-			// 	last_name: 'Subrio',
-			// 	phone_number: '+12025550180',
-			// 	salutation: 'Mr',
-			// },
-			// bank_details: {
-			// 	stripe_response: {},
-			// 	bank_name: 'Visa',
-			// 	bank_account_type: 'Checking',
-			// 	account_name: 'Ralph Christian Subrio',
-			// 	account_number: '000123456789',
-			// 	aba_routing_number: '110000000',
-			// },
-			// questionnaires: [
-			// 	{
-			// 		plebotomy: true,
-			// 	},
-			// 	{
-			// 		licensed: true,
-			// 	},
-			// ],
-			//
-		}
-		console.log(config, 'test')
-
-		// axios
-		// 	.post(
-		// 		'http://localhost:8000/api/registration/',
-
-		// 		config,
-		// 		{ headers }
-		// 	)
-		// 	.then((response) => {
-		// 		console.log(response, ' response')
-		// 	})
-		// }
 	}
 
 	return (
