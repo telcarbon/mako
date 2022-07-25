@@ -63,7 +63,7 @@ export interface IBusinessInfo {
 	type: number
 	addressLineOne?: string // balikan
 	addressLineTwo?: string // balikan
-	// unitFloorBuilding: string
+	unitFloorBuilding: string
 	email: string
 	phoneNumber: string // temporary with + sign???
 	city: string
@@ -96,8 +96,8 @@ export interface IBankDetailsInfo {
 }
 
 export interface IQuestionnareInfo {
-	plebotomy: boolean | null
-	licensed: boolean | null
+	plebotomy?: boolean | null
+	licensed?: boolean | null | undefined
 	phlebotomist?: [
 		{
 			phlebotomistName?: string

@@ -79,16 +79,16 @@ export const BusinessQuestionnaire = ({
 		}),
 	})
 
-	const initialValues: IQuestionnareInfo = {
-		plebotomy: null,
-		licensed: null,
-		phlebotomist: [{ phlebotomistName: '' }],
-		trainExistingStaff: null,
-		offerClia: null,
-		isCliaWaivedSite: null,
-		hasParkingLot: null,
-		offerPrescription: null,
-	}
+	// const initialValues: IQuestionnareInfo = {
+	// 	plebotomy: null,
+	// 	licensed: null,
+	// 	phlebotomist: [{ phlebotomistName: '' }],
+	// 	trainExistingStaff: null,
+	// 	offerClia: null,
+	// 	isCliaWaivedSite: null,
+	// 	hasParkingLot: null,
+	// 	offerPrescription: null,
+	// }
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
@@ -124,17 +124,20 @@ export const BusinessQuestionnaire = ({
 			| Partial<{ phlebotomistName: string }>[]
 	) => {
 		append(value)
+		console.log('add: ', getValues())
 	}
 
 	const handleRemove = (index: number | number[] | undefined) => {
 		remove(index)
+		console.log('remove: ', getValues())
 	}
 
 	const handleSubmit = async (values: any) => {
+		// console.log(getValues(), 'values')
 		const formValues = getValues()
 		setBusinessQs(formValues)
 		setCurrentStep(4)
-		navigate(`${match?.pathnameBase}/terms`)
+		// navigate(`${match?.pathnameBase}/terms`)
 	}
 
 	useEffect(() => {
@@ -254,29 +257,26 @@ export const BusinessQuestionnaire = ({
 								)}
 							</FormField>
 						)}
-						{licensedPhlebotomistCollapse &&
-							offerPhlebotomyCollapse && (
-								<FormField
-									name="trainExistingStaff"
-									label="Would you like to train your existing staff in phlebotomy?"
-									useWrapper={false}
-									className="form-radio-wrap rounded-2 d-flex ps-3"
-									isRadio
-								>
-									<div className="d-flex">
-										{RadioLabelOptions.map(
-											(option, index) => (
-												<FormRadioGroup
-													name={'trainExistingStaff'}
-													register={register}
-													value={option.value}
-													key={index}
-												/>
-											)
-										)}
-									</div>
-								</FormField>
-							)}
+						{licensedPhlebotomistCollapse && (
+							<FormField
+								name="trainExistingStaff"
+								label="Would you like to train your existing staff in phlebotomy?"
+								useWrapper={false}
+								className="form-radio-wrap rounded-2 d-flex ps-3"
+								isRadio
+							>
+								<div className="d-flex">
+									{RadioLabelOptions.map((option, index) => (
+										<FormRadioGroup
+											name={'trainExistingStaff'}
+											register={register}
+											value={option.value}
+											key={index}
+										/>
+									))}
+								</div>
+							</FormField>
+						)}
 						{trainExistingStaffCollapse && (
 							<FormField
 								name="offerClia"
