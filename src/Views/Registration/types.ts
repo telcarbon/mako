@@ -63,7 +63,6 @@ export interface IBusinessInfo {
 	type: number
 	addressLineOne?: string // balikan
 	addressLineTwo?: string // balikan
-	unitFloorBuilding: string
 	email: string
 	phoneNumber: string // temporary with + sign???
 	city: string

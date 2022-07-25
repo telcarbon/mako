@@ -49,3 +49,15 @@ export const camelToUnderscore = (oldObject: any) => {
 	}
 	return oldObject
 }
+
+export const convertQs = (obj: any) => {
+	const container: any = []
+	if (obj) {
+		Object.keys(obj).forEach((itm) => {
+			if (obj[itm]) {
+				container.push({ [itm]: obj[itm] })
+			}
+		})
+	}
+	return container
+}
