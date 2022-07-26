@@ -19,7 +19,9 @@ import {
 	ifNullOrEmpty,
 	yupShortTest,
 } from 'common/Util'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { faBullseye } from '@fortawesome/free-solid-svg-icons'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -34,15 +36,17 @@ export const BusinessInfo = ({
 }: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
+	const [partnerEmail, setPartnetEmail] = useState({})
 
 	const validationSchema = Yup.object().shape({
-		name: Yup.string().required('Business Name is required'),
+		name: Yup.string().required('Enter a valid email address'),
 		type: Yup.number()
 			.required('Please select an option')
 			.test('check-test', 'Please select an option', function (value) {
 				return value !== 0
 			}),
-		addressLineOne: Yup.string().required('Address Line 1 is required'),
+		street: Yup.string().required('Address Line 1 is required'),
+		unitFloorBuilding: Yup.string().required('Address Line 2 is required'),
 		state: Yup.string().required('State is required').nullable(),
 		city: Yup.mixed().when('state', {
 			is: (state: string) => {
@@ -58,6 +62,7 @@ export const BusinessInfo = ({
 		}),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
 		zipCode: Yup.string()
+			.required('Zip code is required')
 			.nullable()
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
@@ -71,6 +76,12 @@ export const BusinessInfo = ({
 			),
 		email: Yup.string()
 			.email('Must be a valid email address')
+			.test(
+				'is-existing',
+				'Email already exists',
+				(value) => value !== partnerEmail
+			)
+
 			.required('Enter a valid email address'),
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')
@@ -94,8 +105,8 @@ export const BusinessInfo = ({
 	const initialValues: IBusinessInfo = {
 		name: '',
 		type: 0,
-		addressLineOne: '',
-		addressLineTwo: '',
+		street: '',
+		unitFloorBuilding: '',
 		email: '',
 		phoneNumber: '',
 		city: '',
@@ -126,13 +137,13 @@ export const BusinessInfo = ({
 		const formValues = getValues()
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
-		// navigate(`${match?.pathnameBase}/busines-rep-info`)
+		navigate(`${match?.pathnameBase}/busines-rep-info`)
 	}
 
 	const stateWatch: any = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
 
-	const addressOne = watch('addressLineOne')
+	const emailWatch = watch('email')
 
 	const restructureCities = (): any => {
 		if (!ifEmptyState) {
@@ -150,6 +161,31 @@ export const BusinessInfo = ({
 			return []
 		}
 	}
+
+	const headers = {
+		'Content-Type': 'application/json',
+		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
+	}
+
+	const emailChecker = () => {
+		axios
+			.get(
+				`http://localhost:8000/api/partner-checker/?email=${emailWatch}`,
+				{
+					headers,
+				}
+			)
+			.then((response) => {
+				console.log(response, ' response')
+				setPartnetEmail(response?.data?.results[0]?.email)
+			})
+	}
+
+	console.log(partnerEmail)
+
+	useEffect(() => {
+		emailChecker()
+	}, [emailWatch])
 
 	return (
 		<>
@@ -184,19 +220,19 @@ export const BusinessInfo = ({
 							<Row className="justify-content-center mt-2">
 								<Col lg={6} className="px-3">
 									<FormField
-										name="addressLineOne"
+										name="street"
 										label="Business Address"
 									>
 										<FormTextInput
 											placeholder="Address Line 1"
-											name="addressLineOne"
+											name="street"
 											register={register}
 										/>
 									</FormField>
-									<FormField name="addressLineTwo">
+									<FormField name="unitFloorBuilding">
 										<FormTextInput
 											placeholder="Address Line 2"
-											name="addressLineTwo"
+											name="unitFloorBuilding"
 											register={register}
 										/>
 									</FormField>
@@ -257,6 +293,9 @@ export const BusinessInfo = ({
 											placeholder="Email Address"
 											name="email"
 											register={register}
+											onChange={() => {
+												emailChecker
+											}}
 										/>
 									</FormField>
 									<FormField name="phoneNumber">

@@ -20,10 +20,23 @@ import { camelToUnderscore, convertQs } from 'common/Util'
 export const Registration = () => {
 	const location = useLocation()
 	const [businessRepInfo, setBusinessRepInfo] = useState<IBusinessRepInfo>()
-	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>()
+	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>({
+		name: '',
+		type: 0,
+		street: '',
+		unitFloorBuilding: '',
+		email: '',
+		phoneNumber: '',
+		city: '',
+		state: '',
+		zipCode: '',
+		country: 'US',
+		npi: '',
+		ncpdp: '',
+	})
 	const [bankingInfo, setBankingInfo] = useState<IBankDetailsInfo>()
 	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>({
-		plebotomy: true,
+		plebotomy: null,
 		licensed: null,
 		phlebotomist: [{ phlebotomistName: '' }],
 		trainExistingStaff: null,
@@ -36,7 +49,7 @@ export const Registration = () => {
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: 'Token 6590266c4ebaac0637ce259f741d462270075c65',
+		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
 	}
 
 	const handleChangeStep = (value: any) => {
@@ -52,20 +65,28 @@ export const Registration = () => {
 				password: businessRepInfo?.password,
 			}
 
-			const newPartner = {
-				...businessInfo,
-				unitFloorBuilding: `${businessInfo?.addressLineOne} ${businessInfo?.addressLineTwo}`,
-			}
-			delete newPartner.addressLineOne
-			delete newPartner.addressLineTwo
+			// const newPartner = {
+			// 	...businessInfo,
+			// 	unitFloorBuilding: `${businessInfo?.street} ${businessInfo?.addressLineTwo}`,
+			// }
+			// delete newPartner.street
+			// delete newPartner.addressLineTwo
 
 			const personalInfo = {
 				lastName: businessRepInfo?.lastName,
 				firstName: businessRepInfo?.firstName,
-				phoneNumber: businessRepInfo?.phoneNumber,
+				phoneNumber: `+1${businessRepInfo?.phoneNumber}`,
 				salutation: businessRepInfo?.salutation,
 				middleName: businessRepInfo?.middleName,
 			}
+
+			const newPartner = {
+				...businessInfo,
+				phoneNumber: `+1${businessInfo?.phoneNumber}`,
+			}
+
+			const convertedQuestionnaire = convertQs(businessQs)
+
 			const config = {
 				partner: camelToUnderscore(newPartner),
 				business_representative: camelToUnderscore(personalInfo),
@@ -74,67 +95,24 @@ export const Registration = () => {
 					stripe_response: {},
 					...camelToUnderscore(bankingInfo),
 				},
-				questionnaires: [],
+				questionnaires: convertedQuestionnaire,
 			}
-			// partner: {
-			// 	street: 'Fortune Drive',
-			// 	unit_floor_building: '141 Unit A',
-			// 	state: 'PR',
-			// 	city: 'Valenzula',
-			// 	zip_code: 14400,
-			// 	country: 'PH',
-			// 	name: 'qweadf',
-			// 	email: 'cmqwe@asdfasdf.com',
-			// 	phone_number: '+12025550180',
-			// 	npi: 1234567890,
-			// 	ncpdp: 1234567,
-			// 	type: 1,
-			// },
-			// auth_credentials: {
-			// 	email: 'ralph.subrio@doodlepress.com.ph',
-			// 	password: 'Letmein12@',
-			// },
-			// business_representative: {
-			// 	first_name: 'Ralph',
-			// 	last_name: 'Subrio',
-			// 	phone_number: '+12025550180',
-			// 	salutation: 'Mr',
-			// },
-			// bank_details: {
-			// 	stripe_response: {},
-			// 	bank_name: 'Visa',
-			// 	bank_account_type: 'Checking',
-			// 	account_name: 'Ralph Christian Subrio',
-			// 	account_number: '000123456789',
-			// 	aba_routing_number: '110000000',
-			// },
-			// questionnaires: [
-			// 	{
-			// 		plebotomy: true,
-			// 	},
-			// 	{
-			// 		licensed: true,
-			// 	},
-			// ],
-			//
-		}
 
-			// axios
-			// 	.post(
-			// 		'http://localhost:8000/api/registration/',
+			axios
+				.post(
+					'http://localhost:8000/api/registration/',
 
-			// 		config,
-			// 		{ headers }
-			// 	)
-			// 	.then((response) => {
-			// 		console.log(response, ' response')
-			// 	})
+					config,
+					{ headers }
+				)
+				.then((response) => {
+					console.log(response, ' response')
+				})
 		}
 	}
 
 	return (
 		<>
-			<button onClick={() => handleSubmit()}>test</button>
 			<SideNav
 				className={
 					!location.pathname.includes('success') ? 'bg-primary' : ''
@@ -185,8 +163,16 @@ export const Registration = () => {
 						/>
 					}
 				/>
-				<Route path={'/terms'} element={<TermsAndAgreement />} />
-				<Route path={'/success'} element={<RegistrationSuccess />} />
+				<Route
+					path={'/terms'}
+					element={<TermsAndAgreement submitForm={handleSubmit} />}
+				/>
+				<Route
+					path={'/success'}
+					element={
+						<RegistrationSuccess email={businessInfo?.email} />
+					}
+				/>
 			</Routes>
 		</>
 	)

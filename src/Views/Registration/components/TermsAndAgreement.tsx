@@ -6,12 +6,16 @@ import { BankAccountInfoUsage } from './Tab/BankAccountInfoUsage'
 import { General } from './Tab/General'
 import { TechUsage } from './Tab/TechUsage'
 
-export const TermsAndAgreement = () => {
+interface TermsAndAgreementProps {
+	submitForm: any
+}
+
+export const TermsAndAgreement = ({ submitForm }: TermsAndAgreementProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const [key, setKey] = useState<string>('tech')
-	
+
 	return (
 		<Container fluid>
 			<ContentHeader
@@ -49,10 +53,13 @@ export const TermsAndAgreement = () => {
 					className="col-lg-7 pull-left mt-3"
 				/>
 				<Button
-					type="submit"
+					type="button"
 					// disabled={!isDirty}
 					className="col-lg-auto pull-right"
-					onClick={() => navigate(`${match?.pathnameBase}/success`)}
+					onClick={() => {
+						submitForm()
+						navigate(`${match?.pathnameBase}/success`)
+					}}
 				>
 					Agree & Proceed
 				</Button>

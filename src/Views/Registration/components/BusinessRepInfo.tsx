@@ -13,7 +13,7 @@ import * as Yup from 'yup'
 import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessRepInfo, salutationOptions } from '../types'
-import { isNumericDigits, yupShortTest } from 'common/Util'
+import { checkLength, isNumericDigits, yupShortTest } from 'common/Util'
 interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
 	setBusinessRepInfo: (value: IBusinessRepInfo) => void
@@ -42,12 +42,20 @@ export const BusinessRepInfo = ({
 		email: Yup.string()
 			.email('Must be a valid email address')
 			.required('Enter a valid email address'),
-		password: Yup.string().required('Password is required'),
-		salutation: Yup.string().required('Salutation is required'),
+		password: Yup.string()
+			.required('Password is required')
+			.test(
+				'length-test',
+				'Should be composed of 8 characters',
+				function (value) {
+					return yupShortTest(value, checkLength(value, 8))
+				}
+			),
+		salutation: Yup.string().required('Salutation is required').nullable(),
 		firstName: Yup.string().required('First Name is required'),
 		lastName: Yup.string().required('Last Name is required'),
 		phoneNumber: Yup.string()
-			.required('Mobile Number is required')
+			.required('Phone Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
 			}),

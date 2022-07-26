@@ -1,8 +1,13 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Col, Container, Row, Button } from 'react-bootstrap'
+import { IBusinessInfo } from '../types'
 
-export const RegistrationSuccess = () => {
+interface RegistrationSuccessProps {
+	email: string
+}
+
+export const RegistrationSuccess = ({ email }: RegistrationSuccessProps) => {
 	return (
 		<Container fluid className="register-success">
 			<Row className="justify-content-center align-items-center vh-100">
@@ -13,10 +18,7 @@ export const RegistrationSuccess = () => {
 					<p>
 						We’ve also sent a copy of the contract as well as next
 						steps to your e-mail{' '}
-						<strong className="text-secondary">
-							johnmorrison@gmail.com
-						</strong>
-						.
+						<strong className="text-secondary">{email}</strong>.
 					</p>
 					{/* <Button
 						className="rounded-pill mt-5"

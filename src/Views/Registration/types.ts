@@ -61,10 +61,10 @@ export const bankingTypeOptions = [
 export interface IBusinessInfo {
 	name: string
 	type: number
-	addressLineOne?: string // balikan
-	addressLineTwo?: string // balikan
+	street?: string
+	unitFloorBuilding?: string 
 	email: string
-	phoneNumber: string // temporary with + sign???
+	phoneNumber: string
 	city: string
 	state: string
 	zipCode: string
@@ -77,7 +77,7 @@ export interface IBusinessRepInfo {
 	firstName: string
 	middleName: string
 	lastName: string
-	phoneNumber: string // temporary with + sign???
+	phoneNumber: string 
 	salutation: string
 	email: string
 	password: string

@@ -47,7 +47,7 @@ export const BusinessQuestionnaire = ({
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
-		phlebotomist: Yup.array().when('isLicensedPhlebotomist', {
+		phlebotomist: Yup.array().when('licensed', {
 			is: true,
 			then: Yup.array().of(
 				Yup.object({
@@ -57,7 +57,7 @@ export const BusinessQuestionnaire = ({
 				})
 			),
 		}),
-		trainExistingStaff: Yup.mixed().when('isLicensedPhlebotomist', {
+		trainExistingStaff: Yup.mixed().when('licensed', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
@@ -78,6 +78,16 @@ export const BusinessQuestionnaire = ({
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
 	})
+	const initialValues: IQuestionnareInfo = {
+		plebotomy: null,
+		licensed: null,
+		phlebotomist: [{ phlebotomistName: '' }],
+		trainExistingStaff: null,
+		offerClia: null,
+		isCliaWaivedSite: null,
+		hasParkingLot: null,
+		offerPrescription: null,
+	}
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
@@ -404,7 +414,7 @@ export const BusinessQuestionnaire = ({
 					/>
 					<Button
 						type="submit"
-						// disabled={!isDirty}
+						disabled={!isDirty}
 						className="col-lg-auto pull-right"
 					>
 						Next
