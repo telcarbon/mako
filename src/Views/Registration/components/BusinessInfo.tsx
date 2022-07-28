@@ -1,4 +1,4 @@
-import { useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm, useWatch } from 'react-hook-form'
 import {
 	ContentHeader,
 	FormTextInput,
@@ -22,6 +22,9 @@ import {
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { faBullseye } from '@fortawesome/free-solid-svg-icons'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+import { Form as BootstrapForm } from 'react-bootstrap'
+import 'react-phone-number-input/style.css'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -36,7 +39,11 @@ export const BusinessInfo = ({
 }: IBusinessInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
-	const [partnerEmail, setPartnetEmail] = useState({})
+
+	const headers = {
+		'Content-Type': 'application/json',
+		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
+	}
 
 	const validationSchema = Yup.object().shape({
 		name: Yup.string().required('Enter a valid email address'),
@@ -75,19 +82,37 @@ export const BusinessInfo = ({
 				}
 			),
 		email: Yup.string()
+			.required('Email address is required')
 			.email('Must be a valid email address')
 			.test(
-				'is-existing',
-				'Email already exists',
-				(value) => value !== partnerEmail
-			)
+				'email-existing',
+				'Email address already exists',
+				function (value) {
+					return new Promise((resolve) => {
+						axios
+							.get(
+								`http://localhost:8000/api/partner-checker/?email=${value}`,
+								{
+									headers,
+								}
+							)
+							.then((response) => {
+								if (response && response.data.count > 0) {
+									resolve(false)
+								}
+								resolve(true)
+							})
+							.catch(() => {
+								resolve(true)
+							})
+					})
+				}
+			),
 
-			.required('Enter a valid email address'),
-		phoneNumber: Yup.string()
-			.required('Phone Number is required')
-			.test('numeric-test', 'Numeric digits only', function (value) {
-				return yupShortTest(value, isNumericDigits(value))
-			}), // problem with format tskk
+		phoneNumber: Yup.string().required('Phone Number is required'),
+		// .test('numeric-test', 'Numeric digits only', function (value) {
+		// 	return yupShortTest(value, isNumericDigits(value))
+		// }), // problem with format tskk
 		npi: Yup.string()
 			.required('NPI Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
@@ -137,7 +162,8 @@ export const BusinessInfo = ({
 		const formValues = getValues()
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
-		navigate(`${match?.pathnameBase}/busines-rep-info`)
+		// navigate(`${match?.pathnameBase}/busines-rep-info`)
+		console.log(formValues)
 	}
 
 	const stateWatch: any = watch('state')
@@ -161,31 +187,6 @@ export const BusinessInfo = ({
 			return []
 		}
 	}
-
-	const headers = {
-		'Content-Type': 'application/json',
-		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
-	}
-
-	const emailChecker = () => {
-		axios
-			.get(
-				`http://localhost:8000/api/partner-checker/?email=${emailWatch}`,
-				{
-					headers,
-				}
-			)
-			.then((response) => {
-				console.log(response, ' response')
-				setPartnetEmail(response?.data?.results[0]?.email)
-			})
-	}
-
-	console.log(partnerEmail)
-
-	useEffect(() => {
-		emailChecker()
-	}, [emailWatch])
 
 	return (
 		<>
@@ -293,18 +294,44 @@ export const BusinessInfo = ({
 											placeholder="Email Address"
 											name="email"
 											register={register}
-											onChange={() => {
-												emailChecker
-											}}
 										/>
 									</FormField>
-									<FormField name="phoneNumber">
+									<FormField
+										label="Mobile number"
+										name="mobile"
+										useWrapper={false}
+										className="form-group"
+									>
+										<Controller
+											control={control}
+											rules={{
+												validate: (value) =>
+													isValidPhoneNumber(value),
+											}}
+											name="phoneNumber"
+											render={({
+												field: { onChange, value },
+											}) => (
+												<PhoneInput
+													containerClass="my-container-class"
+													placeholder="Enter phone number"
+													value={value}
+													onChange={onChange}
+													defaultCountry="US"
+													inputComponent={
+														BootstrapForm.Control as any
+													}
+												/>
+											)}
+										/>
+									</FormField>
+									{/* <FormField name="phoneNumber">
 										<FormTextInput
 											placeholder="Phone Number"
 											name="phoneNumber"
 											register={register}
 										/>
-									</FormField>
+									</FormField> */}
 									<FormField
 										name="npi"
 										label="Licenses"

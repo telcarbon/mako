@@ -14,6 +14,7 @@ import {
 	IBusinessInfo,
 	IBusinessRepInfo,
 	IQuestionnareInfo,
+	ITermsInfo,
 } from './types'
 import { camelToUnderscore, convertQs } from 'common/Util'
 
@@ -45,6 +46,7 @@ export const Registration = () => {
 		hasParkingLot: null,
 		offerPrescription: null,
 	})
+	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 
 	const headers = {
@@ -59,60 +61,52 @@ export const Registration = () => {
 	}
 
 	const handleSubmit = () => {
-		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
-			const credentials = {
-				email: businessRepInfo?.email,
-				password: businessRepInfo?.password,
-			}
-
-			// const newPartner = {
-			// 	...businessInfo,
-			// 	unitFloorBuilding: `${businessInfo?.street} ${businessInfo?.addressLineTwo}`,
-			// }
-			// delete newPartner.street
-			// delete newPartner.addressLineTwo
-
-			const personalInfo = {
-				lastName: businessRepInfo?.lastName,
-				firstName: businessRepInfo?.firstName,
-				phoneNumber: `+1${businessRepInfo?.phoneNumber}`,
-				salutation: businessRepInfo?.salutation,
-				middleName: businessRepInfo?.middleName,
-			}
-
-			const newPartner = {
-				...businessInfo,
-				phoneNumber: `+1${businessInfo?.phoneNumber}`,
-			}
-
-			const convertedQuestionnaire = convertQs(businessQs)
-
-			const config = {
-				partner: camelToUnderscore(newPartner),
-				business_representative: camelToUnderscore(personalInfo),
-				auth_credentials: camelToUnderscore(credentials),
-				bank_details: {
-					stripe_response: {},
-					...camelToUnderscore(bankingInfo),
-				},
-				questionnaires: convertedQuestionnaire,
-			}
-
-			axios
-				.post(
-					'http://localhost:8000/api/registration/',
-
-					config,
-					{ headers }
-				)
-				.then((response) => {
-					console.log(response, ' response')
-				})
+		// if (businessInfo && businessRepInfo && businessQs && bankingInfo ) {
+		const credentials = {
+			email: businessRepInfo?.email,
+			password: businessRepInfo?.password,
 		}
+
+		const personalInfo = {
+			lastName: businessRepInfo?.lastName,
+			firstName: businessRepInfo?.firstName,
+			phoneNumber: `+1${businessRepInfo?.phoneNumber}`,
+			salutation: businessRepInfo?.salutation,
+			middleName: businessRepInfo?.middleName,
+		}
+
+		// const newPartner = {
+		// 	...businessInfo,
+		// 	phoneNumber: `+1${businessInfo?.phoneNumber}`,
+		// }
+
+		const convertedQuestionnaire = convertQs(businessQs)
+
+		const params = {
+			partner: camelToUnderscore(businessInfo),
+			business_representative: camelToUnderscore(personalInfo),
+			auth_credentials: camelToUnderscore(credentials),
+			bank_details: {
+				stripe_response: {},
+				...camelToUnderscore(bankingInfo),
+			},
+			questionnaires: convertedQuestionnaire,
+			// terms: camelToUnderscore(termsInfo),
+		}
+
+		axios
+			.post('http://localhost:8000/api/registration/', params, {
+				headers,
+			})
+			.then((response) => {
+				console.log(response, ' response')
+			})
+		// }
 	}
 
 	return (
 		<>
+			<button onClick={() => handleSubmit()}>test</button>
 			<SideNav
 				className={
 					!location.pathname.includes('success') ? 'bg-primary' : ''
@@ -165,7 +159,13 @@ export const Registration = () => {
 				/>
 				<Route
 					path={'/terms'}
-					element={<TermsAndAgreement submitForm={handleSubmit} />}
+					element={
+						<TermsAndAgreement
+							onSubmit={handleSubmit}
+							termsInfo={termsInfo}
+							setTermsInfo={setTermsInfo}
+						/>
+					}
 				/>
 				<Route
 					path={'/success'}

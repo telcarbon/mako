@@ -36,7 +36,7 @@ export const BusinessQuestionnaire = ({
 	setBusinessQs,
 	setCurrentStep,
 }: IBusinessQuestionnaireProps) => {
-	const match = useMatch('registration/*')
+	const match = useMatch('/*')
 	const navigate = useNavigate()
 	const [isUploaded, setIsUploaded] = useState<boolean>(false)
 

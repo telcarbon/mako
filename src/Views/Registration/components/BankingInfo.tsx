@@ -57,9 +57,6 @@ export const BankingInfo = ({
 	})
 
 	const initialValues: IBankDetailsInfo = {
-		// creditCardName: '',
-		// creditCardNumber: '',
-		// expirationDate: '',
 		bankName: '',
 		bankAccountType: '',
 		accountName: '',

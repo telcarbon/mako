@@ -61,8 +61,8 @@ export const bankingTypeOptions = [
 export interface IBusinessInfo {
 	name: string
 	type: number
-	street?: string
-	unitFloorBuilding?: string 
+	street: string
+	unitFloorBuilding: string
 	email: string
 	phoneNumber: string
 	city: string
@@ -77,7 +77,7 @@ export interface IBusinessRepInfo {
 	firstName: string
 	middleName: string
 	lastName: string
-	phoneNumber: string 
+	phoneNumber: string
 	salutation: string
 	email: string
 	password: string
@@ -95,16 +95,22 @@ export interface IBankDetailsInfo {
 }
 
 export interface IQuestionnareInfo {
-	plebotomy?: boolean | null
-	licensed?: boolean | null | undefined
-	phlebotomist?: [
+	plebotomy: boolean | null
+	licensed: boolean | null | undefined
+	phlebotomist: [
 		{
-			phlebotomistName?: string
+			phlebotomistName: string
 		}
 	]
-	trainExistingStaff?: boolean | null
-	offerClia?: boolean | null
-	isCliaWaivedSite?: boolean | null
-	hasParkingLot?: boolean | null
-	offerPrescription?: boolean | null
+	trainExistingStaff: boolean | null
+	offerClia: boolean | null
+	isCliaWaivedSite: boolean | null
+	hasParkingLot: boolean | null
+	offerPrescription: boolean | null
+}
+
+export interface ITermsInfo {
+	general: boolean | null
+	techUsage: boolean | null
+	bankAccountUsage: boolean | null
 }
