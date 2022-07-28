@@ -143,7 +143,7 @@ export const BusinessInfo = ({
 	}
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: businessInfo,
 	})
 
@@ -304,16 +304,12 @@ export const BusinessInfo = ({
 									>
 										<Controller
 											control={control}
-											rules={{
-												validate: (value) =>
-													isValidPhoneNumber(value),
-											}}
 											name="phoneNumber"
 											render={({
 												field: { onChange, value },
 											}) => (
 												<PhoneInput
-													containerClass="my-container-class"
+													international
 													placeholder="Enter phone number"
 													value={value}
 													onChange={onChange}
