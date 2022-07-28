@@ -70,7 +70,7 @@ export const Registration = () => {
 			const personalInfo = {
 				lastName: businessRepInfo?.lastName,
 				firstName: businessRepInfo?.firstName,
-				phoneNumber: `+1${businessRepInfo?.phoneNumber}`,
+				phoneNumber: businessRepInfo?.phoneNumber,
 				salutation: businessRepInfo?.salutation,
 				middleName: businessRepInfo?.middleName,
 			}

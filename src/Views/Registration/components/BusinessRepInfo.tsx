@@ -8,13 +8,17 @@ import {
 	FormSearchSelect,
 } from 'components'
 import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
+import { Form as BootstrapForm } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
 import { IBusinessRepInfo, salutationOptions } from '../types'
 import { checkLength, isNumericDigits, yupShortTest } from 'common/Util'
 import axios from 'axios'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+
 interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
 	setBusinessRepInfo: (value: IBusinessRepInfo) => void
@@ -105,8 +109,9 @@ export const BusinessRepInfo = ({
 		lastName: Yup.string().required('Last Name is required'),
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')
-			.test('numeric-test', 'Numeric digits only', function (value) {
-				return yupShortTest(value, isNumericDigits(value))
+			.test({
+				test: (value) => (!value ? true : isValidPhoneNumber(value)),
+				message: 'Enter a valid mobile phone number',
 			}),
 	})
 
@@ -199,12 +204,28 @@ export const BusinessRepInfo = ({
 											register={register}
 										/>
 									</FormField>
-									<FormField name="mobile">
-										<FormTextInput
-											placeholder="Mobile Number"
+									<FormField
+										name="phoneNumber"
+										useWrapper={false}
+										className="form-group"
+									>
+										<Controller
+											control={control}
 											name="phoneNumber"
-											register={register}
-											type="number"
+											render={({
+												field: { onChange, value },
+											}) => (
+												<PhoneInput
+													international
+													placeholder="Enter phone number"
+													value={value}
+													onChange={onChange}
+													defaultCountry="US"
+													inputComponent={
+														BootstrapForm.Control as any
+													}
+												/>
+											)}
 										/>
 									</FormField>
 								</Col>

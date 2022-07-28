@@ -8,6 +8,7 @@ import {
 	FormSearchSelect,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
+import { Form as BootstrapForm } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import { useMatch, useNavigate } from 'react-router-dom'
@@ -19,11 +20,8 @@ import {
 	ifNullOrEmpty,
 	yupShortTest,
 } from 'common/Util'
-import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { faBullseye } from '@fortawesome/free-solid-svg-icons'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { Form as BootstrapForm } from 'react-bootstrap'
 import 'react-phone-number-input/style.css'
 
 interface IBusinessInfoProps {
@@ -109,10 +107,13 @@ export const BusinessInfo = ({
 				}
 			),
 
-		phoneNumber: Yup.string().required('Phone Number is required'),
-		// .test('numeric-test', 'Numeric digits only', function (value) {
-		// 	return yupShortTest(value, isNumericDigits(value))
-		// }), // problem with format tskk
+		phoneNumber: Yup.string()
+			.required('Phone Number is required')
+			.test({
+				test: (value) => (!value ? true : isValidPhoneNumber(value)),
+				message: 'Enter a valid mobile phone number',
+			}),
+
 		npi: Yup.string()
 			.required('NPI Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
@@ -320,13 +321,6 @@ export const BusinessInfo = ({
 											)}
 										/>
 									</FormField>
-									{/* <FormField name="phoneNumber">
-										<FormTextInput
-											placeholder="Phone Number"
-											name="phoneNumber"
-											register={register}
-										/>
-									</FormField> */}
 									<FormField
 										name="npi"
 										label="Licenses"
