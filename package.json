@@ -60,6 +60,7 @@
 		"prop-types": "^15.8.1",
 		"react-bootstrap": "^2.4.0",
 		"react-hook-form": "^7.33.0",
+		"react-phone-number-input": "^3.2.6",
 		"react-router-dom": "^6.3.0",
 		"react-select": "^5.4.0",
 		"webpack": "^5.73.0"
