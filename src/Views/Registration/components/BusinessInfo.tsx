@@ -143,7 +143,7 @@ export const BusinessInfo = ({
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: businessInfo,
 	})
 
@@ -162,7 +162,7 @@ export const BusinessInfo = ({
 		const formValues = getValues()
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
-		// navigate(`${match?.pathnameBase}/busines-rep-info`)
+		navigate(`${match?.pathnameBase}/busines-rep-info`)
 		console.log(formValues)
 	}
 
@@ -297,8 +297,7 @@ export const BusinessInfo = ({
 										/>
 									</FormField>
 									<FormField
-										label="Mobile number"
-										name="mobile"
+										name="phoneNumber"
 										useWrapper={false}
 										className="form-group"
 									>

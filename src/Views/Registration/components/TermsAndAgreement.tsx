@@ -41,7 +41,7 @@ export const TermsAndAgreement = ({
 		console.log(formValues)
 		setTermsInfo(formValues)
 		onSubmit()
-		// navigate(`${match?.pathnameBase}/success`)
+		navigate(`${match?.pathnameBase}/success`)
 	}
 
 	return (
