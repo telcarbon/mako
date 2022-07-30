@@ -6,20 +6,20 @@
 		"city": "Valenzula",
 		"zip_code": 14400,
 		"country": "PH",
-		"name": "qweadf",
-		"email": "cmqwe@asdfasdf.com",
+		"name": "test",
+		"email": "peter2@parker.com",
 		"phone_number": "+12025550180",
-		"npi": 1234567890,
-		"ncpdp": 1234567,
+		"npi": "1234567899",
+		"ncpdp": 1234568,
 		"type": 1
 	},
 	"auth_credentials": {
-		"email": "ralph.subrio@doodlepress.com.ph",
+		"email": "dr2@strange.com.ph",
 		"password": "Letmein12@"
 	},
 	"business_representative": {
-		"first_name": "Ralph",
-		"last_name": "Subrio",
+		"first_name": "Dr 2",
+		"last_name": "Strange",
 		"phone_number": "+12025550180",
 		"salutation": "Mr"
 	},
@@ -33,10 +33,22 @@
 	},
 	"questionnaires": [
 		{
-			"plebotomy": true
+			"Would you like to offer phlebotomy/blood draw services?": {
+				"answer": true,
+				"extra_values": []
+			}
 		},
 		{
-			"licensed": true
+			"Do you have a licensed phlebotomist?": {
+				"answer": true,
+				"extra_values": ["ralph"]
+			}
+		},
+		{
+			"Would you like to offer CLIA waived point of care testing services to the general public (Strep, HIV, UTI, Flu, A1c, Blood Pressure, etc)?": {
+				"answer": true,
+				"extra_values": ["wag mo nalang pansin un"]
+			}
 		}
 	]
 }

@@ -107,10 +107,25 @@ export interface IQuestionnareInfo {
 	isCliaWaivedSite: boolean | null
 	hasParkingLot: boolean | null
 	offerPrescription: boolean | null
+	cliaCertification: any
 }
 
 export interface ITermsInfo {
 	general: boolean | null
 	techUsage: boolean | null
 	bankAccountUsage: boolean | null
+}
+
+export const Questions = {
+	plebotomy: 'Would you like to offer phlebotomy/blood draw services?',
+	licensed: 'Do you have a licensed phlebotomist?',
+	trainExistingStaff:
+		'Would you like to train your existing staff in phlebotomy?',
+	offerClia:
+		'Would you like to offer CLIA waived point of care testing services to the general public (Strep, HIV, UTI, Flu, A1c, Blood Pressure, etc)?',
+	isCliaWaivedSite: 'Is your business a CLIA WAIVED site?',
+	hasParkingLot:
+		'Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?',
+	offerPrescription:
+		'Does your business offer prescription delivery via company driver or courier service?',
 }
