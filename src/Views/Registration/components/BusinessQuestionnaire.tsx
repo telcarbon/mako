@@ -11,6 +11,7 @@ import {
 	ContentHeader,
 	Form,
 	FormField,
+	FormFileUpload,
 	FormRadioGroup,
 	FormTextInput,
 } from 'components'
@@ -69,6 +70,10 @@ export const BusinessQuestionnaire = ({
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
+		cliaCertification: Yup.mixed().when('isCliaWaivedSite', {
+			is: true,
+			then: Yup.string().required('Please upload your CLIA Certificate').nullable(),
+		}),
 		hasParkingLot: Yup.mixed().when('isCliaWaivedSite', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
@@ -87,6 +92,7 @@ export const BusinessQuestionnaire = ({
 		isCliaWaivedSite: null,
 		hasParkingLot: null,
 		offerPrescription: null,
+		cliaCertification: ''
 	}
 
 	const useFormInstance = useForm({
@@ -131,7 +137,9 @@ export const BusinessQuestionnaire = ({
 		const formValues = getValues()
 		setBusinessQs(formValues)
 		setCurrentStep(4)
-		navigate(`${match?.pathnameBase}/terms`)
+		console.log(formValues);
+		
+		// navigate(`${match?.pathnameBase}/terms`)
 	}
 
 	useEffect(() => {
@@ -314,7 +322,10 @@ export const BusinessQuestionnaire = ({
 								</div>
 								{isCliaWaivedSiteCollapse && (
 									<div style={{ flexBasis: '100%' }}>
-										{!isUploaded ? (
+										<FormField name="cliaCertification">
+											<FormFileUpload name="cliaCertification" register={register} />
+										</FormField>
+										{/* {!isUploaded ? (
 											<button
 												className="btn btn-outline-dark border-2 col-lg-5"
 												type="button"
@@ -357,8 +368,8 @@ export const BusinessQuestionnaire = ({
 														fontSize: '1.25em',
 													}}
 												/>
-											</button>
-										)}
+											</button> 
+										)}*/}
 									</div>
 								)}
 							</FormField>

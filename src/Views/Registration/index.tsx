@@ -45,13 +45,14 @@ export const Registration = () => {
 		isCliaWaivedSite: null,
 		hasParkingLot: null,
 		offerPrescription: null,
+		cliaCertification: '',
 	})
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
+		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
 	}
 
 	const handleChangeStep = (value: any) => {

@@ -1,5 +1,11 @@
 import { useState } from 'react'
-import { Button, ContentHeader, Form, FormField, FormCheckBox } from 'components'
+import {
+	Button,
+	ContentHeader,
+	Form,
+	FormField,
+	FormCheckBox,
+} from 'components'
 import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
@@ -26,23 +32,23 @@ export const TermsAndAgreement = ({
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
-	const {
-		getValues,
-		register,
-		formState: { isDirty },
-	} = useFormInstance
+	const { getValues, register, watch } = useFormInstance
 
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
-		console.log(formValues)
 		setTermsInfo(formValues)
 		onSubmit()
 		navigate(`${match?.pathnameBase}/success`)
 	}
+
+	const allTermsHasFalse = watch([
+		'general',
+		'techUsage',
+		'bankAccountUsage',
+	]).includes(false)
 
 	return (
 		<Container fluid>
@@ -60,7 +66,14 @@ export const TermsAndAgreement = ({
 								register={register}
 								value={'hasAgreeToTerms'}
 							>
-								I agree to the general terms and agreement
+								I agree to the{' '}
+								<a
+									className="link-secondary"
+									href="http://google.com"
+								>
+									general terms
+								</a>{' '}
+								and agreement
 							</FormCheckBox>
 							<FormCheckBox
 								name="techUsage"
@@ -68,7 +81,14 @@ export const TermsAndAgreement = ({
 								value={'techUsage'}
 								className="my-2"
 							>
-								I agree to the Tech Usage agreement
+								I agree to the{' '}
+								<a
+									className="link-secondary"
+									href="http://google.com"
+								>
+									Tech Usage
+								</a>{' '}
+								agreement
 							</FormCheckBox>
 							<FormCheckBox
 								name="bankAccountUsage"
@@ -76,7 +96,14 @@ export const TermsAndAgreement = ({
 								value={'bankAccountUsage'}
 								className="my-2"
 							>
-								I agree to the Bank Account Usage agreement
+								I agree to the{' '}
+								<a
+									className="link-secondary"
+									href="http://google.com"
+								>
+									Bank Account Usage{' '}
+								</a>
+								agreement
 							</FormCheckBox>
 						</FormField>
 					</Col>
@@ -89,7 +116,7 @@ export const TermsAndAgreement = ({
 					/>
 					<Button
 						type="submit"
-						disabled={!isDirty}
+						disabled={allTermsHasFalse}
 						className="col-lg-auto pull-right"
 					>
 						Agree & Proceed

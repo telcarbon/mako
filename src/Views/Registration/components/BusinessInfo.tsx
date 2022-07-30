@@ -19,6 +19,7 @@ import {
 	checkLength,
 	ifNullOrEmpty,
 	yupShortTest,
+	checkDuplicates,
 } from 'common/Util'
 import axios from 'axios'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
@@ -40,7 +41,7 @@ export const BusinessInfo = ({
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: 'Token d5a100a2099c66cd2060fd3951bad9db82e1704f',
+		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
 	}
 
 	const validationSchema = Yup.object().shape({
@@ -53,18 +54,18 @@ export const BusinessInfo = ({
 		street: Yup.string().required('Address Line 1 is required'),
 		unitFloorBuilding: Yup.string().required('Address Line 2 is required'),
 		state: Yup.string().required('State is required').nullable(),
-		city: Yup.mixed().when('state', {
-			is: (state: string) => {
-				if (state !== '') {
-					const cities = stateAndCitiesData.find(
-						(f) => f.name === state
-					)?.cities
-					return cities && cities.length > 0
-				}
-				return false
-			},
-			then: Yup.string().required('City is required').nullable(),
-		}),
+		// city: Yup.mixed().when('state', {
+		// 	is: (state: string) => {
+		// 		if (state !== '') {
+		// 			const cities = stateAndCitiesData.find(
+		// 				(f) => f.name === state
+		// 			)?.cities
+		// 			return cities && cities.length > 0
+		// 		}
+		// 		return false
+		// 	},
+		// 	then: Yup.string().required('City is required').nullable(),
+		// }),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
 		zipCode: Yup.string()
 			.required('Zip code is required')
@@ -86,6 +87,11 @@ export const BusinessInfo = ({
 				'email-existing',
 				'Email address already exists',
 				function (value) {
+					// const apiURL = "http://localhost:8000/api/partner-checker/?email="
+					// checkDuplicates(
+					// 	`${apiURL}${value}`,
+					// 	{headers}
+					// )
 					return new Promise((resolve) => {
 						axios
 							.get(
@@ -154,12 +160,9 @@ export const BusinessInfo = ({
 		formState: { isDirty },
 		watch,
 		control,
-		setValue,
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		// console.log('============', getValues())
-		// console.log('testing', (123).toString('D16'))
 		const formValues = getValues()
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
@@ -169,8 +172,6 @@ export const BusinessInfo = ({
 
 	const stateWatch: any = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
-
-	const emailWatch = watch('email')
 
 	const restructureCities = (): any => {
 		if (!ifEmptyState) {
@@ -316,6 +317,10 @@ export const BusinessInfo = ({
 													defaultCountry="US"
 													inputComponent={
 														BootstrapForm.Control as any
+													}
+													countries={['US']}
+													addInternationalOption={
+														false
 													}
 												/>
 											)}
