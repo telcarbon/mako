@@ -14,6 +14,9 @@ import {
 import { useMatch, useNavigate } from 'react-router-dom'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
 import { isNumericDigits, yupShortTest } from 'common/Util'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import { PaymentForm } from './PaymentForm'
 
 interface IBankingInfoProps {
 	bankingInfo: IBankDetailsInfo | undefined
@@ -84,6 +87,10 @@ export const BankingInfo = ({
 		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
+	const stripePromise = loadStripe(
+		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
+	)
+
 	return (
 		<>
 			<Container fluid>
@@ -97,37 +104,16 @@ export const BankingInfo = ({
 					<Row className="justify-content-center mb-5">
 						<Col lg={12}>
 							<Row className="justify-content-center">
-								{/* <Col
+								<Col
 									lg={5}
 									className="d-flex align-items-stretch card border-2 border-dark rounded-2"
 								>
 									<div className="card-body d-flex flex-column">
-										<FormField
-											name="creditCardNumber"
-											label="Credit Card"
-										>
-											<FormTextInput
-												placeholder="Credit Card Number"
-												name="creditCardNumber"
-												register={register}
-											/>
-										</FormField>
-										<FormField name="creditCardName">
-											<FormTextInput
-												placeholder="Name on Credit Card"
-												name="creditCardName"
-												register={register}
-											/>
-										</FormField>
-										<FormField name="expirationDate">
-											<FormTextInput
-												placeholder="Expiration Date"
-												name="expirationDate"
-												register={register}
-											/>
-										</FormField>
+										<Elements stripe={stripePromise}>
+											<PaymentForm />
+										</Elements>
 									</div>
-								</Col> */}
+								</Col>
 								<Col
 									lg={5}
 									className="d-flex align-items-stretch card border-2 border-dark rounded-2"

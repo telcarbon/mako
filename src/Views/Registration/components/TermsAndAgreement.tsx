@@ -66,14 +66,15 @@ export const TermsAndAgreement = ({
 								register={register}
 								value={'hasAgreeToTerms'}
 							>
-								I agree to the{' '}
+								I agree nd accept the{' '}
 								<a
 									className="link-secondary"
 									href="http://google.com"
+									target="_blank"
 								>
-									general terms
-								</a>{' '}
-								and agreement
+									general terms and conditions
+								</a>
+								.
 							</FormCheckBox>
 							<FormCheckBox
 								name="techUsage"
@@ -81,14 +82,15 @@ export const TermsAndAgreement = ({
 								value={'techUsage'}
 								className="my-2"
 							>
-								I agree to the{' '}
+								I agree and accept the{' '}
 								<a
 									className="link-secondary"
 									href="http://google.com"
+									target="_blank"
 								>
-									Tech Usage
-								</a>{' '}
-								agreement
+									MakoRX technical usage terms and conditions
+								</a>
+								.
 							</FormCheckBox>
 							<FormCheckBox
 								name="bankAccountUsage"
@@ -96,14 +98,16 @@ export const TermsAndAgreement = ({
 								value={'bankAccountUsage'}
 								className="my-2"
 							>
-								I agree to the{' '}
+								I agree and accept the{' '}
 								<a
 									className="link-secondary"
 									href="http://google.com"
+									target="_blank"
 								>
-									Bank Account Usage{' '}
+									MakoRX bank account information usage terms
+									and conditions
 								</a>
-								agreement
+								.
 							</FormCheckBox>
 						</FormField>
 					</Col>

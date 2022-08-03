@@ -87,11 +87,6 @@ export const BusinessInfo = ({
 				'email-existing',
 				'Email address already exists',
 				function (value) {
-					// const apiURL = "http://localhost:8000/api/partner-checker/?email="
-					// checkDuplicates(
-					// 	`${apiURL}${value}`,
-					// 	{headers}
-					// )
 					return new Promise((resolve) => {
 						axios
 							.get(
@@ -112,6 +107,11 @@ export const BusinessInfo = ({
 					})
 				}
 			),
+		// .test('is-existing', 'Email address already exists', (value) => {
+		// 	const apiURL =
+		// 		'http://localhost:8000/api/partner-checker/?email='
+		// 	checkDuplicates(`${apiURL}${value}`, { headers })
+		// }),
 
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')

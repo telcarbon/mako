@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios from 'axios'
 
 export const isEmpty = (value: any) => {
 	return (
@@ -58,26 +58,23 @@ export const convertQs = (obj: any) => {
 		Object.keys(obj).forEach((itm) => {
 			if (obj[itm]) {
 				container.push({ [itm]: obj[itm] })
-			// 	if(itm === 'phlebotomist'){
-					
-			// 	}
-			// } else {
-			// 	container.push({ [itm]: false })
+				// 	if(itm === 'phlebotomist'){
+
+				// 	}
+				// } else {
+				// 	container.push({ [itm]: false })
 			}
 		})
 	}
 	return container
 }
 
-export const checkDuplicates = (apiUrl: string, value:string, headers: any) => {
-	return new Promise((resolve) => {
+export const checkDuplicates = (apiUrl: string, headers: any) => {
+	const promise = new Promise((resolve) => {
 		axios
-			.get(
-				`${apiUrl}${value}`,
-				{
-					headers,
-				}
-			)
+			.get(apiUrl, {
+				headers,
+			})
 			.then((response) => {
 				if (response && response.data.count > 0) {
 					resolve(false)
@@ -88,4 +85,5 @@ export const checkDuplicates = (apiUrl: string, value:string, headers: any) => {
 				resolve(true)
 			})
 	})
+	return promise
 }
