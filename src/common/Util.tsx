@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { IQuestionnareInfo, Questions } from 'Views/Registration/types'
 
 export const isEmpty = (value: any) => {
 	return (
@@ -54,18 +55,31 @@ export const camelToUnderscore = (oldObject: any) => {
 
 export const convertQs = (obj: any) => {
 	const container: any = []
-	if (obj) {
-		Object.keys(obj).forEach((itm) => {
-			if (obj[itm]) {
-				container.push({ [itm]: obj[itm] })
-				// 	if(itm === 'phlebotomist'){
 
-				// 	}
-				// } else {
-				// 	container.push({ [itm]: false })
+	if (obj) {
+		delete obj['cliaCertification']
+
+		Object.keys(obj).forEach((itm: string) => {
+			const extraValues: any = []
+			if (obj[itm] && itm !== 'phlebotomist') {
+				const questVal = Questions[itm]
+				if (itm === 'licensed' && obj['licensed']) {
+					obj['phlebotomist'].map((itm: any) => {
+						if (itm?.phlebotomistName) {
+							extraValues.push(itm?.phlebotomistName)
+						}
+					})
+				}
+				container.push({
+					[questVal]: {
+						answer: obj[itm],
+						extra_values: extraValues,
+					},
+				})
 			}
 		})
 	}
+	console.log('container', container)
 	return container
 }
 

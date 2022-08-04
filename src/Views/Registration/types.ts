@@ -116,7 +116,11 @@ export interface ITermsInfo {
 	bankAccountUsage: boolean | null
 }
 
-export const Questions = {
+// export enum Questions {
+// 	plebotomy = 'Would you like to offer phlebotomy/blood draw services?',
+// }
+
+export const Questions: Record<string, string> = {
 	plebotomy: 'Would you like to offer phlebotomy/blood draw services?',
 	licensed: 'Do you have a licensed phlebotomist?',
 	trainExistingStaff:
