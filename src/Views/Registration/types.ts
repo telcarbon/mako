@@ -129,3 +129,9 @@ export const Questions = {
 	offerPrescription:
 		'Does your business offer prescription delivery via company driver or courier service?',
 }
+
+export enum StripeFields {
+	CARD_NUMBER = 'cardNumber',
+	CARD_CVC_NUMBER = 'cardCVCNumber',
+	CARD_EXPIRY_DATE = 'cardExpiryDate',
+}
