@@ -61,7 +61,7 @@ export const convertQs = (obj: any) => {
 
 		Object.keys(obj).forEach((itm: string) => {
 			const extraValues: any = []
-			if (obj[itm] && itm !== 'phlebotomist') {
+			if (obj[itm] !== null && itm !== 'phlebotomist') {
 				const questVal = Questions[itm]
 				if (itm === 'licensed' && obj['licensed']) {
 					obj['phlebotomist'].map((itm: any) => {

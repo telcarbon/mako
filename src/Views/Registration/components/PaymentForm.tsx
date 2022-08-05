@@ -1,16 +1,12 @@
 import React, { useState } from 'react'
 import {
-	Elements,
-	CardElement,
 	CardCvcElement,
 	CardExpiryElement,
 	CardNumberElement,
 	useElements,
 	useStripe,
-	IbanElement,
 } from '@stripe/react-stripe-js'
-import { Form, FormField } from 'components'
-import axios from 'axios'
+import { Button, Form, FormField } from 'components'
 import { StripeFields } from '../types'
 
 const inputStyle = {
@@ -19,10 +15,13 @@ const inputStyle = {
 	fontSize: '16px',
 }
 
-export const PaymentForm = () => {
+interface PaymentFormProps {
+	onSubmit?: (...args: any[]) => void
+}
+
+export const PaymentForm = ({ onSubmit }: PaymentFormProps) => {
 	const stripe = useStripe()
 	const elements = useElements()
-	const [success, setSuccess] = useState(false)
 
 	const [stripeErrors, setStripeErrors] = useState({
 		cardNumber: undefined,
@@ -69,23 +68,23 @@ export const PaymentForm = () => {
 				<FormField name="creditCard" label="Credit Card">
 					<CardNumberElement
 						className="form-control"
-						onChange={(e) => {
-							stripeValidationSetter(
-								e.error?.message,
-								StripeFields.CARD_NUMBER
-							)
-						}}
 						options={{
 							style: {
 								base: inputStyle,
 							},
 							showIcon: true,
 						}}
+						onChange={(e) => {
+							stripeValidationSetter(
+								e.error?.message,
+								StripeFields.CARD_NUMBER
+							)
+						}}
 					/>
-					<div>
+					<small className="text-danger px-1">
 						{isError(StripeFields.CARD_NUMBER) &&
 							stripeErrors[StripeFields.CARD_NUMBER]}
-					</div>
+					</small>
 				</FormField>
 				<FormField name="expiry">
 					<CardExpiryElement
@@ -102,10 +101,10 @@ export const PaymentForm = () => {
 							},
 						}}
 					/>
-					<div>
+					<small className="text-danger px-1">
 						{isError(StripeFields.CARD_EXPIRY_DATE) &&
 							stripeErrors[StripeFields.CARD_EXPIRY_DATE]}
-					</div>
+					</small>
 				</FormField>
 				<FormField name="cvc">
 					<CardCvcElement
@@ -122,13 +121,18 @@ export const PaymentForm = () => {
 							},
 						}}
 					/>
-					{isError(StripeFields.CARD_CVC_NUMBER) &&
-						stripeErrors[StripeFields.CARD_CVC_NUMBER]}
+					<small className="text-danger p-1">
+						{isError(StripeFields.CARD_CVC_NUMBER) &&
+							stripeErrors[StripeFields.CARD_CVC_NUMBER]}
+					</small>
 				</FormField>
-				<IbanElement></IbanElement>
-				<button type="button" onClick={handleSubmit}>
-					save
-				</button>
+				<Button
+					type="button"
+					onClick={handleSubmit}
+					className="pull-right"
+				>
+					Save
+				</Button>
 			</form>
 		</>
 	)

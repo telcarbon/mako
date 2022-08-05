@@ -48,7 +48,7 @@ export const BusinessInfo = ({
 		name: Yup.string().required('Enter a valid email address'),
 		type: Yup.number()
 			.required('Please select an option')
-			.test('check-test', 'Please select an option', function (value) {
+			.test('check-test', 'Please select an option', (value) => {
 				return value !== 0
 			}),
 		street: Yup.string().required('Address Line 1 is required'),
@@ -70,7 +70,7 @@ export const BusinessInfo = ({
 		zipCode: Yup.string()
 			.required('Zip code is required')
 			.nullable()
-			.test('numeric-test', 'Numeric digits only', function (value) {
+			.test('numeric-test', 'Numeric digits only', (value) => {
 				return yupShortTest(value, isNumericDigits(value))
 			})
 			.test(
@@ -83,30 +83,26 @@ export const BusinessInfo = ({
 		email: Yup.string()
 			.required('Email address is required')
 			.email('Must be a valid email address')
-			.test(
-				'email-existing',
-				'Email address already exists',
-				function (value) {
-					return new Promise((resolve) => {
-						axios
-							.get(
-								`http://localhost:8000/api/partner-checker/?email=${value}`,
-								{
-									headers,
-								}
-							)
-							.then((response) => {
-								if (response && response.data.count > 0) {
-									resolve(false)
-								}
-								resolve(true)
-							})
-							.catch(() => {
-								resolve(true)
-							})
-					})
-				}
-			),
+			.test('is-existing', 'Email address already exists', (value) => {
+				return new Promise((resolve) => {
+					axios
+						.get(
+							`http://localhost:8000/api/partner-checker/?email=${value}`,
+							{
+								headers,
+							}
+						)
+						.then((response) => {
+							if (response && response.data.count > 0) {
+								resolve(false)
+							}
+							resolve(true)
+						})
+						.catch(() => {
+							resolve(true)
+						})
+				})
+			}),
 		// .test('is-existing', 'Email address already exists', (value) => {
 		// 	const apiURL =
 		// 		'http://localhost:8000/api/partner-checker/?email='
@@ -122,14 +118,54 @@ export const BusinessInfo = ({
 
 		npi: Yup.string()
 			.required('NPI Number is required')
-			.test('numeric-test', 'Numeric digits only', function (value) {
+			.test('numeric-test', 'Numeric digits only', (value) => {
 				return yupShortTest(value, isNumericDigits(value))
+			})
+			.test('is-existing', 'NPI Number already exists', (value) => {
+				return new Promise((resolve) => {
+					axios
+						.get(
+							`http://localhost:8000/api/partner-checker/?npi=${value}`,
+							{
+								headers,
+							}
+						)
+						.then((response) => {
+							if (response && response.data.count > 0) {
+								resolve(false)
+							}
+							resolve(true)
+						})
+						.catch(() => {
+							resolve(true)
+						})
+				})
 			})
 			.length(10, 'Should be compose of 10 digits'),
 		ncpdp: Yup.string()
 			.required('NCPDP Number is required')
-			.test('numeric-test', 'Numeric digits only', function (value) {
+			.test('numeric-test', 'Numeric digits only', (value) => {
 				return value ? (!isNumericDigits(value) ? false : true) : true
+			})
+			.test('is-existing', 'NCPDP Number already exists', (value) => {
+				return new Promise((resolve) => {
+					axios
+						.get(
+							`http://localhost:8000/api/partner-checker/?ncpdp=${value}`,
+							{
+								headers,
+							}
+						)
+						.then((response) => {
+							if (response && response.data.count > 0) {
+								resolve(false)
+							}
+							resolve(true)
+						})
+						.catch(() => {
+							resolve(true)
+						})
+				})
 			})
 			.length(7, 'Should be compose of 7 digits'),
 	})

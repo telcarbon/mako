@@ -5,28 +5,42 @@ import { IBusinessInfo } from '../types'
 
 interface RegistrationSuccessProps {
 	email: string
+	success?: boolean
 }
 
-export const RegistrationSuccess = ({ email }: RegistrationSuccessProps) => {
+export const RegistrationSuccess = ({
+	email,
+	success,
+}: RegistrationSuccessProps) => {
 	return (
 		<Container fluid className="register-success">
 			<Row className="justify-content-center align-items-center vh-100">
 				<Col lg={6} className="text-center">
-					<h5 className="text-center mb-4">
-						Registration Succesful!
-					</h5>
-					<p>
-						We’ve also sent a copy of the contract as well as next
-						steps to your e-mail{' '}
-						<strong className="text-secondary">{email}</strong>.
-					</p>
-					{/* <Button
-						className="rounded-pill mt-5"
-						variant="outline-secondary"
-					>
-						<FontAwesomeIcon icon={faDownload} className="me-2" />
-						Download Contract
-					</Button> */}
+					{success ? (
+						<>
+							<h5 className="text-center mb-4">
+								Registration Succesful!
+							</h5>
+							<p>
+								We’ve also sent a copy of the contract as well
+								as next steps to your e-mail{' '}
+								<strong className="text-secondary">
+									{email}
+								</strong>
+								.
+							</p>
+						</>
+					) : (
+						<>
+							<h5 className="text-center mb-4 text-danger">
+								Something went wrong
+							</h5>
+							<p>
+								We apologize for the inconvenience. Please try
+								again.
+							</p>
+						</>
+					)}
 				</Col>
 			</Row>
 		</Container>

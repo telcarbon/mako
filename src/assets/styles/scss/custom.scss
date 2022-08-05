@@ -87,7 +87,7 @@ body {
 }
 
 .card {
-	padding: 0.5rem 0.85rem 2.5rem;
+	padding: 0.5rem 0.85rem;
 	margin: 0 1.5rem;
 }
 
@@ -120,10 +120,14 @@ body {
 
 .tab-content {
 	border-radius: 0.25rem;
-	border: 1px solid $nero;
+	// border: 1px solid $nero;
 	padding: 1.3rem 1.75rem;
-	height: 55vh;
-	overflow-y: auto;
+	// height: 55vh;
+	// overflow-y: auto;
+
+	.card-body {
+		min-height: 350px;
+	}
 
 	&::-webkit-scrollbar {
 		width: 10px;
@@ -245,6 +249,18 @@ input[type='radio'] {
 	}
 }
 
+.disabled {
+	opacity: 0.65;
+	cursor: default;
+
+	&:active,
+	&:before {
+		transform: none;
+		transition: none;
+		will-change: unset;
+	}
+}
+
 .form-group,
 .form-radio-wrap,
 .select {
@@ -312,6 +328,10 @@ input[type='radio'] {
 	.form-control {
 		padding-left: 3.8rem;
 	}
+}
+
+input[type="file"] {
+    display: none;
 }
 
 // FORMS

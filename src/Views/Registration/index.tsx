@@ -49,9 +49,10 @@ export const Registration = () => {
 	})
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [currentStep, setCurrentStep] = useState<Number>(0)
+	const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
 	const headers = {
-		'Content-Type': 'application/json',
+		'Content-Type': 'multipart/data',
 		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
 	}
 
@@ -61,8 +62,10 @@ export const Registration = () => {
 		}
 	}
 
+	console.log(businessQs, "taas");
+
 	const handleSubmit = () => {
-		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
+		// if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
 			const credentials = {
 				email: businessRepInfo?.email,
 				password: businessRepInfo?.password,
@@ -95,19 +98,34 @@ export const Registration = () => {
 				// terms: camelToUnderscore(termsInfo),
 			}
 
-			axios
-				.post('http://localhost:8000/api/registration/', params, {
-					headers,
-				})
-				.then((response) => {
-					console.log(response, ' response')
-				})
-		}
+			const formData = new FormData()
+
+			// formData.append('data', params)
+			// formData.append('clia_certification', )
+
+			console.log(params, "params");
+
+			console.log(businessQs, "baba");
+			
+			
+
+			// axios
+			// 	.post('http://localhost:8000/api/registration/', params, {
+			// 		headers,
+			// 	})
+			// 	.then((response) => {
+			// 		console.log(response, ' response')
+			// 		if(response.status === 200) {
+			// 			setIsSuccess(true)
+			// 		}
+			// 		// navigate(`${match?.pathnameBase}/success`)
+			// 	})
+		// }
 	}
 
 	return (
 		<>
-			{/* <button onClick={() => handleSubmit()}>test</button> */}
+			<button onClick={() => handleSubmit()}>test</button>
 			<SideNav
 				className={
 					!location.pathname.includes('success') ? 'bg-primary' : ''
@@ -171,7 +189,7 @@ export const Registration = () => {
 				<Route
 					path={'/success'}
 					element={
-						<RegistrationSuccess email={businessInfo?.email} />
+						<RegistrationSuccess email={businessInfo?.email} success={isSuccess}/>
 					}
 				/>
 			</Routes>

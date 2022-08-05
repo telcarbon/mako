@@ -13,6 +13,7 @@ export interface FormFieldProps {
 	hidden?: boolean
 	isRadio?: boolean
 	centered?: boolean
+	disabled?: boolean
 }
 
 export const FormField = ({
@@ -25,6 +26,7 @@ export const FormField = ({
 	isRadio,
 	centered,
 	labelClassName,
+	disabled,
 }: FormFieldProps) => {
 	const {
 		formState: { errors },
@@ -38,6 +40,7 @@ export const FormField = ({
 				className={classNames(`form-group ${className || ''}`, {
 					'error-highlight': hasError,
 					'mb-0': isRadio && hasError,
+					disabled: disabled,
 				})}
 				style={{ display: hidden ? 'none' : 'block' }}
 			>

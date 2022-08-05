@@ -84,10 +84,7 @@ export interface IBusinessRepInfo {
 }
 
 export interface IBankDetailsInfo {
-	// creditCardNumber: string
-	// creditCardName: string
-	// expirationDate: string
-	bankName: string // payment network
+	bankName: string
 	bankAccountType: string
 	accountName: string
 	accountNumber: string
@@ -116,9 +113,11 @@ export interface ITermsInfo {
 	bankAccountUsage: boolean | null
 }
 
-// export enum Questions {
-// 	plebotomy = 'Would you like to offer phlebotomy/blood draw services?',
-// }
+export enum StripeFields {
+	CARD_NUMBER = 'cardNumber',
+	CARD_CVC_NUMBER = 'cardCVCNumber',
+	CARD_EXPIRY_DATE = 'cardExpiryDate',
+}
 
 export const Questions: Record<string, string> = {
 	plebotomy: 'Would you like to offer phlebotomy/blood draw services?',
@@ -132,10 +131,4 @@ export const Questions: Record<string, string> = {
 		'Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?',
 	offerPrescription:
 		'Does your business offer prescription delivery via company driver or courier service?',
-}
-
-export enum StripeFields {
-	CARD_NUMBER = 'cardNumber',
-	CARD_CVC_NUMBER = 'cardCVCNumber',
-	CARD_EXPIRY_DATE = 'cardExpiryDate',
 }

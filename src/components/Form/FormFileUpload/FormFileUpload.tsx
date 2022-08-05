@@ -1,20 +1,52 @@
-import React from 'react'
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import classNames from 'classnames'
+import { Button } from 'components'
+import React, { useState } from 'react'
 import { UseFormRegister } from 'react-hook-form'
 
 type InputFileProps = {
 	name: string
 	register: UseFormRegister<any>
 	className?: string
-	type?: 'file'
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+	label?: string
 }
 
-export const FormFileUpload = ({name, register, className, type}: InputFileProps) => {
+export const FormFileUpload = ({
+	name,
+	register,
+	className,
+	label,
+}: InputFileProps) => {
+	const [selectedFile, setSelectedFile] = useState<string>('')
+	const { onChange } = register(name)
+
 	return (
-		<input
-			type="file"
-			className={className}
-			{...register(name)}
-		/>
+		<label
+			className={classNames(
+				`btn btn-outline-dark border-2 ${className || ''}`
+			)}
+		>
+			<input
+				type="file"
+				accept="application/pdf"
+				{...register(name)}
+				onChange={(event) => {
+					setSelectedFile(event.target.value)
+					onChange(event)
+				}}
+			/>
+			<FontAwesomeIcon
+				icon={faCloudArrowUp}
+				className="text-secondary"
+				size="1x"
+				style={{
+					fontSize: '1.25em',
+					paddingRight: '0.4em',
+				}}
+			/>
+			{selectedFile === '' ? label : selectedFile}
+		</label>
 	)
 }
