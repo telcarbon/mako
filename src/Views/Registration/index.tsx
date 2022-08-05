@@ -1,6 +1,12 @@
 import { createContext, useState } from 'react'
 import axios from 'axios'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import {
+	Route,
+	Routes,
+	useLocation,
+	useMatch,
+	useNavigate,
+} from 'react-router-dom'
 import { SideNav } from 'components'
 import { BankingInfo } from './components/BankingInfo'
 import { BusinessInfo } from './components/BusinessInfo'
@@ -17,8 +23,12 @@ import {
 	ITermsInfo,
 } from './types'
 import { camelToUnderscore, convertQs } from 'common/Util'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
 
 export const Registration = () => {
+	const match = useMatch('registration/*')
+	const navigate = useNavigate()
 	const location = useLocation()
 	const [businessRepInfo, setBusinessRepInfo] = useState<IBusinessRepInfo>()
 	const [businessInfo, setBusinessInfo] = useState<IBusinessInfo>({
@@ -35,7 +45,13 @@ export const Registration = () => {
 		npi: '',
 		ncpdp: '',
 	})
-	const [bankingInfo, setBankingInfo] = useState<IBankDetailsInfo>()
+	const [bankingInfo, setBankingInfo] = useState<IBankDetailsInfo>({
+		bankName: '',
+		bankAccountType: '',
+		accountName: '',
+		accountNumber: '',
+		abaRoutingNumber: '',
+	})
 	const [businessQs, setBusinessQs] = useState<IQuestionnareInfo>({
 		plebotomy: null,
 		licensed: null,
@@ -48,6 +64,7 @@ export const Registration = () => {
 		cliaCertification: '',
 	})
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
+	const [stripeToken, setStripeToken] = useState<string>('')
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 	const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
@@ -62,137 +79,164 @@ export const Registration = () => {
 		}
 	}
 
-	console.log(businessQs, "taas");
+	console.log(businessQs, 'taas')
+
+	const stripePromise = loadStripe(
+		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
+	)
 
 	const handleSubmit = () => {
 		// if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
-			const credentials = {
-				email: businessRepInfo?.email,
-				password: businessRepInfo?.password,
-			}
+		const credentials = {
+			email: businessRepInfo?.email,
+			password: businessRepInfo?.password,
+		}
 
-			const personalInfo = {
-				lastName: businessRepInfo?.lastName,
-				firstName: businessRepInfo?.firstName,
-				phoneNumber: businessRepInfo?.phoneNumber,
-				salutation: businessRepInfo?.salutation,
-				middleName: businessRepInfo?.middleName,
-			}
+		const personalInfo = {
+			lastName: businessRepInfo?.lastName,
+			firstName: businessRepInfo?.firstName,
+			phoneNumber: businessRepInfo?.phoneNumber,
+			salutation: businessRepInfo?.salutation,
+			middleName: businessRepInfo?.middleName,
+		}
 
-			// const newPartner = {
-			// 	...businessInfo,
-			// 	phoneNumber: `+1${businessInfo?.phoneNumber}`,
-			// }
+		// const newPartner = {
+		// 	...businessInfo,
+		// 	phoneNumber: `+1${businessInfo?.phoneNumber}`,
+		// }
 
-			const convertedQuestionnaire = convertQs(businessQs)
+		const convertedQuestionnaire = convertQs(businessQs)
 
-			const params = {
-				partner: camelToUnderscore(businessInfo),
-				business_representative: camelToUnderscore(personalInfo),
-				auth_credentials: camelToUnderscore(credentials),
-				bank_details: {
-					stripe_response: {},
-					...camelToUnderscore(bankingInfo),
-				},
-				questionnaires: convertedQuestionnaire,
-				// terms: camelToUnderscore(termsInfo),
-			}
+		const params = {
+			partner: camelToUnderscore(businessInfo),
+			business_representative: camelToUnderscore(personalInfo),
+			auth_credentials: camelToUnderscore(credentials),
+			bank_details: {
+				credit_card_token: stripeToken,
+				...camelToUnderscore(bankingInfo),
+			},
+			questionnaires: convertedQuestionnaire,
+			// terms: camelToUnderscore(termsInfo),
+		}
 
-			const formData = new FormData()
+		const formData = new FormData()
 
-			// formData.append('data', params)
-			// formData.append('clia_certification', )
+		formData.append('data', JSON.stringify(params))
+		formData.append('clia_certification', businessQs.cliaCertification[0])
 
-			console.log(params, "params");
+		console.log(params, 'params')
 
-			console.log(businessQs, "baba");
-			
-			
+		console.log(businessQs.cliaCertification[0], 'baba')
 
-			// axios
-			// 	.post('http://localhost:8000/api/registration/', params, {
-			// 		headers,
-			// 	})
-			// 	.then((response) => {
-			// 		console.log(response, ' response')
-			// 		if(response.status === 200) {
-			// 			setIsSuccess(true)
-			// 		}
-			// 		// navigate(`${match?.pathnameBase}/success`)
-			// 	})
+		axios
+			.post('http://localhost:8000/api/registration/', formData, {
+				headers,
+			})
+			.then((response) => {
+				console.log(response, ' response')
+
+				if (response.status === 200) {
+					setIsSuccess(true)
+					navigate(`${match?.pathnameBase}/success`)
+				} else {
+					setIsSuccess(false)
+					navigate(`${match?.pathnameBase}/error`)
+				}
+			})
+			.catch((err) => {
+				console.log(err, 'error')
+				navigate(`${match?.pathnameBase}/error`)
+			})
 		// }
 	}
 
 	return (
 		<>
-			<button onClick={() => handleSubmit()}>test</button>
-			<SideNav
-				className={
-					!location.pathname.includes('success') ? 'bg-primary' : ''
-				}
-			>
-				{!location.pathname.includes('success') && (
-					<RegistrationNav currentStep={currentStep} />
-				)}
-			</SideNav>
-			<Routes>
-				<Route
-					path={'/'}
-					element={
-						<BusinessInfo
-							businessInfo={businessInfo}
-							setBusinessInfo={setBusinessInfo}
-							setCurrentStep={handleChangeStep}
-						/>
+			<Elements stripe={stripePromise}>
+				<button onClick={() => handleSubmit()}>test</button>
+				<SideNav
+					className={
+						!location.pathname.includes('success')
+							? 'bg-primary'
+							: ''
 					}
-				/>
-				<Route
-					path={'/busines-rep-info'}
-					element={
-						<BusinessRepInfo
-							businessRepInfo={businessRepInfo}
-							setBusinessRepInfo={setBusinessRepInfo}
-							setCurrentStep={handleChangeStep}
-						/>
-					}
-				/>
-				<Route
-					path={'/banking-info'}
-					element={
-						<BankingInfo
-							bankingInfo={bankingInfo}
-							setBankingInfo={setBankingInfo}
-							setCurrentStep={handleChangeStep}
-						/>
-					}
-				/>
-				<Route
-					path={'/business-questionnaire'}
-					element={
-						<BusinessQuestionnaire
-							businessQs={businessQs}
-							setBusinessQs={setBusinessQs}
-							setCurrentStep={setCurrentStep}
-						/>
-					}
-				/>
-				<Route
-					path={'/terms'}
-					element={
-						<TermsAndAgreement
-							onSubmit={handleSubmit}
-							termsInfo={termsInfo}
-							setTermsInfo={setTermsInfo}
-						/>
-					}
-				/>
-				<Route
-					path={'/success'}
-					element={
-						<RegistrationSuccess email={businessInfo?.email} success={isSuccess}/>
-					}
-				/>
-			</Routes>
+				>
+					{!location.pathname.includes('success') && (
+						<RegistrationNav currentStep={currentStep} />
+					)}
+				</SideNav>
+				<Routes>
+					<Route
+						path={'/'}
+						element={
+							<BusinessInfo
+								businessInfo={businessInfo}
+								setBusinessInfo={setBusinessInfo}
+								setCurrentStep={handleChangeStep}
+							/>
+						}
+					/>
+					<Route
+						path={'/busines-rep-info'}
+						element={
+							<BusinessRepInfo
+								businessRepInfo={businessRepInfo}
+								setBusinessRepInfo={setBusinessRepInfo}
+								setCurrentStep={handleChangeStep}
+							/>
+						}
+					/>
+					<Route
+						path={'/banking-info'}
+						element={
+							<BankingInfo
+								bankingInfo={bankingInfo}
+								setBankingInfo={setBankingInfo}
+								setCurrentStep={handleChangeStep}
+								setStripeToken={setStripeToken}
+							/>
+						}
+					/>
+					<Route
+						path={'/business-questionnaire'}
+						element={
+							<BusinessQuestionnaire
+								businessQs={businessQs}
+								setBusinessQs={setBusinessQs}
+								setCurrentStep={setCurrentStep}
+							/>
+						}
+					/>
+					<Route
+						path={'/terms'}
+						element={
+							<TermsAndAgreement
+								onSubmit={handleSubmit}
+								termsInfo={termsInfo}
+								setTermsInfo={setTermsInfo}
+							/>
+						}
+					/>
+					<Route
+						path={'/success'}
+						element={
+							<RegistrationSuccess
+								email={businessInfo?.email}
+								success={isSuccess}
+							/>
+						}
+					/>
+					<Route
+						path={'/error'}
+						element={
+							<RegistrationSuccess
+								email={businessInfo?.email}
+								success={isSuccess}
+							/>
+						}
+					/>
+				</Routes>
+			</Elements>
 		</>
 	)
 }

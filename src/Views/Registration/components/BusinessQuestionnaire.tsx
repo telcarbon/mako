@@ -134,7 +134,7 @@ export const BusinessQuestionnaire = ({
 		setCurrentStep(4)
 		console.log(formValues)
 
-		// navigate(`${match?.pathnameBase}/terms`)
+		navigate(`${match?.pathnameBase}/terms`)
 	}
 
 	useEffect(() => {

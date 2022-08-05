@@ -15,7 +15,12 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
 import { isNumericDigits, yupShortTest } from 'common/Util'
 import { loadStripe } from '@stripe/stripe-js'
-import { Elements } from '@stripe/react-stripe-js'
+import {
+	CardNumberElement,
+	Elements,
+	useElements,
+	useStripe,
+} from '@stripe/react-stripe-js'
 import { PaymentForm } from './PaymentForm'
 import stripeLogo from 'assets/images/stripe.png'
 
@@ -23,21 +28,27 @@ interface IBankingInfoProps {
 	bankingInfo: IBankDetailsInfo | undefined
 	setBankingInfo: (value: IBankDetailsInfo) => void
 	setCurrentStep: (value: Number) => void
+	setStripeToken: (value: any) => void
 }
 
 export const BankingInfo = ({
 	bankingInfo,
 	setBankingInfo,
 	setCurrentStep,
+	setStripeToken,
 }: IBankingInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
+	const stripe = useStripe()
+	const elements = useElements()
 	const [tabKey, setTabKey] = useState<string>('bank')
 	console.log(tabKey)
 
 	const validationSchema = Yup.object().shape({
 		bankName: Yup.string().required('Bank Name is required'),
-		bankAccountType: Yup.string().required('Please select an option').nullable(),
+		bankAccountType: Yup.string()
+			.required('Please select an option')
+			.nullable(),
 		accountName: Yup.string().required('Account Name is required'),
 		accountNumber: Yup.string()
 			.required('Account Number is required')
@@ -51,14 +62,6 @@ export const BankingInfo = ({
 			}),
 	})
 
-	const initialValues: IBankDetailsInfo = {
-		bankName: '',
-		bankAccountType: '',
-		accountName: '',
-		accountNumber: '',
-		abaRoutingNumber: '',
-	}
-
 	const useFormInstance = useForm({
 		resolver: tabKey === 'bank' ? yupResolver(validationSchema) : undefined,
 		defaultValues: bankingInfo,
@@ -68,20 +71,52 @@ export const BankingInfo = ({
 		getValues,
 		register,
 		formState: { isDirty },
-		watch,
 		control,
 	} = useFormInstance
 
+	const [stripeErrors, setStripeErrors] = useState({
+		cardNumber: undefined,
+		cardCVCNumber: undefined,
+		cardExpiryDate: undefined,
+	})
+
+	const hasStripeErrors = () =>
+		Object.values(stripeErrors).every((value) => {
+			return value === undefined
+		})
+
+	async function handleStripeTokenSubmit(e: any) {
+		const cardNumberElement = elements?.getElement(CardNumberElement)!
+		// const cardExpiryElement = elements?.getElement(CardExpiryElement)!
+		// const cardCvcElement = elements?.getElement(CardCvcElement)!
+
+		if (hasStripeErrors()) {
+			try {
+				stripe
+					?.createToken(cardNumberElement)
+					.then((result) => {
+						setStripeToken(result.token?.id)
+						console.log(result.token?.id)
+					})
+					.catch((err) => {
+						console.log('stripe post error', err)
+					})
+			} catch (ex) {
+				console.log('try error', ex)
+			}
+		}
+	}
+
 	const handleSubmit = async (values: any) => {
-		const formValues = getValues()
-		setBankingInfo(formValues)
+		if (tabKey === 'bank') {
+			const formValues = getValues()
+			setBankingInfo(formValues)
+		} else {
+			handleStripeTokenSubmit
+		}
 		setCurrentStep(3)
 		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
-
-	const stripePromise = loadStripe(
-		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
-	)
 
 	return (
 		<>
@@ -166,11 +201,17 @@ export const BankingInfo = ({
 												className="card border-2 border-dark rounded-2 m-auto"
 											>
 												<div className="card-body d-flex flex-column">
-													<Elements
-														stripe={stripePromise}
-													>
-														<PaymentForm />
-													</Elements>
+													<PaymentForm
+														setStripeToken={
+															setStripeToken
+														}
+														setStripeErrors={
+															setStripeErrors
+														}
+														stripeErrors={
+															stripeErrors
+														}
+													/>
 													<img
 														src={stripeLogo}
 														alt="logo"
@@ -192,7 +233,7 @@ export const BankingInfo = ({
 						/>
 						<Button
 							type="submit"
-							disabled={!isDirty}
+							// disabled={!isDirty}
 							className="col-lg-auto pull-right"
 						>
 							Next

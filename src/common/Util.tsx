@@ -56,15 +56,17 @@ export const camelToUnderscore = (oldObject: any) => {
 export const convertQs = (obj: any) => {
 	const container: any = []
 
-	if (obj) {
-		delete obj['cliaCertification']
+	const temp = Object.assign({}, obj)
 
-		Object.keys(obj).forEach((itm: string) => {
+	if (temp) {
+		delete temp['cliaCertification']
+
+		Object.keys(temp).forEach((itm: string) => {
 			const extraValues: any = []
-			if (obj[itm] !== null && itm !== 'phlebotomist') {
+			if (temp[itm] !== null && itm !== 'phlebotomist') {
 				const questVal = Questions[itm]
-				if (itm === 'licensed' && obj['licensed']) {
-					obj['phlebotomist'].map((itm: any) => {
+				if (itm === 'licensed' && temp['licensed']) {
+					temp['phlebotomist'].map((itm: any) => {
 						if (itm?.phlebotomistName) {
 							extraValues.push(itm?.phlebotomistName)
 						}
@@ -72,7 +74,7 @@ export const convertQs = (obj: any) => {
 				}
 				container.push({
 					[questVal]: {
-						answer: obj[itm],
+						answer: temp[itm],
 						extra_values: extraValues,
 					},
 				})

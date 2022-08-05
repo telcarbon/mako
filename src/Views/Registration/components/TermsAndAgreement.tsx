@@ -41,7 +41,7 @@ export const TermsAndAgreement = ({
 		const formValues = getValues()
 		setTermsInfo(formValues)
 		onSubmit()
-		navigate(`${match?.pathnameBase}/success`)
+		// navigate(`${match?.pathnameBase}/success`)
 	}
 
 	const allTermsHasFalse = watch([

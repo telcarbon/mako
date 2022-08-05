@@ -84,11 +84,11 @@ export interface IBusinessRepInfo {
 }
 
 export interface IBankDetailsInfo {
-	bankName: string
-	bankAccountType: string
-	accountName: string
-	accountNumber: string
-	abaRoutingNumber: string
+	bankName: string | null
+	bankAccountType: string | null
+	accountName: string | null
+	accountNumber: string | null
+	abaRoutingNumber: string | null
 }
 
 export interface IQuestionnareInfo {
