@@ -66,7 +66,7 @@ export const TermsAndAgreement = ({
 								register={register}
 								value={'hasAgreeToTerms'}
 							>
-								I agree nd accept the{' '}
+								I agree and accept the{' '}
 								<a
 									className="link-secondary"
 									href="http://google.com"

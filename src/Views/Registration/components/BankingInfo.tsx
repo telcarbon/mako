@@ -42,7 +42,6 @@ export const BankingInfo = ({
 	const stripe = useStripe()
 	const elements = useElements()
 	const [tabKey, setTabKey] = useState<string>('bank')
-	console.log(tabKey)
 
 	const validationSchema = Yup.object().shape({
 		bankName: Yup.string().required('Bank Name is required'),
@@ -80,6 +79,10 @@ export const BankingInfo = ({
 		cardExpiryDate: undefined,
 	})
 
+	const stripePromise = loadStripe(
+		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
+	)
+
 	const hasStripeErrors = () =>
 		Object.values(stripeErrors).every((value) => {
 			return value === undefined
@@ -87,8 +90,6 @@ export const BankingInfo = ({
 
 	async function handleStripeTokenSubmit(e: any) {
 		const cardNumberElement = elements?.getElement(CardNumberElement)!
-		// const cardExpiryElement = elements?.getElement(CardExpiryElement)!
-		// const cardCvcElement = elements?.getElement(CardCvcElement)!
 
 		if (hasStripeErrors()) {
 			try {
@@ -96,7 +97,7 @@ export const BankingInfo = ({
 					?.createToken(cardNumberElement)
 					.then((result) => {
 						setStripeToken(result.token?.id)
-						console.log(result.token?.id)
+						console.log(result, 'token')
 					})
 					.catch((err) => {
 						console.log('stripe post error', err)
@@ -119,7 +120,7 @@ export const BankingInfo = ({
 	}
 
 	return (
-		<>
+		<Elements stripe={stripePromise}>
 			<Container fluid>
 				<ContentHeader
 					title="Banking Information"
@@ -233,7 +234,9 @@ export const BankingInfo = ({
 						/>
 						<Button
 							type="submit"
-							// disabled={!isDirty}
+							disabled={
+								tabKey === 'bank' ? !isDirty : hasStripeErrors()
+							}
 							className="col-lg-auto pull-right"
 						>
 							Next
@@ -241,6 +244,6 @@ export const BankingInfo = ({
 					</div>
 				</Form>
 			</Container>
-		</>
+		</Elements>
 	)
 }

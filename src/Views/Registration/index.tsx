@@ -14,7 +14,7 @@ import { BusinessQuestionnaire } from './components/BusinessQuestionnaire'
 import { BusinessRepInfo } from './components/BusinessRepInfo'
 import { RegistrationNav } from './components/NavBar/RegistrationNav'
 import { TermsAndAgreement } from './components/TermsAndAgreement'
-import { RegistrationSuccess } from './components/RegistrationSuccess'
+import { RegistrationResult } from './components/RegistrationResult'
 import {
 	IBankDetailsInfo,
 	IBusinessInfo,
@@ -68,6 +68,10 @@ export const Registration = () => {
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 	const [isSuccess, setIsSuccess] = useState<boolean>(false)
 
+	const stripePromise = loadStripe(
+		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
+	)
+
 	const headers = {
 		'Content-Type': 'multipart/data',
 		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
@@ -78,12 +82,6 @@ export const Registration = () => {
 			setCurrentStep(value)
 		}
 	}
-
-	console.log(businessQs, 'taas')
-
-	const stripePromise = loadStripe(
-		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
-	)
 
 	const handleSubmit = () => {
 		// if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
@@ -112,7 +110,7 @@ export const Registration = () => {
 			business_representative: camelToUnderscore(personalInfo),
 			auth_credentials: camelToUnderscore(credentials),
 			bank_details: {
-				credit_card_token: stripeToken,
+				credit_card_token: stripeToken || null,
 				...camelToUnderscore(bankingInfo),
 			},
 			questionnaires: convertedQuestionnaire,
@@ -126,8 +124,6 @@ export const Registration = () => {
 
 		console.log(params, 'params')
 
-		console.log(businessQs.cliaCertification[0], 'baba')
-
 		axios
 			.post('http://localhost:8000/api/registration/', formData, {
 				headers,
@@ -135,7 +131,7 @@ export const Registration = () => {
 			.then((response) => {
 				console.log(response, ' response')
 
-				if (response.status === 200) {
+				if (response.status === 201) {
 					setIsSuccess(true)
 					navigate(`${match?.pathnameBase}/success`)
 				} else {
@@ -151,92 +147,92 @@ export const Registration = () => {
 	}
 
 	return (
-		<>
-			<Elements stripe={stripePromise}>
-				<button onClick={() => handleSubmit()}>test</button>
-				<SideNav
-					className={
-						!location.pathname.includes('success')
-							? 'bg-primary'
-							: ''
-					}
-				>
-					{!location.pathname.includes('success') && (
+		<Elements stripe={stripePromise}>
+			<button onClick={() => handleSubmit()}>test</button>
+			<SideNav
+				className={
+					!location.pathname.includes('success') &&
+					!location.pathname.includes('error')
+						? 'bg-primary'
+						: ''
+				}
+			>
+				{!location.pathname.includes('success') &&
+					!location.pathname.includes('error') && (
 						<RegistrationNav currentStep={currentStep} />
 					)}
-				</SideNav>
-				<Routes>
-					<Route
-						path={'/'}
-						element={
-							<BusinessInfo
-								businessInfo={businessInfo}
-								setBusinessInfo={setBusinessInfo}
-								setCurrentStep={handleChangeStep}
-							/>
-						}
-					/>
-					<Route
-						path={'/busines-rep-info'}
-						element={
-							<BusinessRepInfo
-								businessRepInfo={businessRepInfo}
-								setBusinessRepInfo={setBusinessRepInfo}
-								setCurrentStep={handleChangeStep}
-							/>
-						}
-					/>
-					<Route
-						path={'/banking-info'}
-						element={
-							<BankingInfo
-								bankingInfo={bankingInfo}
-								setBankingInfo={setBankingInfo}
-								setCurrentStep={handleChangeStep}
-								setStripeToken={setStripeToken}
-							/>
-						}
-					/>
-					<Route
-						path={'/business-questionnaire'}
-						element={
-							<BusinessQuestionnaire
-								businessQs={businessQs}
-								setBusinessQs={setBusinessQs}
-								setCurrentStep={setCurrentStep}
-							/>
-						}
-					/>
-					<Route
-						path={'/terms'}
-						element={
-							<TermsAndAgreement
-								onSubmit={handleSubmit}
-								termsInfo={termsInfo}
-								setTermsInfo={setTermsInfo}
-							/>
-						}
-					/>
-					<Route
-						path={'/success'}
-						element={
-							<RegistrationSuccess
-								email={businessInfo?.email}
-								success={isSuccess}
-							/>
-						}
-					/>
-					<Route
-						path={'/error'}
-						element={
-							<RegistrationSuccess
-								email={businessInfo?.email}
-								success={isSuccess}
-							/>
-						}
-					/>
-				</Routes>
-			</Elements>
-		</>
+			</SideNav>
+			<Routes>
+				<Route
+					path={'/'}
+					element={
+						<BusinessInfo
+							businessInfo={businessInfo}
+							setBusinessInfo={setBusinessInfo}
+							setCurrentStep={handleChangeStep}
+						/>
+					}
+				/>
+				<Route
+					path={'/busines-rep-info'}
+					element={
+						<BusinessRepInfo
+							businessRepInfo={businessRepInfo}
+							setBusinessRepInfo={setBusinessRepInfo}
+							setCurrentStep={handleChangeStep}
+						/>
+					}
+				/>
+				<Route
+					path={'/banking-info'}
+					element={
+						<BankingInfo
+							bankingInfo={bankingInfo}
+							setBankingInfo={setBankingInfo}
+							setCurrentStep={handleChangeStep}
+							setStripeToken={setStripeToken}
+						/>
+					}
+				/>
+				<Route
+					path={'/business-questionnaire'}
+					element={
+						<BusinessQuestionnaire
+							businessQs={businessQs}
+							setBusinessQs={setBusinessQs}
+							setCurrentStep={setCurrentStep}
+						/>
+					}
+				/>
+				<Route
+					path={'/terms'}
+					element={
+						<TermsAndAgreement
+							onSubmit={handleSubmit}
+							termsInfo={termsInfo}
+							setTermsInfo={setTermsInfo}
+						/>
+					}
+				/>
+				<Route
+					path={'/success'}
+					element={
+						<RegistrationResult
+							email={businessInfo?.email}
+							success={isSuccess}
+						/>
+					}
+				/>
+				<Route
+					path={'/error'}
+					element={
+						<RegistrationResult
+							email={businessInfo?.email}
+							success={isSuccess}
+						/>
+					}
+				/>
+			</Routes>
+		</Elements>
 	)
 }
