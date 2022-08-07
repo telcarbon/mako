@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
 import {
 	Button,
+	ButtonVariety,
 	Form,
 	FormField,
 	FormSearchSelect,
@@ -29,6 +30,7 @@ interface IBankingInfoProps {
 	setBankingInfo: (value: IBankDetailsInfo) => void
 	setCurrentStep: (value: Number) => void
 	setStripeToken: (value: any) => void
+	stripeToken: any
 }
 
 export const BankingInfo = ({
@@ -36,6 +38,7 @@ export const BankingInfo = ({
 	setBankingInfo,
 	setCurrentStep,
 	setStripeToken,
+	stripeToken,
 }: IBankingInfoProps) => {
 	const match = useMatch('registration/*')
 	const navigate = useNavigate()
@@ -73,11 +76,21 @@ export const BankingInfo = ({
 		control,
 	} = useFormInstance
 
+	// NOTE: REFACTOR \/
+
 	const [stripeErrors, setStripeErrors] = useState({
 		cardNumber: undefined,
 		cardCVCNumber: undefined,
 		cardExpiryDate: undefined,
 	})
+
+	const [stripeValid, setStripeValid] = useState({
+		cardNumber: false,
+		cardCVCNumber: false,
+		cardExpiryDate: false,
+	})
+
+	// END: REFACTOR
 
 	const stripePromise = loadStripe(
 		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
@@ -88,7 +101,12 @@ export const BankingInfo = ({
 			return value === undefined
 		})
 
-	async function handleStripeTokenSubmit(e: any) {
+	const isStripeFieldsValid = () =>
+		Object.values(stripeValid).every((value) => {
+			return value === true
+		})
+
+	async function handleStripeTokenSubmit() {
 		const cardNumberElement = elements?.getElement(CardNumberElement)!
 
 		if (hasStripeErrors()) {
@@ -108,19 +126,27 @@ export const BankingInfo = ({
 		}
 	}
 
-	const handleSubmit = async (values: any) => {
+	const checkProceedByCC = () => {
+		return stripeToken ? false : isStripeFieldsValid() ? false : true
+	}
+
+	const handleSubmit = (values: any) => {
 		if (tabKey === 'bank') {
 			const formValues = getValues()
 			setBankingInfo(formValues)
 		} else {
-			handleStripeTokenSubmit
+			handleStripeTokenSubmit()
 		}
 		setCurrentStep(3)
-		navigate(`${match?.pathnameBase}/business-questionnaire`)
+		// navigate(`${match?.pathnameBase}/business-questionnaire`)
+	}
+
+	const handleDisable = () => {
+		return tabKey === 'bank' ? !isDirty : checkProceedByCC()
 	}
 
 	return (
-		<Elements stripe={stripePromise}>
+		<>
 			<Container fluid>
 				<ContentHeader
 					title="Banking Information"
@@ -130,99 +156,103 @@ export const BankingInfo = ({
 				/>
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 					<Row className="justify-content-center mb-5">
-						<Col lg={12}>
+						<Col lg={10}>
+							<Button
+								variety={ButtonVariety.Link}
+								onClick={() => setTabKey('bank')}
+								className="me-3"
+							>
+								Bank
+							</Button>
+							<Button
+								variety={ButtonVariety.Link}
+								onClick={() => setTabKey('credit')}
+							>
+								Credit
+							</Button>
 							<Row className="justify-content-center">
-								<Col lg={10}>
-									<Tabs
-										id="controlled-tab-example"
-										activeKey={tabKey}
-										onSelect={(key: any) => setTabKey(key)}
-										className="mb-3"
-									>
-										<Tab
-											eventKey="bank"
-											title="Bank Account"
+								<Col
+									lg={6}
+									className={`card border-2 border-dark rounded-2 m-auto ${
+										tabKey === 'bank' ? 'd-block' : 'd-none'
+									}`}
+								>
+									<div className="card-body d-flex flex-column">
+										<FormField
+											name="bankName"
+											label="Bank Account"
 										>
-											<Col
-												lg={6}
-												className="card border-2 border-dark rounded-2 m-auto"
-											>
-												<div className="card-body d-flex flex-column">
-													<FormField
-														name="bankName"
-														label="Bank Account"
-													>
-														<FormTextInput
-															placeholder="Bank Name"
-															name="bankName"
-															register={register}
-														/>
-													</FormField>
-													<FormField name="bankAccountType">
-														<FormSearchSelect
-															name="bankAccountType"
-															register={register}
-															placeholder="Bank Account Type"
-															control={control}
-															options={
-																bankingTypeOptions
-															}
-														/>
-													</FormField>
-													<FormField name="accountName">
-														<FormTextInput
-															placeholder="Account Name"
-															name="accountName"
-															register={register}
-														/>
-													</FormField>
-													<FormField name="accountNumber">
-														<FormTextInput
-															placeholder="Account Number"
-															name="accountNumber"
-															register={register}
-														/>
-													</FormField>
-													<FormField name="abaRoutingNumber">
-														<FormTextInput
-															placeholder="ABA Routing Number"
-															name="abaRoutingNumber"
-															register={register}
-														/>
-													</FormField>
-												</div>
-											</Col>
-										</Tab>
-										<Tab
-											eventKey="credit"
-											title="Credit Card"
-										>
-											<Col
-												lg={6}
-												className="card border-2 border-dark rounded-2 m-auto"
-											>
-												<div className="card-body d-flex flex-column">
-													<PaymentForm
-														setStripeToken={
-															setStripeToken
-														}
-														setStripeErrors={
-															setStripeErrors
-														}
-														stripeErrors={
-															stripeErrors
-														}
-													/>
-													<img
-														src={stripeLogo}
-														alt="logo"
-														className="img-fluid mt-auto w-25 align-self-center"
-													/>
-												</div>
-											</Col>
-										</Tab>
-									</Tabs>
+											<FormTextInput
+												placeholder="Bank Name"
+												name="bankName"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="bankAccountType">
+											<FormSearchSelect
+												name="bankAccountType"
+												register={register}
+												placeholder="Bank Account Type"
+												control={control}
+												options={bankingTypeOptions}
+											/>
+										</FormField>
+										<FormField name="accountName">
+											<FormTextInput
+												placeholder="Account Name"
+												name="accountName"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="accountNumber">
+											<FormTextInput
+												placeholder="Account Number"
+												name="accountNumber"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="abaRoutingNumber">
+											<FormTextInput
+												placeholder="ABA Routing Number"
+												name="abaRoutingNumber"
+												register={register}
+											/>
+										</FormField>
+									</div>
 								</Col>
+								<div
+									className={
+										tabKey === 'credit'
+											? 'd-block'
+											: 'd-none'
+									}
+								>
+									<Col
+										lg={6}
+										className={`card border-2 border-dark rounded-2 m-auto ${
+											tabKey === 'credit'
+												? 'd-block'
+												: 'd-none'
+										}`}
+									>
+										<div className="card-body d-flex flex-column">
+											<PaymentForm
+												setStripeToken={setStripeToken}
+												setStripeErrors={
+													setStripeErrors
+												}
+												stripeErrors={stripeErrors}
+												setStripeValid={setStripeValid}
+												stripeValid={stripeValid}
+											/>
+											<img
+												src={stripeLogo}
+												alt="logo"
+												className="img-fluid mt-auto w-25 align-self-center"
+											/>
+										</div>
+									</Col>
+								</div>
 							</Row>
 						</Col>
 					</Row>
@@ -234,9 +264,7 @@ export const BankingInfo = ({
 						/>
 						<Button
 							type="submit"
-							disabled={
-								tabKey === 'bank' ? !isDirty : hasStripeErrors()
-							}
+							disabled={handleDisable()}
 							className="col-lg-auto pull-right"
 						>
 							Next
@@ -244,6 +272,6 @@ export const BankingInfo = ({
 					</div>
 				</Form>
 			</Container>
-		</Elements>
+		</>
 	)
 }

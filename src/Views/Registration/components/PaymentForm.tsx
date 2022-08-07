@@ -19,7 +19,9 @@ interface PaymentFormProps {
 	onSubmit?: (...args: any[]) => void
 	setStripeToken: (...args: any[]) => void
 	setStripeErrors: (...args: any[]) => void
+	setStripeValid: (...args: any[]) => void
 	stripeErrors: any
+	stripeValid: any
 }
 
 export const PaymentForm = ({
@@ -27,14 +29,29 @@ export const PaymentForm = ({
 	setStripeToken,
 	setStripeErrors,
 	stripeErrors,
+	setStripeValid,
+	stripeValid,
 }: PaymentFormProps) => {
-	const stripe = useStripe()
-	const elements = useElements()
-
-	const stripeValidationSetter = (
+	const stripeErrorSetter = (
 		message: string | undefined,
 		type: StripeFields
 	): void => setStripeErrors({ ...stripeErrors, [type]: message })
+
+	const stripeValidSetter = (value: boolean, type: StripeFields): void =>
+		setStripeValid({ ...stripeValid, [type]: value })
+
+	const validation = (
+		error: any,
+		complete: boolean,
+		type: StripeFields
+	): void => {
+		stripeErrorSetter(error?.message, type)
+		if (error === undefined && complete) {
+			stripeValidSetter(true, type)
+		} else {
+			stripeValidSetter(false, type)
+		}
+	}
 
 	const isError = (type: StripeFields) => !!stripeErrors[type]
 
@@ -42,6 +59,7 @@ export const PaymentForm = ({
 		<>
 			<FormField name="creditCard" label="Credit Card">
 				<CardNumberElement
+					id="cardNumber"
 					className="form-control"
 					options={{
 						style: {
@@ -50,10 +68,8 @@ export const PaymentForm = ({
 						showIcon: true,
 					}}
 					onChange={(e) => {
-						stripeValidationSetter(
-							e.error?.message,
-							StripeFields.CARD_NUMBER
-						)
+						const { error, complete } = e
+						validation(error, complete, StripeFields.CARD_NUMBER)
 					}}
 				/>
 				<small className="text-danger px-1">
@@ -65,8 +81,10 @@ export const PaymentForm = ({
 				<CardExpiryElement
 					className="form-control"
 					onChange={(e) => {
-						stripeValidationSetter(
-							e.error?.message,
+						const { error, complete } = e
+						validation(
+							error,
+							complete,
 							StripeFields.CARD_EXPIRY_DATE
 						)
 					}}
@@ -85,8 +103,10 @@ export const PaymentForm = ({
 				<CardCvcElement
 					className="form-control"
 					onChange={(e) => {
-						stripeValidationSetter(
-							e.error?.message,
+						const { error, complete } = e
+						validation(
+							error,
+							complete,
 							StripeFields.CARD_CVC_NUMBER
 						)
 					}}

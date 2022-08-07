@@ -191,6 +191,7 @@ export const Registration = () => {
 							setBankingInfo={setBankingInfo}
 							setCurrentStep={handleChangeStep}
 							setStripeToken={setStripeToken}
+							stripeToken={stripeToken}
 						/>
 					}
 				/>
