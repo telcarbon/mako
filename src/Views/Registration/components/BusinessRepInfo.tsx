@@ -1,23 +1,27 @@
-import React from 'react'
-import {
-	ContentHeader,
-	FormField,
-	FormTextInput,
-	Form,
-	Button,
-	FormSearchSelect,
-} from 'components'
-import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
-import { Form as BootstrapForm } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Yup from 'yup'
-import { Controller, useForm } from 'react-hook-form'
-import { useMatch, useNavigate } from 'react-router-dom'
-import { IBusinessRepInfo, salutationOptions } from '../types'
-import { checkLength, isNumericDigits, yupShortTest } from 'common/Util'
 import axios from 'axios'
+import {
+	Button,
+	ContentHeader,
+	Form,
+	FormField,
+	FormSearchSelect,
+	FormTextInput,
+} from 'components'
+import {
+	Col,
+	Container,
+	Form as BootstrapForm,
+	ProgressBar,
+	Row,
+} from 'react-bootstrap'
+import { Controller, useForm } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import { useMatch, useNavigate } from 'react-router-dom'
+import { API_URL, TOKEN } from 'shared/config'
+import * as Yup from 'yup'
+import { IBusinessRepInfo, salutationOptions } from '../types'
 
 interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
@@ -35,7 +39,7 @@ export const BusinessRepInfo = ({
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
+		Authorization: `Token ${TOKEN}`,
 	}
 
 	const initialValues: IBusinessRepInfo = {
@@ -59,7 +63,7 @@ export const BusinessRepInfo = ({
 					return new Promise((resolve) => {
 						axios
 							.get(
-								`http://localhost:8000/api/business-representative-checker/?email=${value}`,
+								`${API_URL}/business-representative-checker/?email=${value}`,
 								{
 									headers,
 								}
@@ -78,32 +82,9 @@ export const BusinessRepInfo = ({
 			),
 		password: Yup.string()
 			.required('Password is required')
-			// .min(8, 'Must be 8 characters or more')
-			// .matches(/[0-9]/, 'Password requires a number'),
-			// .test(
-			// 	'is-pass-checker',
-			// 	'Should contain alphanumeric characters',
-			// 	function (value) {
-			// 		if (value) {
-			// 			var regex = new RegExp(
-			// 				/((^[0-9]+[a-z]+)|(^[a-z]+[0-9]+))+[0-9a-z]+$/i
-			// 			)
-			// 			return regex.test(value)
-			// 		}
-			// 		return true
-			// 	}
-			// ),
 			.min(8, 'Password must be 8 characters long')
 			.matches(/[0-9]/, 'Password requires atleast one number')
 			.matches(/[a-zA-Z]/, 'Password requires alphanumeric characters'),
-		// .matches(/[^a-zA-Z0-9]/, 'One number'),
-		// .test(
-		// 	'length-test',
-		// 	'Should be composed of 8 characters',
-		// 	function (value) {
-		// 		return yupShortTest(value, checkLength(value, 8))
-		// 	}
-		// ),
 		salutation: Yup.string().required('Salutation is required').nullable(),
 		firstName: Yup.string().required('First Name is required'),
 		lastName: Yup.string().required('Last Name is required'),
@@ -163,7 +144,7 @@ export const BusinessRepInfo = ({
 											placeholder="Password"
 											name="password"
 											register={register}
-											// type="password"
+											type="password"
 										/>
 									</FormField>
 								</Col>

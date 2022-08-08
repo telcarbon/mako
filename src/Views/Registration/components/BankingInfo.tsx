@@ -24,6 +24,7 @@ import {
 } from '@stripe/react-stripe-js'
 import { PaymentForm } from './PaymentForm'
 import stripeLogo from 'assets/images/stripe.png'
+import { Variety } from 'common/Variety'
 
 interface IBankingInfoProps {
 	bankingInfo: IBankDetailsInfo | undefined
@@ -92,10 +93,6 @@ export const BankingInfo = ({
 
 	// END: REFACTOR
 
-	const stripePromise = loadStripe(
-		'pk_test_51LQ9cVICT5CVRbAwvt35XulMMMrK7VsmGFCCV2aSSzj7dVDOyeDCotpevYSmutX7QrIEwvUtqcpFTnVQkk6HS2v100AzU1FtQY'
-	)
-
 	const hasStripeErrors = () =>
 		Object.values(stripeErrors).every((value) => {
 			return value === undefined
@@ -130,24 +127,27 @@ export const BankingInfo = ({
 		return stripeToken ? false : isStripeFieldsValid() ? false : true
 	}
 
-	const handleSubmit = (values: any) => {
+	const handleSubmit = async (values: any) => {
 		if (tabKey === 'bank') {
 			const formValues = getValues()
 			setBankingInfo(formValues)
 		} else {
-			handleStripeTokenSubmit()
+			await handleStripeTokenSubmit()
 		}
 		setCurrentStep(3)
-		// navigate(`${match?.pathnameBase}/business-questionnaire`)
+		navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
 	const handleDisable = () => {
 		return tabKey === 'bank' ? !isDirty : checkProceedByCC()
 	}
 
+	console.log(stripeToken);
+	
+
 	return (
 		<>
-			<Container fluid>
+			<Container fluid className="banking-info">
 				<ContentHeader
 					title="Banking Information"
 					subtitle="Enter either of the following"
@@ -157,76 +157,75 @@ export const BankingInfo = ({
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 					<Row className="justify-content-center mb-5">
 						<Col lg={10}>
-							<Button
-								variety={ButtonVariety.Link}
-								onClick={() => setTabKey('bank')}
-								className="me-3"
-							>
-								Bank
-							</Button>
-							<Button
-								variety={ButtonVariety.Link}
-								onClick={() => setTabKey('credit')}
-							>
-								Credit
-							</Button>
-							<Row className="justify-content-center">
-								<Col
-									lg={6}
-									className={`card border-2 border-dark rounded-2 m-auto ${
-										tabKey === 'bank' ? 'd-block' : 'd-none'
-									}`}
-								>
-									<div className="card-body d-flex flex-column">
-										<FormField
-											name="bankName"
-											label="Bank Account"
-										>
-											<FormTextInput
-												placeholder="Bank Name"
+							<div className='card border-0'>
+								<div className="mb-5 m-auto button-tab">
+									<Button
+										variety={Variety.Dark}
+										onClick={() => setTabKey('bank')}
+										className="me-3"
+									>
+										Bank
+									</Button>
+									<Button
+										variety={Variety.Dark}
+										onClick={() => setTabKey('credit')}
+									>
+										Credit
+									</Button>
+								</div>
+								<Row className="justify-content-center">
+									<Col
+										lg={6}
+										className={`card border-2 border-dark rounded-2 m-auto ${
+											tabKey === 'bank'
+												? 'd-block'
+												: 'd-none'
+										}`}
+									>
+										<div className="card-body d-flex flex-column">
+											<FormField
 												name="bankName"
-												register={register}
-											/>
-										</FormField>
-										<FormField name="bankAccountType">
-											<FormSearchSelect
-												name="bankAccountType"
-												register={register}
-												placeholder="Bank Account Type"
-												control={control}
-												options={bankingTypeOptions}
-											/>
-										</FormField>
-										<FormField name="accountName">
-											<FormTextInput
-												placeholder="Account Name"
-												name="accountName"
-												register={register}
-											/>
-										</FormField>
-										<FormField name="accountNumber">
-											<FormTextInput
-												placeholder="Account Number"
-												name="accountNumber"
-												register={register}
-											/>
-										</FormField>
-										<FormField name="abaRoutingNumber">
-											<FormTextInput
-												placeholder="ABA Routing Number"
-												name="abaRoutingNumber"
-												register={register}
-											/>
-										</FormField>
-									</div>
-								</Col>
-								<div
-									className={
-										tabKey === 'credit'
-											? 'd-block'
-											: 'd-none'
-									}
-								>
+												label="Bank Account"
+											>
+												<FormTextInput
+													placeholder="Bank Name"
+													name="bankName"
+													register={register}
+												/>
+											</FormField>
+											<FormField name="bankAccountType">
+												<FormSearchSelect
+													name="bankAccountType"
+													register={register}
+													placeholder="Bank Account Type"
+													control={control}
+													options={bankingTypeOptions}
+												/>
+											</FormField>
+											<FormField name="accountName">
+												<FormTextInput
+													placeholder="Account Name"
+													name="accountName"
+													register={register}
+												/>
+											</FormField>
+											<FormField name="accountNumber">
+												<FormTextInput
+													placeholder="Account Number"
+													name="accountNumber"
+													register={register}
+												/>
+											</FormField>
+											<FormField name="abaRoutingNumber">
+												<FormTextInput
+													placeholder="ABA Routing Number"
+													name="abaRoutingNumber"
+													register={register}
+												/>
+											</FormField>
+										</div>
+									</Col>
+
 									<Col
 										lg={6}
 										className={`card border-2 border-dark rounded-2 m-auto ${
@@ -252,8 +251,8 @@ export const BankingInfo = ({
 											/>
 										</div>
 									</Col>
-								</div>
-							</Row>
+								</Row>
+							</div>
 						</Col>
 					</Row>
 					<div className="footer w-75">

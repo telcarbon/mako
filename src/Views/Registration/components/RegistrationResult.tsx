@@ -1,6 +1,7 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Col, Container, Row, Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import { IBusinessInfo } from '../types'
 
 interface RegistrationResultProps {
@@ -39,6 +40,12 @@ export const RegistrationResult = ({
 								We apologize for the inconvenience. Please try
 								again.
 							</p>
+							<Link
+								className="link-secondary"
+								to={'/registration'}
+							>
+								Back to Home
+							</Link>
 						</>
 					)}
 				</Col>

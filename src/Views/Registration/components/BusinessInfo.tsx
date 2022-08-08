@@ -19,11 +19,11 @@ import {
 	checkLength,
 	ifNullOrEmpty,
 	yupShortTest,
-	checkDuplicates,
 } from 'common/Util'
 import axios from 'axios'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
+import { API_URL, TOKEN } from 'shared/config'
 
 interface IBusinessInfoProps {
 	businessInfo: IBusinessInfo | undefined
@@ -41,7 +41,7 @@ export const BusinessInfo = ({
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: 'Token 866b9cd8650c3066c41fb328d9e7b6626f69b4c2',
+		Authorization: `Token ${TOKEN}`,
 	}
 
 	const validationSchema = Yup.object().shape({
@@ -86,12 +86,9 @@ export const BusinessInfo = ({
 			.test('is-existing', 'Email address already exists', (value) => {
 				return new Promise((resolve) => {
 					axios
-						.get(
-							`http://localhost:8000/api/partner-checker/?email=${value}`,
-							{
-								headers,
-							}
-						)
+						.get(`${API_URL}/partner-checker/?email=${value}`, {
+							headers,
+						})
 						.then((response) => {
 							if (response && response.data.count > 0) {
 								resolve(false)
@@ -121,26 +118,23 @@ export const BusinessInfo = ({
 			.test('numeric-test', 'Numeric digits only', (value) => {
 				return yupShortTest(value, isNumericDigits(value))
 			})
-			.test('is-existing', 'NPI Number already exists', (value) => {
-				return new Promise((resolve) => {
-					axios
-						.get(
-							`http://localhost:8000/api/partner-checker/?npi=${value}`,
-							{
-								headers,
-							}
-						)
-						.then((response) => {
-							if (response && response.data.count > 0) {
-								resolve(false)
-							}
-							resolve(true)
-						})
-						.catch(() => {
-							resolve(true)
-						})
-				})
-			})
+			// .test('is-existing', 'NPI Number already exists', (value) => {
+			// 	return new Promise((resolve) => {
+			// 		axios
+			// 			.get(`${API_URL}/partner-checker/?npi=${value}`, {
+			// 				headers,
+			// 			})
+			// 			.then((response) => {
+			// 				if (response && response.data.count > 0) {
+			// 					resolve(false)
+			// 				}
+			// 				resolve(true)
+			// 			})
+			// 			.catch(() => {
+			// 				resolve(true)
+			// 			})
+			// 	})
+			// })
 			.length(10, 'Should be compose of 10 digits'),
 		ncpdp: Yup.string()
 			.required('NCPDP Number is required')
@@ -150,12 +144,9 @@ export const BusinessInfo = ({
 			.test('is-existing', 'NCPDP Number already exists', (value) => {
 				return new Promise((resolve) => {
 					axios
-						.get(
-							`http://localhost:8000/api/partner-checker/?ncpdp=${value}`,
-							{
-								headers,
-							}
-						)
+						.get(`${API_URL}/partner-checker/?ncpdp=${value}`, {
+							headers,
+						})
 						.then((response) => {
 							if (response && response.data.count > 0) {
 								resolve(false)
@@ -169,21 +160,6 @@ export const BusinessInfo = ({
 			})
 			.length(7, 'Should be compose of 7 digits'),
 	})
-
-	const initialValues: IBusinessInfo = {
-		name: '',
-		type: 0,
-		street: '',
-		unitFloorBuilding: '',
-		email: '',
-		phoneNumber: '',
-		city: '',
-		state: '',
-		zipCode: '',
-		country: 'US',
-		npi: '',
-		ncpdp: '',
-	}
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
@@ -203,7 +179,6 @@ export const BusinessInfo = ({
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
 		navigate(`${match?.pathnameBase}/busines-rep-info`)
-		console.log(formValues)
 	}
 
 	const stateWatch: any = watch('state')

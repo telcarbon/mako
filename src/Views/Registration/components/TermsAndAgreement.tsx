@@ -1,30 +1,23 @@
-import { useState } from 'react'
 import {
 	Button,
 	ContentHeader,
 	Form,
-	FormField,
 	FormCheckBox,
+	FormField
 } from 'components'
-import { Container, Row, Col, ProgressBar } from 'react-bootstrap'
+import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { useMatch, useNavigate } from 'react-router-dom'
 import { ITermsInfo } from '../types'
 
 interface TermsAndAgreementProps {
 	onSubmit: (...args: any[]) => void
-	termsInfo: ITermsInfo | undefined
 	setTermsInfo: (value: ITermsInfo) => void
 }
 
 export const TermsAndAgreement = ({
 	onSubmit,
-	termsInfo,
 	setTermsInfo,
 }: TermsAndAgreementProps) => {
-	const match = useMatch('registration/*')
-	const navigate = useNavigate()
-
 	const initialValues: ITermsInfo = {
 		general: false,
 		techUsage: false,
@@ -35,13 +28,22 @@ export const TermsAndAgreement = ({
 		defaultValues: initialValues,
 	})
 
-	const { getValues, register, watch } = useFormInstance
+	const {
+		getValues,
+		register,
+		watch,
+		formState: { isSubmitting },
+	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		const formValues = getValues()
-		setTermsInfo(formValues)
-		onSubmit()
-		// navigate(`${match?.pathnameBase}/success`)
+		// return promise that resolves after 2 seconds
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				const formValues = getValues()
+				setTermsInfo(formValues)
+				onSubmit()
+			}, 2000)
+		})
 	}
 
 	const allTermsHasFalse = watch([
@@ -120,10 +122,17 @@ export const TermsAndAgreement = ({
 					/>
 					<Button
 						type="submit"
-						disabled={allTermsHasFalse}
+						disabled={allTermsHasFalse || isSubmitting}
 						className="col-lg-auto pull-right"
 					>
-						Agree & Proceed
+						{isSubmitting ? (
+							<>
+								<span>Submitting</span>
+								<span className="spinner-border spinner-border-sm ms-2"></span>
+							</>
+						) : (
+							'Agree & Proceed'
+						)}
 					</Button>
 				</div>
 			</Form>

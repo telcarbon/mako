@@ -1,12 +1,9 @@
-import React, { useState } from 'react'
 import {
 	CardCvcElement,
 	CardExpiryElement,
-	CardNumberElement,
-	useElements,
-	useStripe,
+	CardNumberElement
 } from '@stripe/react-stripe-js'
-import { Button, Form, FormField } from 'components'
+import { FormField } from 'components'
 import { StripeFields } from '../types'
 
 const inputStyle = {
