@@ -214,7 +214,7 @@ export const Registration = () => {
 						path={'/success'}
 						element={
 							<RegistrationResult
-								email={businessInfo?.email}
+								email={businessRepInfo?.email}
 								success={isSuccess}
 							/>
 						}

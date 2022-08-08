@@ -1,30 +1,27 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { ContentHeader } from 'components/ContentHeader'
-import { Container, Row, Col, ProgressBar, Tabs, Tab } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
-import * as Yup from 'yup'
+import {
+	CardNumberElement,
+	useElements,
+	useStripe,
+} from '@stripe/react-stripe-js'
+import stripeLogo from 'assets/images/stripe.png'
+import { isNumericDigits, yupShortTest } from 'common/Util'
+import { Variety } from 'common/Variety'
 import {
 	Button,
-	ButtonVariety,
 	Form,
 	FormField,
 	FormSearchSelect,
 	FormTextInput,
 } from 'components'
+import { ContentHeader } from 'components/ContentHeader'
+import { useState } from 'react'
+import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
+import { useForm } from 'react-hook-form'
 import { useMatch, useNavigate } from 'react-router-dom'
+import * as Yup from 'yup'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
-import { isNumericDigits, yupShortTest } from 'common/Util'
-import { loadStripe } from '@stripe/stripe-js'
-import {
-	CardNumberElement,
-	Elements,
-	useElements,
-	useStripe,
-} from '@stripe/react-stripe-js'
 import { PaymentForm } from './PaymentForm'
-import stripeLogo from 'assets/images/stripe.png'
-import { Variety } from 'common/Variety'
 
 interface IBankingInfoProps {
 	bankingInfo: IBankDetailsInfo | undefined
@@ -128,14 +125,17 @@ export const BankingInfo = ({
 	}
 
 	const handleSubmit = async (values: any) => {
+		setCurrentStep(3)
 		if (tabKey === 'bank') {
 			const formValues = getValues()
 			setBankingInfo(formValues)
+			navigate(`${match?.pathnameBase}/business-questionnaire`)
 		} else {
 			await handleStripeTokenSubmit()
+			setTimeout(() => {
+				navigate(`${match?.pathnameBase}/business-questionnaire`)
+			}, 1500)
 		}
-		setCurrentStep(3)
-		// navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
 	const handleDisable = () => {
@@ -157,14 +157,22 @@ export const BankingInfo = ({
 							<div className="card border-0">
 								<div className="mb-5 m-auto button-tab">
 									<Button
-										variety={Variety.Dark}
+										variety={
+											tabKey === 'bank'
+												? Variety.Secondary
+												: Variety.Primary
+										}
 										onClick={() => setTabKey('bank')}
 										className="me-3"
 									>
 										Bank
 									</Button>
 									<Button
-										variety={Variety.Dark}
+										variety={
+											tabKey !== 'bank'
+												? Variety.Secondary
+												: Variety.Primary
+										}
 										onClick={() => setTabKey('credit')}
 									>
 										Credit

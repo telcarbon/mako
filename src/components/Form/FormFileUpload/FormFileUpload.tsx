@@ -1,4 +1,4 @@
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
+import { faChain, faCloudArrowUp, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
 import { Button } from 'components'
@@ -28,25 +28,59 @@ export const FormFileUpload = ({
 				`btn btn-outline-dark border-2 ${className || ''}`
 			)}
 		>
-			<input
-				type="file"
-				accept="application/pdf"
-				{...register(name)}
-				onChange={(event) => {
-					setSelectedFile(event.target.value)
-					onChange(event)
-				}}
-			/>
-			<FontAwesomeIcon
-				icon={faCloudArrowUp}
-				className="text-secondary"
-				size="1x"
-				style={{
-					fontSize: '1.25em',
-					paddingRight: '0.4em',
-				}}
-			/>
-			{selectedFile === '' ? label : selectedFile}
+			{selectedFile === '' ? (
+				<>
+					<input
+						type="file"
+						accept="application/pdf"
+						{...register(name)}
+						onChange={(event) => {
+
+							setSelectedFile(event.target.value)
+							onChange(event)
+						}}
+					/>
+					<FontAwesomeIcon
+						icon={faCloudArrowUp}
+						className="text-secondary"
+						size="1x"
+						style={{
+							fontSize: '1.25em',
+							paddingRight: '0.4em',
+						}}
+					/>
+					{label}
+				</>
+			) : (
+				<button
+					type="button"
+					onClick={(e) => {
+						setSelectedFile('')
+						e.preventDefault()
+					}}
+					className="d-block bg-transparent border-0 m-auto py-0"
+				>
+					<FontAwesomeIcon
+						icon={faChain}
+						className="text-secondary pe-4"
+						size="1x"
+						style={{
+							fontSize: '1.25em',
+							paddingRight: '0.4em',
+						}}
+					/>
+					{selectedFile}
+					<FontAwesomeIcon
+						icon={faTrash}
+						className="text-secondary ps-5"
+						size="1x"
+						style={{
+							fontSize: '1.25em',
+							paddingRight: '0.4em',
+						}}
+					/>
+				</button>
+			)}
 		</label>
 	)
 }

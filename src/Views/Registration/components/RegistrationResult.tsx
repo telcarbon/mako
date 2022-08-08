@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { IBusinessInfo } from '../types'
 
 interface RegistrationResultProps {
-	email: string
+	email: string | undefined
 	success?: boolean
 }
 

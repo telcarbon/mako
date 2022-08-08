@@ -42,16 +42,6 @@ export const BusinessRepInfo = ({
 		Authorization: `Token ${TOKEN}`,
 	}
 
-	const initialValues: IBusinessRepInfo = {
-		email: '',
-		password: '',
-		salutation: '',
-		firstName: '',
-		middleName: '',
-		lastName: '',
-		phoneNumber: '',
-	}
-
 	const validationSchema = Yup.object().shape({
 		email: Yup.string()
 			.required('Enter a valid email address')

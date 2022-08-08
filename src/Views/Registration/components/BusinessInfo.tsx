@@ -1,4 +1,4 @@
-import { Controller, useForm, useWatch } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import {
 	ContentHeader,
 	FormTextInput,
@@ -118,23 +118,23 @@ export const BusinessInfo = ({
 			.test('numeric-test', 'Numeric digits only', (value) => {
 				return yupShortTest(value, isNumericDigits(value))
 			})
-			// .test('is-existing', 'NPI Number already exists', (value) => {
-			// 	return new Promise((resolve) => {
-			// 		axios
-			// 			.get(`${API_URL}/partner-checker/?npi=${value}`, {
-			// 				headers,
-			// 			})
-			// 			.then((response) => {
-			// 				if (response && response.data.count > 0) {
-			// 					resolve(false)
-			// 				}
-			// 				resolve(true)
-			// 			})
-			// 			.catch(() => {
-			// 				resolve(true)
-			// 			})
-			// 	})
-			// })
+			.test('is-existing', 'NPI Number already exists', (value) => {
+				return new Promise((resolve) => {
+					axios
+						.get(`${API_URL}/partner-checker/?npi=${value}`, {
+							headers,
+						})
+						.then((response) => {
+							if (response && response.data.count > 0) {
+								resolve(false)
+							}
+							resolve(true)
+						})
+						.catch(() => {
+							resolve(true)
+						})
+				})
+			})
 			.length(10, 'Should be compose of 10 digits'),
 		ncpdp: Yup.string()
 			.required('NCPDP Number is required')
