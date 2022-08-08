@@ -135,16 +135,13 @@ export const BankingInfo = ({
 			await handleStripeTokenSubmit()
 		}
 		setCurrentStep(3)
-		navigate(`${match?.pathnameBase}/business-questionnaire`)
+		// navigate(`${match?.pathnameBase}/business-questionnaire`)
 	}
 
 	const handleDisable = () => {
 		return tabKey === 'bank' ? !isDirty : checkProceedByCC()
 	}
-
-	console.log(stripeToken);
-	
-
+	console.log('stripetoken', stripeToken)
 	return (
 		<>
 			<Container fluid className="banking-info">
@@ -157,7 +154,7 @@ export const BankingInfo = ({
 				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 					<Row className="justify-content-center mb-5">
 						<Col lg={10}>
-							<div className='card border-0'>
+							<div className="card border-0">
 								<div className="mb-5 m-auto button-tab">
 									<Button
 										variety={Variety.Dark}
@@ -225,7 +222,6 @@ export const BankingInfo = ({
 											</FormField>
 										</div>
 									</Col>
-
 									<Col
 										lg={6}
 										className={`card border-2 border-dark rounded-2 m-auto ${
