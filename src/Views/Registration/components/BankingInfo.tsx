@@ -13,6 +13,7 @@ import {
 	FormField,
 	FormSearchSelect,
 	FormTextInput,
+	SubmitButton,
 } from 'components'
 import { ContentHeader } from 'components/ContentHeader'
 import { useState } from 'react'
@@ -43,6 +44,7 @@ export const BankingInfo = ({
 	const stripe = useStripe()
 	const elements = useElements()
 	const [tabKey, setTabKey] = useState<string>('bank')
+	const [isStripeSubmitting, setIsStripeSubmitting] = useState<boolean>(false)
 
 	const validationSchema = Yup.object().shape({
 		bankName: Yup.string().required('Bank Name is required'),
@@ -70,7 +72,7 @@ export const BankingInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		control,
 	} = useFormInstance
 
@@ -132,8 +134,10 @@ export const BankingInfo = ({
 			navigate(`${match?.pathnameBase}/business-questionnaire`)
 		} else {
 			await handleStripeTokenSubmit()
+			setIsStripeSubmitting(true)
 			setTimeout(() => {
 				navigate(`${match?.pathnameBase}/business-questionnaire`)
+				setIsStripeSubmitting(false)
 			}, 1500)
 		}
 	}
@@ -141,7 +145,7 @@ export const BankingInfo = ({
 	const handleDisable = () => {
 		return tabKey === 'bank' ? !isDirty : checkProceedByCC()
 	}
-	console.log('stripetoken', stripeToken)
+
 	return (
 		<>
 			<Container fluid className="banking-info">
@@ -265,13 +269,14 @@ export const BankingInfo = ({
 							now={60}
 							className="col-lg-7 pull-left mt-3"
 						/>
-						<Button
-							type="submit"
-							disabled={handleDisable()}
+						<SubmitButton
+							pending={isSubmitting || isStripeSubmitting}
+							pendingText="Submitting"
 							className="col-lg-auto pull-right"
+							disabled={handleDisable()}
 						>
 							Next
-						</Button>
+						</SubmitButton>
 					</div>
 				</Form>
 			</Container>

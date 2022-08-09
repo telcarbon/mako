@@ -22,10 +22,10 @@ import {
 	IQuestionnareInfo,
 	ITermsInfo,
 } from './types'
-import { camelToUnderscore, convertQs } from 'common/Util'
+import { convertFieldsToSnakeCase, convertQs } from 'common/Util'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { STRIPE_PUBLIC_KEY, TOKEN } from 'shared/config'
+import { API_URL, STRIPE_PUBLIC_KEY, TOKEN } from 'shared/config'
 
 export const Registration = () => {
 	const match = useMatch('registration/*')
@@ -84,60 +84,58 @@ export const Registration = () => {
 
 	const handleSubmit = () => {
 		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
-		const credentials = {
-			email: businessRepInfo?.email,
-			password: businessRepInfo?.password,
-		}
+			const credentials = {
+				email: businessRepInfo?.email,
+				password: businessRepInfo?.password,
+			}
 
-		const personalInfo = {
-			lastName: businessRepInfo?.lastName,
-			firstName: businessRepInfo?.firstName,
-			phoneNumber: businessRepInfo?.phoneNumber,
-			salutation: businessRepInfo?.salutation,
-			middleName: businessRepInfo?.middleName,
-		}
+			const personalInfo = {
+				lastName: businessRepInfo?.lastName,
+				firstName: businessRepInfo?.firstName,
+				phoneNumber: businessRepInfo?.phoneNumber,
+				salutation: businessRepInfo?.salutation,
+				middleName: businessRepInfo?.middleName,
+			}
 
-		const convertedQuestionnaire = convertQs(businessQs)
+			const convertedQuestionnaire = convertQs(businessQs)
 
-		const params = {
-			partner: camelToUnderscore(businessInfo),
-			business_representative: camelToUnderscore(personalInfo),
-			auth_credentials: camelToUnderscore(credentials),
-			bank_details: {
-				credit_card_token: stripeToken || null,
-				...camelToUnderscore(bankingInfo),
-			},
-			questionnaires: convertedQuestionnaire,
-			// terms: camelToUnderscore(termsInfo),
-		}
+			const params = {
+				partner: convertFieldsToSnakeCase(businessInfo),
+				business_representative: convertFieldsToSnakeCase(personalInfo),
+				auth_credentials: convertFieldsToSnakeCase(credentials),
+				bank_details: {
+					credit_card_token: stripeToken || null,
+					...convertFieldsToSnakeCase(bankingInfo),
+				},
+				questionnaires: convertedQuestionnaire,
+				// terms: camelToUnderscore(termsInfo),
+			}
 
-		const formData = new FormData()
+			const formData = new FormData()
 
-		formData.append('data', JSON.stringify(params))
-		formData.append('clia_certification', businessQs.cliaCertification[0])
+			formData.append('data', JSON.stringify(params))
+			formData.append(
+				'clia_certification',
+				businessQs.cliaCertification[0]
+			)
 
-		console.log(stripeToken, "stripe");
-		
-
-		axios
-			.post('http://localhost:8000/api/registration/', formData, {
-				headers,
-			})
-			.then((response) => {
-				console.log(response, ' response')
-
-				if (response.status === 201) {
-					setIsSuccess(true)
-					navigate(`${match?.pathnameBase}/success`)
-				} else {
-					setIsSuccess(false)
+			axios
+				.post(`${API_URL}/registration/`, formData, {
+					headers,
+				})
+				.then((response) => {
+					if (response.status === 201) {
+						setIsSuccess(true)
+						navigate(`${match?.pathnameBase}/success`)
+					} else {
+						setIsSuccess(false)
+						navigate(`${match?.pathnameBase}/error`)
+					}
+				})
+				.catch((err) => {
+					console.log(err, 'error')
 					navigate(`${match?.pathnameBase}/error`)
-				}
-			})
-			.catch((err) => {
-				console.log(err, 'error')
-				navigate(`${match?.pathnameBase}/error`)
-			})
+				})
 		}
 	}
 

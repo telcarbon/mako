@@ -6,8 +6,6 @@ import {
 } from 'react-router-dom'
 import { Registration } from 'Views/Registration'
 
-console.log(process.env, "env")
-
 function AppRoutes() {
 	const navigate = useNavigate()
 

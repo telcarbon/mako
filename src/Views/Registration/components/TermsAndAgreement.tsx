@@ -3,7 +3,8 @@ import {
 	ContentHeader,
 	Form,
 	FormCheckBox,
-	FormField
+	FormField,
+	SubmitButton,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
@@ -120,20 +121,14 @@ export const TermsAndAgreement = ({
 						now={100}
 						className="col-lg-7 pull-left mt-3"
 					/>
-					<Button
-						type="submit"
-						disabled={allTermsHasFalse || isSubmitting}
+					<SubmitButton
+						pending={isSubmitting}
+						pendingText="Submitting"
 						className="col-lg-auto pull-right"
+						disabled={allTermsHasFalse || isSubmitting}
 					>
-						{isSubmitting ? (
-							<>
-								<span>Submitting</span>
-								<span className="spinner-border spinner-border-sm ms-2"></span>
-							</>
-						) : (
-							'Agree & Proceed'
-						)}
-					</Button>
+						Agree & Proceed
+					</SubmitButton>
 				</div>
 			</Form>
 		</Container>

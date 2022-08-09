@@ -6,6 +6,7 @@ import {
 	Form,
 	Button,
 	FormSearchSelect,
+	SubmitButton,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { Form as BootstrapForm } from 'react-bootstrap'
@@ -45,7 +46,7 @@ export const BusinessInfo = ({
 	}
 
 	const validationSchema = Yup.object().shape({
-		name: Yup.string().required('Enter a valid email address'),
+		name: Yup.string().required('Business name is required'),
 		type: Yup.number()
 			.required('Please select an option')
 			.test('check-test', 'Please select an option', (value) => {
@@ -100,11 +101,6 @@ export const BusinessInfo = ({
 						})
 				})
 			}),
-		// .test('is-existing', 'Email address already exists', (value) => {
-		// 	const apiURL =
-		// 		'http://localhost:8000/api/partner-checker/?email='
-		// 	checkDuplicates(`${apiURL}${value}`, { headers })
-		// }),
 
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')
@@ -169,7 +165,7 @@ export const BusinessInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		watch,
 		control,
 	} = useFormInstance
@@ -365,13 +361,14 @@ export const BusinessInfo = ({
 							now={20}
 							className="col-lg-7 pull-left mt-3"
 						/>
-						<Button
-							type="submit"
-							disabled={!isDirty}
+						<SubmitButton
+							pending={isSubmitting}
+							pendingText="Submitting"
 							className="col-lg-auto pull-right"
+							disabled={!isDirty || isSubmitting}
 						>
 							Next
-						</Button>
+						</SubmitButton>
 					</div>
 				</Form>
 			</Container>

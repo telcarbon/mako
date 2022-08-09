@@ -14,6 +14,7 @@ import {
 	FormFileUpload,
 	FormRadioGroup,
 	FormTextInput,
+	SubmitButton,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
@@ -99,7 +100,7 @@ export const BusinessQuestionnaire = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		watch,
 		control,
 		setValue,
@@ -132,8 +133,6 @@ export const BusinessQuestionnaire = ({
 		const formValues = getValues()
 		setBusinessQs(formValues)
 		setCurrentStep(4)
-		console.log(formValues)
-
 		navigate(`${match?.pathnameBase}/terms`)
 	}
 
@@ -296,54 +295,9 @@ export const BusinessQuestionnaire = ({
 											name="cliaCertification"
 											register={register}
 											label="Upload CLIA certification"
-											className='col-lg-5'
+											className="col-lg-5"
 										/>
 									</FormField>
-									{/* {!isUploaded ? (
-											<button
-												className="btn btn-outline-dark border-2 col-lg-5"
-												type="button"
-												onClick={() =>
-													setIsUploaded(true)
-												}
-											>
-												Upload CLIA certification
-												<FontAwesomeIcon
-													icon={faCloudArrowUp}
-													className="text-secondary ps-2"
-													size="1x"
-													style={{
-														fontSize: '1.25em',
-													}}
-												/>
-											</button>
-										) : (
-											<button
-												className="btn btn-outline-dark border-2 col-lg-5"
-												type="button"
-												onClick={() =>
-													setIsUploaded(false)
-												}
-											>
-												<FontAwesomeIcon
-													icon={faChain}
-													className="text-secondary pe-2"
-													size="1x"
-													style={{
-														fontSize: '1.25em',
-													}}
-												/>
-												Filename
-												<FontAwesomeIcon
-													icon={faTrash}
-													className="text-secondary pull-right"
-													size="1x"
-													style={{
-														fontSize: '1.25em',
-													}}
-												/>
-											</button> 
-										)}*/}
 								</div>
 							)}
 						</FormField>
@@ -392,13 +346,14 @@ export const BusinessQuestionnaire = ({
 						now={80}
 						className="col-lg-7 pull-left mt-3"
 					/>
-					<Button
-						type="submit"
-						disabled={!isDirty}
+					<SubmitButton
+						pending={isSubmitting}
+						pendingText="Submitting"
 						className="col-lg-auto pull-right"
+						disabled={!isDirty || isSubmitting}
 					>
 						Next
-					</Button>
+					</SubmitButton>
 				</div>
 			</Form>
 		</Container>

@@ -7,6 +7,7 @@ import {
 	FormField,
 	FormSearchSelect,
 	FormTextInput,
+	SubmitButton,
 } from 'components'
 import {
 	Col,
@@ -94,7 +95,7 @@ export const BusinessRepInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty },
+		formState: { isDirty, isSubmitting },
 		watch,
 		control,
 	} = useFormInstance
@@ -209,13 +210,14 @@ export const BusinessRepInfo = ({
 							now={40}
 							className="col-lg-7 pull-left mt-3"
 						/>
-						<Button
-							type="submit"
-							disabled={!isDirty}
+						<SubmitButton
+							pending={isSubmitting}
+							pendingText="Submitting"
 							className="col-lg-auto pull-right"
+							disabled={!isDirty}
 						>
 							Next
-						</Button>
+						</SubmitButton>
 					</div>
 				</Form>
 			</Container>

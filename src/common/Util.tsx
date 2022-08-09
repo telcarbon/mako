@@ -28,18 +28,7 @@ export const yupShortTest = (val: any, checker: boolean) => {
 	return val ? (!checker ? false : true) : true
 }
 
-// export const camelToUnderscore = (oldObj: any) => {
-// 	const convertKey = (key: any) => key.replace(/([A-Z])/g, '_$1').toLowerCase()
-// 	const newObject = {}
-// 	Object.keys(oldObj).forEach(k => {
-// 		newObject[convertKey(camel)] = oldObj[camel]
-// 	});
-// 	for (var camel in oldObj) {
-// 		newObject[convertKey(camel)] = oldObj[camel]
-// 	}
-// }
-
-export const camelToUnderscore = (oldObject: any) => {
+export const convertFieldsToSnakeCase = (oldObject: any) => {
 	if (oldObject !== undefined) {
 		const convertKey = (key: any) =>
 			key.replace(/([A-Z])/g, '_$1').toLowerCase()
@@ -81,7 +70,6 @@ export const convertQs = (obj: any) => {
 			}
 		})
 	}
-	console.log('container', container)
 	return container
 }
 
