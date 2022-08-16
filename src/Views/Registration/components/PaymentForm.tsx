@@ -1,7 +1,7 @@
 import {
 	CardCvcElement,
 	CardExpiryElement,
-	CardNumberElement,
+	CardNumberElement
 } from '@stripe/react-stripe-js'
 import { FormField } from 'components'
 import { StripeFields } from '../types'
@@ -10,7 +10,6 @@ const inputStyle = {
 	iconColor: '#334c6e',
 	fontWeight: '400',
 	fontSize: '16px',
-	fontFamily: 'Montserrat, sans-serif',
 }
 
 interface PaymentFormProps {

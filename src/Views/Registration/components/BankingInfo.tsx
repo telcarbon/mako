@@ -19,7 +19,7 @@ import { ContentHeader } from 'components/ContentHeader'
 import { useState } from 'react'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
 import { PaymentForm } from './PaymentForm'
@@ -39,7 +39,6 @@ export const BankingInfo = ({
 	setStripeToken,
 	stripeToken,
 }: IBankingInfoProps) => {
-	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 	const stripe = useStripe()
 	const elements = useElements()
@@ -127,19 +126,28 @@ export const BankingInfo = ({
 	}
 
 	const handleSubmit = async (values: any) => {
+		const formValues = getValues()
 		setCurrentStep(3)
+
 		if (tabKey === 'bank') {
-			const formValues = getValues()
 			setBankingInfo(formValues)
-			navigate(`${match?.pathnameBase}/business-questionnaire`)
+			return new Promise(() => {
+				setTimeout(() => {
+					navigate('/business-questionnaire')
+				}, 1000)
+			})
 		} else {
 			await handleStripeTokenSubmit()
 			setIsStripeSubmitting(true)
 			setTimeout(() => {
-				navigate(`${match?.pathnameBase}/business-questionnaire`)
-				setIsStripeSubmitting(false)
-			}, 1500)
+				navigate('/business-questionnaire')
+			}, 1000)
 		}
+
+		// setBankingInfo(formValues)
+		// navigate('/business-questionnaire')
+		// await handleStripeTokenSubmit()
+		// setIsStripeSubmitting(true)
 	}
 
 	const handleDisable = () => {
@@ -271,7 +279,7 @@ export const BankingInfo = ({
 						/>
 						<SubmitButton
 							pending={isSubmitting || isStripeSubmitting}
-							pendingText="Submitting"
+							pendingText="Saving"
 							className="col-lg-auto pull-right"
 							disabled={handleDisable()}
 						>

@@ -19,7 +19,7 @@ import {
 import { Controller, useForm } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { IBusinessRepInfo, salutationOptions } from '../types'
@@ -36,7 +36,6 @@ export const BusinessRepInfo = ({
 	setCurrentStep,
 }: IBusinessRepInfoProps) => {
 	const navigate = useNavigate()
-	const match = useMatch('registration/*')
 
 	const headers = {
 		'Content-Type': 'application/json',
@@ -103,8 +102,12 @@ export const BusinessRepInfo = ({
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessRepInfo(formValues)
-		setCurrentStep(2)
-		navigate(`${match?.pathnameBase}/banking-info`)
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('/banking-info')
+				setCurrentStep(2)
+			}, 1000)
+		})
 	}
 	return (
 		<>
@@ -212,7 +215,7 @@ export const BusinessRepInfo = ({
 						/>
 						<SubmitButton
 							pending={isSubmitting}
-							pendingText="Submitting"
+							pendingText="Saving"
 							className="col-lg-auto pull-right"
 							disabled={!isDirty}
 						>

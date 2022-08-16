@@ -1,4 +1,4 @@
-import { NavLink, useMatch } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { Nav } from 'react-bootstrap'
 
 const navList = [
@@ -10,27 +10,27 @@ const navList = [
 	{
 		id: 2,
 		label: 'Business Representative Information',
-		url: '/busines-rep-info',
+		url: 'busines-rep-info',
 	},
 	{
 		id: 3,
 		label: 'Banking Information',
-		url: '/banking-info',
+		url: 'banking-info',
 	},
 	{
 		id: 4,
 		label: 'Business Questionnaire',
-		url: '/business-questionnaire',
+		url: 'business-questionnaire',
 	},
 	{
 		id: 5,
 		label: 'Terms & Agreement',
-		url: '/terms',
+		url: 'terms',
 	},
 ]
 
 export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
-	const match = useMatch('registration/*')
+	
 	return (
 		<Nav className="mt-4 flex-column">
 			<h5>Register your account</h5>
@@ -39,10 +39,10 @@ export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
 					<Nav.Link
 						// disabled={currentStep === 0 || currentStep < list.id}
 						as={NavLink}
-						to={`${match?.pathnameBase}${list.url}`}
+						to={list.url}
 						className={
 							currentStep !== 0 && currentStep >= list.id
-								? 'active'
+								? 'is-active'
 								: ''
 						}
 					>

@@ -1,12 +1,6 @@
-import { createContext, useState } from 'react'
+import { useState } from 'react'
 import axios from 'axios'
-import {
-	Route,
-	Routes,
-	useLocation,
-	useMatch,
-	useNavigate,
-} from 'react-router-dom'
+import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { SideNav } from 'components'
 import { BankingInfo } from './components/BankingInfo'
 import { BusinessInfo } from './components/BusinessInfo'
@@ -25,10 +19,9 @@ import {
 import { convertFieldsToSnakeCase, convertQs } from 'common/Util'
 import { Elements } from '@stripe/react-stripe-js'
 import { loadStripe } from '@stripe/stripe-js'
-import { API_URL, STRIPE_PUBLIC_KEY, TOKEN } from 'shared/config'
+import { API_URL, STRIPE_PK, TOKEN } from 'shared/config'
 
 export const Registration = () => {
-	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 	const location = useLocation()
 	const [businessRepInfo, setBusinessRepInfo] = useState<IBusinessRepInfo>()
@@ -80,7 +73,7 @@ export const Registration = () => {
 		}
 	}
 
-	const stripePromise = loadStripe(`${STRIPE_PUBLIC_KEY}`)
+	const stripePromise = loadStripe(`${STRIPE_PK}`)
 
 	const handleSubmit = () => {
 		if (businessInfo && businessRepInfo && businessQs && bankingInfo) {
@@ -126,15 +119,15 @@ export const Registration = () => {
 				.then((response) => {
 					if (response.status === 201) {
 						setIsSuccess(true)
-						navigate(`${match?.pathnameBase}/success`)
+						navigate('/success')
 					} else {
 						setIsSuccess(false)
-						navigate(`${match?.pathnameBase}/error`)
+						navigate('/error')
 					}
 				})
 				.catch((err) => {
 					console.log(err, 'error')
-					navigate(`${match?.pathnameBase}/error`)
+					navigate('/error')
 				})
 		}
 	}
@@ -158,7 +151,7 @@ export const Registration = () => {
 				</SideNav>
 				<Routes>
 					<Route
-						path={'/'}
+						path="/"
 						element={
 							<BusinessInfo
 								businessInfo={businessInfo}
@@ -168,7 +161,7 @@ export const Registration = () => {
 						}
 					/>
 					<Route
-						path={'/busines-rep-info'}
+						path="/busines-rep-info"
 						element={
 							<BusinessRepInfo
 								businessRepInfo={businessRepInfo}

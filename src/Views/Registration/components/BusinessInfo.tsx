@@ -7,12 +7,13 @@ import {
 	Button,
 	FormSearchSelect,
 	SubmitButton,
+	LoadingMaskWrap,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { Form as BootstrapForm } from 'react-bootstrap'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Yup from 'yup'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { IBusinessInfo, locationTypeOptions } from '../types'
 import stateAndCitiesData from '../../../common/state_cities.json'
 import {
@@ -37,7 +38,6 @@ export const BusinessInfo = ({
 	setBusinessInfo,
 	setCurrentStep,
 }: IBusinessInfoProps) => {
-	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 
 	const headers = {
@@ -174,7 +174,11 @@ export const BusinessInfo = ({
 		const formValues = getValues()
 		setBusinessInfo(formValues)
 		setCurrentStep(1)
-		navigate(`${match?.pathnameBase}/busines-rep-info`)
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate(`/busines-rep-info`)
+			}, 1000)
+		})
 	}
 
 	const stateWatch: any = watch('state')
@@ -201,7 +205,11 @@ export const BusinessInfo = ({
 		<>
 			<Container fluid>
 				<ContentHeader title="Business Information" />
-				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
+				<Form
+					useFormInstance={useFormInstance}
+					onSubmit={handleSubmit}
+					className="loading style-2"
+				>
 					<Row className="justify-content-center mb-5">
 						<Col lg={10}>
 							<Row className="justify-content-center">
@@ -363,7 +371,7 @@ export const BusinessInfo = ({
 						/>
 						<SubmitButton
 							pending={isSubmitting}
-							pendingText="Submitting"
+							pendingText="Saving"
 							className="col-lg-auto pull-right"
 							disabled={!isDirty || isSubmitting}
 						>
@@ -371,6 +379,7 @@ export const BusinessInfo = ({
 						</SubmitButton>
 					</div>
 				</Form>
+				{isSubmitting && <LoadingMaskWrap />}
 			</Container>
 		</>
 	)

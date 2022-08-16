@@ -2,7 +2,6 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { Col, Container, Row, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
-import { IBusinessInfo } from '../types'
 
 interface RegistrationResultProps {
 	email: string | undefined
@@ -42,7 +41,7 @@ export const RegistrationResult = ({
 							</p>
 							<Link
 								className="link-secondary"
-								to={'/registration'}
+								to={'/'}
 							>
 								Back to Home
 							</Link>

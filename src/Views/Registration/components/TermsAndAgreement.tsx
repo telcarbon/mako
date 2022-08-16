@@ -8,6 +8,7 @@ import {
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
+import { BASE_URL } from 'shared/config'
 import { ITermsInfo } from '../types'
 
 interface TermsAndAgreementProps {
@@ -20,9 +21,8 @@ export const TermsAndAgreement = ({
 	setTermsInfo,
 }: TermsAndAgreementProps) => {
 	const initialValues: ITermsInfo = {
-		general: false,
-		techUsage: false,
-		bankAccountUsage: false,
+		termsOfUse: false,
+		privacyStatement: false,
 	}
 
 	const useFormInstance = useForm({
@@ -37,21 +37,18 @@ export const TermsAndAgreement = ({
 	} = useFormInstance
 
 	const handleSubmit = async (values: any) => {
-		// return promise that resolves after 2 seconds
-		return new Promise((resolve) => {
+		return new Promise(() => {
 			setTimeout(() => {
 				const formValues = getValues()
 				setTermsInfo(formValues)
 				onSubmit()
-			}, 2000)
+			}, 1000)
 		})
 	}
 
-	const allTermsHasFalse = watch([
-		'general',
-		'techUsage',
-		'bankAccountUsage',
-	]).includes(false)
+	const allTermsHasFalse = watch(['termsOfUse', 'privacyStatement']).includes(
+		false
+	)
 
 	return (
 		<Container fluid>
@@ -65,50 +62,33 @@ export const TermsAndAgreement = ({
 					<Col lg={10}>
 						<FormField name="terms">
 							<FormCheckBox
-								name="general"
+								name="termsOfUse"
 								register={register}
-								value={'hasAgreeToTerms'}
+								value={'termsOfUse'}
 							>
 								I agree and accept the{' '}
 								<a
 									className="link-secondary"
-									href="http://google.com"
+									href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_8.9.22.pdf`}
 									target="_blank"
 								>
-									general terms and conditions
+									MakoRx Care Check-In Terms of Use
 								</a>
 								.
 							</FormCheckBox>
 							<FormCheckBox
-								name="techUsage"
+								name="privacyStatement"
 								register={register}
-								value={'techUsage'}
+								value={'privacyStatement'}
 								className="my-2"
 							>
 								I agree and accept the{' '}
 								<a
 									className="link-secondary"
-									href="http://google.com"
+									href={`${BASE_URL}/static/pdf/MakoRx_Privacy_Statement_8.9.22.pdf`}
 									target="_blank"
 								>
-									MakoRX technical usage terms and conditions
-								</a>
-								.
-							</FormCheckBox>
-							<FormCheckBox
-								name="bankAccountUsage"
-								register={register}
-								value={'bankAccountUsage'}
-								className="my-2"
-							>
-								I agree and accept the{' '}
-								<a
-									className="link-secondary"
-									href="http://google.com"
-									target="_blank"
-								>
-									MakoRX bank account information usage terms
-									and conditions
+									MakoRx Privacy Statement
 								</a>
 								.
 							</FormCheckBox>

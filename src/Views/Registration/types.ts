@@ -108,9 +108,8 @@ export interface IQuestionnareInfo {
 }
 
 export interface ITermsInfo {
-	general: boolean | null
-	techUsage: boolean | null
-	bankAccountUsage: boolean | null
+	termsOfUse: boolean
+	privacyStatement: boolean
 }
 
 export enum StripeFields {

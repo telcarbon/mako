@@ -1,10 +1,4 @@
 import { useEffect, useState } from 'react'
-import {
-	faChain,
-	faCloudArrowUp,
-	faTrash,
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
 	Button,
@@ -18,7 +12,7 @@ import {
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useMatch, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { IQuestionnareInfo } from '../types'
 
@@ -38,7 +32,6 @@ export const BusinessQuestionnaire = ({
 	setBusinessQs,
 	setCurrentStep,
 }: IBusinessQuestionnaireProps) => {
-	const match = useMatch('registration/*')
 	const navigate = useNavigate()
 	const [isUploaded, setIsUploaded] = useState<boolean>(false)
 
@@ -132,8 +125,12 @@ export const BusinessQuestionnaire = ({
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessQs(formValues)
-		setCurrentStep(4)
-		navigate(`${match?.pathnameBase}/terms`)
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('/terms')
+				setCurrentStep(4)
+			}, 1000)
+		})
 	}
 
 	useEffect(() => {
