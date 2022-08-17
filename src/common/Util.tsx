@@ -91,3 +91,12 @@ export const checkDuplicates = (apiUrl: string, headers: any) => {
 	})
 	return promise
 }
+
+export const checkObjectIfComplete = (obj: any): boolean => {
+	if (obj !== undefined) {
+		return Object.values(obj).every((value) => {
+			return value !== undefined && value !== '' && value !== null
+		})
+	}
+	return false
+}

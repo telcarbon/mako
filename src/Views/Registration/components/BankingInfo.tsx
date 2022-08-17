@@ -5,7 +5,11 @@ import {
 	useStripe,
 } from '@stripe/react-stripe-js'
 import stripeLogo from 'assets/images/stripe.png'
-import { isNumericDigits, yupShortTest } from 'common/Util'
+import {
+	checkObjectIfComplete,
+	isNumericDigits,
+	yupShortTest,
+} from 'common/Util'
 import { Variety } from 'common/Variety'
 import {
 	Button,
@@ -127,31 +131,26 @@ export const BankingInfo = ({
 
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
-		setCurrentStep(3)
+		setBankingInfo(formValues)
+	}
 
-		if (tabKey === 'bank') {
-			setBankingInfo(formValues)
-			return new Promise(() => {
-				setTimeout(() => {
-					navigate('/business-questionnaire')
-				}, 1000)
-			})
-		} else {
-			await handleStripeTokenSubmit()
-			setIsStripeSubmitting(true)
-			setTimeout(() => {
-				navigate('/business-questionnaire')
-			}, 1000)
+	const handleNext = async () => {
+		// check if either bank records or credit records has details if yes proceed if no edi don't
+
+		const checkBank = checkObjectIfComplete(bankingInfo)
+		const checkCredit = checkProceedByCC()
+
+		if (checkBank || checkCredit) {
+			setCurrentStep(3)
+			navigate('/business-questionnaire')
 		}
-
-		// setBankingInfo(formValues)
-		// navigate('/business-questionnaire')
-		// await handleStripeTokenSubmit()
-		// setIsStripeSubmitting(true)
 	}
 
 	const handleDisable = () => {
-		return tabKey === 'bank' ? !isDirty : checkProceedByCC()
+		return ![
+			stripeToken === '',
+			!checkObjectIfComplete(bankingInfo),
+		].includes(false)
 	}
 
 	return (
@@ -240,6 +239,14 @@ export const BankingInfo = ({
 													register={register}
 												/>
 											</FormField>
+											<SubmitButton
+												pending={isSubmitting}
+												pendingText="Saving"
+												className="col-lg-auto pull-right"
+												disabled={!isDirty}
+											>
+												Save
+											</SubmitButton>
 										</div>
 									</Col>
 									<Col
@@ -265,6 +272,16 @@ export const BankingInfo = ({
 												alt="logo"
 												className="img-fluid mt-auto w-25 align-self-center"
 											/>
+											<button
+												disabled={
+													!isStripeFieldsValid()
+												}
+												onClick={async () =>
+													await handleStripeTokenSubmit()
+												}
+											>
+												Save
+											</button>
 										</div>
 									</Col>
 								</Row>
@@ -277,14 +294,20 @@ export const BankingInfo = ({
 							now={60}
 							className="col-lg-7 pull-left mt-3"
 						/>
-						<SubmitButton
+						{/* <SubmitButton
 							pending={isSubmitting || isStripeSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
 							disabled={handleDisable()}
 						>
 							Next
-						</SubmitButton>
+						</SubmitButton> */}
+						<button
+							disabled={handleDisable()}
+							onClick={() => handleNext()}
+						>
+							Next
+						</button>
 					</div>
 				</Form>
 			</Container>
