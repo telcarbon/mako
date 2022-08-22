@@ -55,7 +55,7 @@ export const Registration = () => {
 		isCliaWaivedSite: null,
 		hasParkingLot: null,
 		offerPrescription: null,
-		cliaCertification: '',
+		cliaCertification: [],
 	})
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [stripeToken, setStripeToken] = useState<string>('')

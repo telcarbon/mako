@@ -17,6 +17,7 @@ import {
 	FormField,
 	FormSearchSelect,
 	FormTextInput,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
 import { ContentHeader } from 'components/ContentHeader'
@@ -48,6 +49,8 @@ export const BankingInfo = ({
 	const elements = useElements()
 	const [tabKey, setTabKey] = useState<string>('bank')
 	const [isStripeSubmitting, setIsStripeSubmitting] = useState<boolean>(false)
+	const [isDataSubmitting, setIsDataSubmitting] = useState<boolean>(false)
+	const [isBankSubmitting, setIsBankSubmitting] = useState<boolean>(false)
 
 	const validationSchema = Yup.object().shape({
 		bankName: Yup.string().required('Bank Name is required'),
@@ -64,7 +67,8 @@ export const BankingInfo = ({
 			.required('ABA Routing Number is required')
 			.test('numeric-test', 'Numeric digits only', function (value) {
 				return yupShortTest(value, isNumericDigits(value))
-			}),
+			})
+			.length(9, 'ABA Routing Number cannot exceed 9 numeric digits'),
 	})
 
 	const useFormInstance = useForm({
@@ -75,7 +79,7 @@ export const BankingInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting },
+		formState: { isDirty, isSubmitting, isSubmitSuccessful },
 		control,
 	} = useFormInstance
 
@@ -107,14 +111,17 @@ export const BankingInfo = ({
 
 	async function handleStripeTokenSubmit() {
 		const cardNumberElement = elements?.getElement(CardNumberElement)!
-
+		setIsStripeSubmitting(true)
 		if (hasStripeErrors()) {
 			try {
 				stripe
 					?.createToken(cardNumberElement)
 					.then((result) => {
-						setStripeToken(result.token?.id)
-						console.log(result, 'token')
+						setTimeout(() => {
+							setStripeToken(result.token?.id)
+							console.log(result, 'token')
+							setIsStripeSubmitting(false)
+						}, 1000)
 					})
 					.catch((err) => {
 						console.log('stripe post error', err)
@@ -126,23 +133,32 @@ export const BankingInfo = ({
 	}
 
 	const checkProceedByCC = () => {
-		return stripeToken ? false : isStripeFieldsValid() ? false : true
+		return stripeToken ? true : isStripeFieldsValid() ? false : true
 	}
 
 	const handleSubmit = async (values: any) => {
-		const formValues = getValues()
-		setBankingInfo(formValues)
+		return new Promise(() => {
+			setTimeout(() => {
+				const formValues = getValues()
+				setBankingInfo(formValues)
+				setIsBankSubmitting(false)
+			}, 1000)
+			setIsBankSubmitting(true)
+		})
 	}
 
 	const handleNext = async () => {
-		// check if either bank records or credit records has details if yes proceed if no edi don't
-
 		const checkBank = checkObjectIfComplete(bankingInfo)
 		const checkCredit = checkProceedByCC()
 
 		if (checkBank || checkCredit) {
-			setCurrentStep(3)
-			navigate('/business-questionnaire')
+			return new Promise(() => {
+				setIsDataSubmitting(true)
+				setTimeout(() => {
+					setCurrentStep(3)
+					navigate('/business-questionnaire')
+				}, 1000)
+			})
 		}
 	}
 
@@ -230,6 +246,7 @@ export const BankingInfo = ({
 													placeholder="Account Number"
 													name="accountNumber"
 													register={register}
+													type="number"
 												/>
 											</FormField>
 											<FormField name="abaRoutingNumber">
@@ -237,12 +254,13 @@ export const BankingInfo = ({
 													placeholder="ABA Routing Number"
 													name="abaRoutingNumber"
 													register={register}
+													type="number"
 												/>
 											</FormField>
 											<SubmitButton
-												pending={isSubmitting}
+												pending={isBankSubmitting}
 												pendingText="Saving"
-												className="col-lg-auto pull-right"
+												className="col-lg-auto m-auto"
 												disabled={!isDirty}
 											>
 												Save
@@ -267,21 +285,25 @@ export const BankingInfo = ({
 												setStripeValid={setStripeValid}
 												stripeValid={stripeValid}
 											/>
+											<SubmitButton
+												pending={isStripeSubmitting}
+												pendingText="Saving"
+												className="col-lg-auto m-auto"
+												disabled={
+													!isStripeFieldsValid()
+												}
+												onClick={async () => {
+													await handleStripeTokenSubmit()
+												}}
+												type="button"
+											>
+												Save
+											</SubmitButton>
 											<img
 												src={stripeLogo}
 												alt="logo"
 												className="img-fluid mt-auto w-25 align-self-center"
 											/>
-											<button
-												disabled={
-													!isStripeFieldsValid()
-												}
-												onClick={async () =>
-													await handleStripeTokenSubmit()
-												}
-											>
-												Save
-											</button>
 										</div>
 									</Col>
 								</Row>
@@ -294,23 +316,22 @@ export const BankingInfo = ({
 							now={60}
 							className="col-lg-7 pull-left mt-3"
 						/>
-						{/* <SubmitButton
-							pending={isSubmitting || isStripeSubmitting}
+						<SubmitButton
+							pending={isDataSubmitting}
 							pendingText="Saving"
-							className="col-lg-auto pull-right"
-							disabled={handleDisable()}
-						>
-							Next
-						</SubmitButton> */}
-						<button
 							disabled={handleDisable()}
 							onClick={() => handleNext()}
+							className="col-lg-auto pull-right"
+							type="button"
 						>
 							Next
-						</button>
+						</SubmitButton>
 					</div>
 				</Form>
 			</Container>
+			{(isDataSubmitting || isStripeSubmitting || isBankSubmitting) && (
+				<LoadingMaskWrap />
+			)}
 		</>
 	)
 }

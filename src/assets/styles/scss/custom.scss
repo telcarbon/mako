@@ -78,7 +78,7 @@ body {
 		border-width: 2px;
 
 		.card-body {
-			min-height: 350px;
+			min-height: 387px;
 		}
 	}
 }
@@ -222,7 +222,12 @@ input[type='checkbox'] {
 		box-shadow: 0 0 0 0.2rem rgba(51, 51, 51, 0.25);
 	}
 }
-
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
 input[type='radio'] {
 	display: none;
 	&:checked {

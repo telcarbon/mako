@@ -1,7 +1,9 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Col, Container, Row, Button } from 'react-bootstrap'
+import { ButtonVariety, Button } from 'components'
+import { Col, Container, Row } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
+import { BASE_URL } from 'shared/config'
 
 interface RegistrationResultProps {
 	email: string | undefined
@@ -29,6 +31,19 @@ export const RegistrationResult = ({
 								</strong>
 								.
 							</p>
+							<p>
+								<a
+									className="rounded-pill btn btn-outline-secondary mt-5"
+									href={`${BASE_URL}/static/pdf/MakoRx_Pharmacy_Agreement_CommericalRetail_CommercialSpecialty_LoyaltyCard_Tablet_PointOfCareTesting.docx`}
+									download
+								>
+									<FontAwesomeIcon
+										icon={faDownload}
+										className="me-2"
+									/>
+									Download Contract
+								</a>
+							</p>
 						</>
 					) : (
 						<>
@@ -39,10 +54,7 @@ export const RegistrationResult = ({
 								We apologize for the inconvenience. Please try
 								again.
 							</p>
-							<Link
-								className="link-secondary"
-								to={'/'}
-							>
+							<Link className="link-secondary" to={'/'}>
 								Back to Home
 							</Link>
 						</>

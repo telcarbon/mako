@@ -37,7 +37,7 @@ export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
 			{navList.map((list) => (
 				<Nav.Item as="li" key={list.id}>
 					<Nav.Link
-						// disabled={currentStep === 0 || currentStep < list.id}
+						disabled={currentStep === 0 || currentStep < list.id}
 						as={NavLink}
 						to={list.url}
 						className={

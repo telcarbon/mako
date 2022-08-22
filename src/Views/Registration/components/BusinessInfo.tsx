@@ -53,20 +53,20 @@ export const BusinessInfo = ({
 				return value !== 0
 			}),
 		street: Yup.string().required('Address Line 1 is required'),
-		unitFloorBuilding: Yup.string().required('Address Line 2 is required'),
+		// unitFloorBuilding: Yup.string().required('Address Line 2 is required'),
 		state: Yup.string().required('State is required').nullable(),
-		// city: Yup.mixed().when('state', {
-		// 	is: (state: string) => {
-		// 		if (state !== '') {
-		// 			const cities = stateAndCitiesData.find(
-		// 				(f) => f.name === state
-		// 			)?.cities
-		// 			return cities && cities.length > 0
-		// 		}
-		// 		return false
-		// 	},
-		// 	then: Yup.string().required('City is required').nullable(),
-		// }),
+		city: Yup.mixed().when('state', {
+			is: (state: string) => {
+				if (state !== '') {
+					const cities = stateAndCitiesData.find(
+						(f) => f.name === state
+					)?.cities
+					return cities && cities.length > 0
+				}
+				return false
+			},
+			then: Yup.string().required('City is required').nullable(),
+		}),
 		// country: Yup.string().required('Country is required'), Note: Since it has default value
 		zipCode: Yup.string()
 			.required('Zip code is required')
@@ -76,8 +76,8 @@ export const BusinessInfo = ({
 			})
 			.test(
 				'length-test',
-				'Should be compose of 5 digits',
-				function (value) {
+				'Zip code cannot exceed 5 numeric digits',
+				(value) => {
 					return yupShortTest(value, checkLength(value, 5))
 				}
 			),
@@ -107,7 +107,34 @@ export const BusinessInfo = ({
 			.test({
 				test: (value) => (!value ? true : isValidPhoneNumber(value)),
 				message: 'Enter a valid mobile phone number',
-			}),
+			})
+			.test(
+				'is-existing',
+				'Phone Number is already registered',
+				(value) => {
+					return new Promise((resolve) => {
+						axios
+							.get(
+								`${API_URL}/partner-checker/?phone_number=${value?.replace(
+									value[0],
+									'%2B'
+								)}`,
+								{
+									headers,
+								}
+							)
+							.then((response) => {
+								if (response && response.data.count > 0) {
+									resolve(false)
+								}
+								resolve(true)
+							})
+							.catch(() => {
+								resolve(true)
+							})
+					})
+				}
+			),
 
 		npi: Yup.string()
 			.required('NPI Number is required')
@@ -285,6 +312,7 @@ export const BusinessInfo = ({
 											placeholder="Zip Code"
 											name="zipCode"
 											register={register}
+											type="number"
 										/>
 									</FormField>
 									<FormField name="country">

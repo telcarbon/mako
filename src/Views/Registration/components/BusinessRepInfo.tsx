@@ -1,12 +1,12 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
 import {
-	Button,
 	ContentHeader,
 	Form,
 	FormField,
 	FormSearchSelect,
 	FormTextInput,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
 import {
@@ -47,7 +47,7 @@ export const BusinessRepInfo = ({
 			.required('Enter a valid email address')
 			.email('Must be a valid email address')
 			.test(
-				'email-existing',
+				'is-existing',
 				'Email address already exists',
 				function (value) {
 					return new Promise((resolve) => {
@@ -83,7 +83,34 @@ export const BusinessRepInfo = ({
 			.test({
 				test: (value) => (!value ? true : isValidPhoneNumber(value)),
 				message: 'Enter a valid mobile phone number',
-			}),
+			})
+			.test(
+				'is-existing',
+				'Phone Number is already registered',
+				function (value) {
+					return new Promise((resolve) => {
+						axios
+							.get(
+								`${API_URL}/business-representative-checker/?phone_number=${value?.replace(
+									value[0],
+									'%2B'
+								)}`,
+								{
+									headers,
+								}
+							)
+							.then((response) => {
+								if (response && response.data.count > 0) {
+									resolve(false)
+								}
+								resolve(true)
+							})
+							.catch(() => {
+								resolve(true)
+							})
+					})
+				}
+			),
 	})
 
 	const useFormInstance = useForm({
@@ -95,7 +122,6 @@ export const BusinessRepInfo = ({
 		getValues,
 		register,
 		formState: { isDirty, isSubmitting },
-		watch,
 		control,
 	} = useFormInstance
 
@@ -224,6 +250,7 @@ export const BusinessRepInfo = ({
 					</div>
 				</Form>
 			</Container>
+			{isSubmitting && <LoadingMaskWrap />}
 		</>
 	)
 }

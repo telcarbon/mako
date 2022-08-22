@@ -4,6 +4,7 @@ import {
 	Form,
 	FormCheckBox,
 	FormField,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
@@ -51,66 +52,69 @@ export const TermsAndAgreement = ({
 	)
 
 	return (
-		<Container fluid>
-			<ContentHeader
-				title="Terms & Agreement"
-				backText="Back"
-				backLink={-1}
-			/>
-			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-				<Row className="justify-content-center mb-5">
-					<Col lg={10}>
-						<FormField name="terms">
-							<FormCheckBox
-								name="termsOfUse"
-								register={register}
-								value={'termsOfUse'}
-							>
-								I agree and accept the{' '}
-								<a
-									className="link-secondary"
-									href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_8.9.22.pdf`}
-									target="_blank"
+		<>
+			<Container fluid>
+				<ContentHeader
+					title="Terms & Agreement"
+					backText="Back"
+					backLink={-1}
+				/>
+				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
+					<Row className="justify-content-center mb-5">
+						<Col lg={10}>
+							<FormField name="terms">
+								<FormCheckBox
+									name="termsOfUse"
+									register={register}
+									value={'termsOfUse'}
 								>
-									MakoRx Care Check-In Terms of Use
-								</a>
-								.
-							</FormCheckBox>
-							<FormCheckBox
-								name="privacyStatement"
-								register={register}
-								value={'privacyStatement'}
-								className="my-2"
-							>
-								I agree and accept the{' '}
-								<a
-									className="link-secondary"
-									href={`${BASE_URL}/static/pdf/MakoRx_Privacy_Statement_8.9.22.pdf`}
-									target="_blank"
+									I agree and accept the{' '}
+									<a
+										className="link-secondary"
+										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_8.9.22.pdf`}
+										target="_blank"
+									>
+										MakoRx Care Check-In Terms of Use
+									</a>
+									.
+								</FormCheckBox>
+								<FormCheckBox
+									name="privacyStatement"
+									register={register}
+									value={'privacyStatement'}
+									className="my-2"
 								>
-									MakoRx Privacy Statement
-								</a>
-								.
-							</FormCheckBox>
-						</FormField>
-					</Col>
-				</Row>
-				<div className="footer w-75">
-					<ProgressBar
-						variant="secondary"
-						now={100}
-						className="col-lg-7 pull-left mt-3"
-					/>
-					<SubmitButton
-						pending={isSubmitting}
-						pendingText="Submitting"
-						className="col-lg-auto pull-right"
-						disabled={allTermsHasFalse || isSubmitting}
-					>
-						Agree & Proceed
-					</SubmitButton>
-				</div>
-			</Form>
-		</Container>
+									I agree and accept the{' '}
+									<a
+										className="link-secondary"
+										href={`${BASE_URL}/static/pdf/MakoRx_Privacy_Statement_8.9.22.pdf`}
+										target="_blank"
+									>
+										MakoRx Privacy Statement
+									</a>
+									.
+								</FormCheckBox>
+							</FormField>
+						</Col>
+					</Row>
+					<div className="footer w-75">
+						<ProgressBar
+							variant="secondary"
+							now={100}
+							className="col-lg-7 pull-left mt-3"
+						/>
+						<SubmitButton
+							pending={isSubmitting}
+							pendingText="Submitting"
+							className="col-lg-auto pull-right"
+							disabled={allTermsHasFalse || isSubmitting}
+						>
+							Agree & Proceed
+						</SubmitButton>
+					</div>
+				</Form>
+			</Container>
+			{isSubmitting && <LoadingMaskWrap />}
+		</>
 	)
 }
