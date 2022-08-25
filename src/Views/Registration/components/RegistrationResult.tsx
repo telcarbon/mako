@@ -1,9 +1,11 @@
 import { faDownload } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { ButtonVariety, Button } from 'components'
-import { Col, Container, Row } from 'react-bootstrap'
+import { ButtonVariety } from 'components'
+import { useState } from 'react'
+import { Col, Container, Row, Button } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
+import { DownloadContractModal } from './Modal/DownloadContractModal'
 
 interface RegistrationResultProps {
 	email: string | undefined
@@ -14,6 +16,8 @@ export const RegistrationResult = ({
 	email,
 	success,
 }: RegistrationResultProps) => {
+	const [showDownloadContractModal, setShowDownloadContractModal] =
+		useState<boolean>(false)
 	return (
 		<Container fluid className="register-success">
 			<Row className="justify-content-center align-items-center vh-100">
@@ -32,17 +36,19 @@ export const RegistrationResult = ({
 								.
 							</p>
 							<p>
-								<a
-									className="rounded-pill btn btn-outline-secondary mt-5"
-									href={`${BASE_URL}/static/pdf/MakoRx_Pharmacy_Agreement_CommericalRetail_CommercialSpecialty_LoyaltyCard_Tablet_PointOfCareTesting.docx`}
-									download
+								<Button
+									variant="outline-secondary"
+									className="rounded-pill mt-5"
+									onClick={() =>
+										setShowDownloadContractModal(true)
+									}
 								>
 									<FontAwesomeIcon
 										icon={faDownload}
 										className="me-2"
 									/>
 									Download Contract
-								</a>
+								</Button>
 							</p>
 						</>
 					) : (
@@ -61,6 +67,10 @@ export const RegistrationResult = ({
 					)}
 				</Col>
 			</Row>
+			<DownloadContractModal
+				show={showDownloadContractModal}
+				setShow={() => setShowDownloadContractModal(false)}
+			/>
 		</Container>
 	)
 }

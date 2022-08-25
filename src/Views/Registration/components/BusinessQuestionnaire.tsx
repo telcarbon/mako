@@ -84,7 +84,7 @@ export const BusinessQuestionnaire = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting },
+		formState: { isDirty, isSubmitting, isValid },
 		watch,
 		control,
 		setValue,
@@ -112,8 +112,6 @@ export const BusinessQuestionnaire = ({
 
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
-		console.log(formValues, "form");
-		
 		setBusinessQs(formValues)
 		return new Promise(() => {
 			setTimeout(() => {
@@ -342,7 +340,7 @@ export const BusinessQuestionnaire = ({
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={!isDirty || isSubmitting}
+							disabled={(!isDirty && !isValid) || isSubmitting}
 						>
 							Next
 						</SubmitButton>

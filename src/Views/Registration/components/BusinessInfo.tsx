@@ -192,11 +192,11 @@ export const BusinessInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting },
+		formState: { isDirty, isSubmitting, isValid},
 		watch,
 		control,
 	} = useFormInstance
-
+	
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessInfo(formValues)
@@ -401,7 +401,7 @@ export const BusinessInfo = ({
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={!isDirty || isSubmitting}
+							disabled={(!isDirty && !isValid) || isSubmitting}
 						>
 							Next
 						</SubmitButton>

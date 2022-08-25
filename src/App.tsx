@@ -10,7 +10,7 @@ import { Registration } from 'Views/Registration'
 function AppRoutes() {
 	const navigate = useNavigate()
 
-	useEffect(() => navigate(`/`), [])
+	// useEffect(() => navigate(`/`), [])
 
 	const routes = useRoutes([{ path: '/*', element: <Registration /> }])
 	return routes

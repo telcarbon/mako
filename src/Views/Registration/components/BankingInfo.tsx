@@ -79,7 +79,7 @@ export const BankingInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting, isSubmitSuccessful },
+		formState: { isDirty, isSubmitting, isValid },
 		control,
 	} = useFormInstance
 
@@ -165,7 +165,7 @@ export const BankingInfo = ({
 	const handleDisable = () => {
 		return ![
 			stripeToken === '',
-			!checkObjectIfComplete(bankingInfo),
+			!checkObjectIfComplete(bankingInfo) && !isValid,
 		].includes(false)
 	}
 

@@ -121,7 +121,7 @@ export const BusinessRepInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting },
+		formState: { isDirty, isSubmitting, isValid },
 		control,
 	} = useFormInstance
 
@@ -243,7 +243,7 @@ export const BusinessRepInfo = ({
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={!isDirty}
+							disabled={(!isDirty && !isValid) || isSubmitting}
 						>
 							Next
 						</SubmitButton>
