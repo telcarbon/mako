@@ -110,6 +110,7 @@ export const BusinessQuestionnaire = ({
 		remove(index)
 	}
 
+
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessQs(formValues)
@@ -284,6 +285,15 @@ export const BusinessQuestionnaire = ({
 												register={register}
 												label="Upload CLIA certification"
 												className="col-lg-5"
+												value={getValues(
+													'cliaCertification'
+												)}
+												onClear={() => {
+													setValue(
+														'cliaCertification',
+														[]
+													)
+												}}
 												// reset={setValue('cliaCertification', [])}
 												// onChange={(e) => setValue('cliaCertification', e?.target?.files[0])}
 											/>
@@ -340,7 +350,7 @@ export const BusinessQuestionnaire = ({
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={(!isDirty && !isValid) || isSubmitting}
+							//	disabled={(!isDirty && !isValid) || isSubmitting}
 						>
 							Next
 						</SubmitButton>
