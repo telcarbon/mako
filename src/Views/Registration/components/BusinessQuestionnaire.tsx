@@ -66,7 +66,7 @@ export const BusinessQuestionnaire = ({
 			is: true,
 			then: Yup.array()
 				.min(1, 'Please upload your CLIA Certificate')
-				.required('Please upload your CLIA Certificate'),
+				.nullable(),
 		}),
 		hasParkingLot: Yup.mixed()
 			.required('Please select an option')
