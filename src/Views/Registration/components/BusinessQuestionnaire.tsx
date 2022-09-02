@@ -64,9 +64,9 @@ export const BusinessQuestionnaire = ({
 			.nullable(),
 		cliaCertification: Yup.mixed().when('isCliaWaivedSite', {
 			is: true,
-			then: Yup.mixed()
-				.required('Please upload your CLIA Certificate')
-				.nullable(),
+			then: Yup.array()
+				.min(1, 'Please upload your CLIA Certificate')
+				.required('Please upload your CLIA Certificate'),
 		}),
 		hasParkingLot: Yup.mixed()
 			.required('Please select an option')
