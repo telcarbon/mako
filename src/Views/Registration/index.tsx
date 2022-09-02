@@ -140,8 +140,8 @@ export const Registration = () => {
 					className={
 						!location.pathname.includes('success') &&
 						!location.pathname.includes('error')
-							? 'bg-primary'
-							: ''
+							? 'bg-primary fixed-left'
+							: 'fixed-top'
 					}
 				>
 					{!location.pathname.includes('success') &&

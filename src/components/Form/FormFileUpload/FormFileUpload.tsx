@@ -5,7 +5,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
-import { Button } from 'components'
 import React, { useState } from 'react'
 import { UseFormRegister } from 'react-hook-form'
 

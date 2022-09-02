@@ -110,7 +110,6 @@ export const BusinessQuestionnaire = ({
 		remove(index)
 	}
 
-
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessQs(formValues)
@@ -294,8 +293,6 @@ export const BusinessQuestionnaire = ({
 														[]
 													)
 												}}
-												// reset={setValue('cliaCertification', [])}
-												// onChange={(e) => setValue('cliaCertification', e?.target?.files[0])}
 											/>
 										</FormField>
 									</div>
@@ -350,7 +347,7 @@ export const BusinessQuestionnaire = ({
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							//	disabled={(!isDirty && !isValid) || isSubmitting}
+							disabled={(!isDirty && !isValid) || isSubmitting}
 						>
 							Next
 						</SubmitButton>

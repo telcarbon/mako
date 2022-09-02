@@ -192,11 +192,11 @@ export const BusinessInfo = ({
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting, isValid},
+		formState: { isDirty, isSubmitting, isValid },
 		watch,
 		control,
 	} = useFormInstance
-	
+
 	const handleSubmit = async (values: any) => {
 		const formValues = getValues()
 		setBusinessInfo(formValues)
@@ -232,11 +232,7 @@ export const BusinessInfo = ({
 		<>
 			<Container fluid>
 				<ContentHeader title="Business Information" />
-				<Form
-					useFormInstance={useFormInstance}
-					onSubmit={handleSubmit}
-					className="loading style-2"
-				>
+				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 					<Row className="justify-content-center mb-5">
 						<Col lg={10}>
 							<Row className="justify-content-center">

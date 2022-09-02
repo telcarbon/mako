@@ -19,7 +19,7 @@ export const RegistrationResult = ({
 	const [showDownloadContractModal, setShowDownloadContractModal] =
 		useState<boolean>(false)
 	return (
-		<Container fluid className="register-success">
+		<Container fluid className="v-middle">
 			<Row className="justify-content-center align-items-center vh-100">
 				<Col lg={6} className="text-center">
 					{success ? (
