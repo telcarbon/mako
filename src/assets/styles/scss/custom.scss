@@ -497,18 +497,39 @@ input[type='file'] {
 
 //slider
 .custom-slider {
-	padding: 0.35rem 1.5rem;
+	padding: 0.35rem 2rem;
 
 	.slick-arrow {
-		color: $navy-blue !important;
 		border: none;
 		outline: none;
-		background: transparent;
+		// background: transparent;
 		&.slick-prev {
-			left: -10px;
+			left: 12px;
+			top: 34px;
+
 			&:before {
 				content: '\f104';
 				font-family: FontAwesome;
+				color: $navy-blue !important;
+				font-size: 25px;
+				font-weight: 900;
+				opacity: 1;
+			}
+		}
+		&.slick-disabled {
+			&::before {
+				opacity: 0.25;
+				cursor: auto;
+			}
+		}
+
+		&.slick-next {
+			right: 12px;
+			top: 34px;
+			// @extend .slick-disabled:before;
+			&:before {
+				@extend .slick-prev:before;
+				content: '\f105';
 			}
 		}
 	}
@@ -529,6 +550,7 @@ input[type='file'] {
 .date-card {
 	font-weight: bold;
 	text-align: center;
+	padding-top: 0.25rem;
 
 	h3 {
 		font-weight: 700;

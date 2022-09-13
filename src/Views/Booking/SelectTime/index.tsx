@@ -45,7 +45,7 @@ export const SelectTime = () => {
 							</Accordion.Header>
 							<Accordion.Body>
 								<div className='mx-3 mb-3'>
-									<p className="mb-0 fw-bold">Select a date</p>
+									<p className="mb-1 fw-bold">Select a date</p>
 									<div className="d-flex justify-content-between">
 										<h4>September 23, 2022</h4>
 										<FontAwesomeIcon
@@ -59,7 +59,7 @@ export const SelectTime = () => {
 								<Slider
 									dots={false}
 									slidesToShow={7}
-									// infinite={false}
+									infinite={false}
 									className="custom-slider"
 								>
 									{renderSlides()}
