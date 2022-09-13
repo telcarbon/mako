@@ -5,7 +5,7 @@ const navList = [
 	{
 		id: 1,
 		label: 'Business Information',
-		url: '/',
+		url: '',
 	},
 	{
 		id: 2,
@@ -30,14 +30,13 @@ const navList = [
 ]
 
 export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
-	
 	return (
 		<Nav className="mt-4 flex-column">
 			<h5>Register your account</h5>
 			{navList.map((list) => (
 				<Nav.Item as="li" key={list.id}>
 					<Nav.Link
-						disabled={currentStep === 0 || currentStep < list.id}
+						// disabled={currentStep === 0 || currentStep < list.id}
 						as={NavLink}
 						to={list.url}
 						className={

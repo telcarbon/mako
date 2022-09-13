@@ -16,6 +16,7 @@ type InputFileProps = {
 	label?: string
 	onClear?: any
 	value?: any
+	hasPhotoPreview?: boolean
 }
 
 const displayIcon = (icon: any, handleDelete?: any) => {
@@ -40,30 +41,57 @@ export const FormFileUpload = ({
 	label,
 	onClear,
 	value,
+	hasPhotoPreview,
 }: InputFileProps) => {
 	const [selectedFile, setSelectedFile] = useState<string>('')
+	const [preview, setPreview] = useState<any>()
 	const { onChange } = register(name)
 
 	return (
 		<label
 			className={classNames(
-				`btn btn-outline-dark border-2 ${className || ''}`
+				`${
+					!hasPhotoPreview
+						? 'btn btn-outline-dark border-2'
+						: 'upload-photo bg-primary'
+				} ${className || ''}`
 			)}
 		>
 			{selectedFile === '' && value.length === 0 ? (
 				<>
 					<input
 						type="file"
-						accept="application/pdf"
+						accept={`${
+							hasPhotoPreview
+								? 'image/png, image/jpeg'
+								: 'application/pdf'
+						}`}
 						{...register(name)}
 						onChange={(event) => {
 							const fileName = event.target.value.split('\\')
 							setSelectedFile(fileName[fileName.length - 1])
+							// if (event?.target?.files?.length !== 0) {
+							// 	setPreview({
+							// 		image: URL.createObjectURL(
+							// 			// @ts-ignore: Object is possibly 'null'.
+							// 			event?.target?.files[0]
+							// 		),
+							// 	})
+							// }
 							onChange(event)
 						}}
 					/>
-					{displayIcon(faCloudArrowUp)}
-					{label}
+					{!hasPhotoPreview ? (
+						<>
+							{displayIcon(faCloudArrowUp)}
+							{label}
+						</>
+					) : (
+						<i
+							className="fa fa-user-plus fa-2x text-secondary"
+							aria-hidden="true"
+						></i>
+					)}
 				</>
 			) : (
 				<button
@@ -74,11 +102,21 @@ export const FormFileUpload = ({
 					}}
 					className="d-block bg-transparent border-0 m-auto py-0"
 				>
-					{displayIcon(faChain)}
-					<span className="pe-5 ps-2">
-						{selectedFile ? selectedFile : value[0].name}
-					</span>
-					{displayIcon(faTrash, onClear)}
+					{!hasPhotoPreview ? (
+						<>
+							{displayIcon(faChain)}
+							<span className="pe-5 ps-2">
+								{selectedFile ? selectedFile : value[0].name}
+							</span>
+							{displayIcon(faTrash, onClear)}
+						</>
+					) : (
+						<img
+							src={window.URL.createObjectURL(value[0].name)}
+							alt="Thumb"
+						/>
+						// "test"
+					)}
 				</button>
 			)}
 		</label>

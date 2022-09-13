@@ -34,8 +34,6 @@ export const BusinessQuestionnaire = ({
 	setCurrentStep,
 }: IBusinessQuestionnaireProps) => {
 	const navigate = useNavigate()
-	const [selectedFile, setSelectedFile] = useState<string>('')
-	const [uploadedPhotos, setUploadedPhotos] = useState<any[]>([])
 
 	const validationSchema = Yup.object().shape({
 		plebotomy: Yup.mixed().required('Please select an option').nullable(),
@@ -162,6 +160,7 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -182,6 +181,7 @@ export const BusinessQuestionnaire = ({
 											value={option.value}
 											key={index}
 											disabled={!q1Watch}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -235,6 +235,7 @@ export const BusinessQuestionnaire = ({
 											value={option.value}
 											key={index}
 											disabled={!q1Watch || !q2Watch}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -255,6 +256,7 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -273,6 +275,7 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -313,6 +316,7 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
+											radioClassName="box"
 										/>
 									))}
 								</div>
@@ -331,6 +335,7 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
+											radioClassName="box"
 										/>
 									))}
 								</div>

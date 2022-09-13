@@ -288,7 +288,7 @@ export const BankingInfo = ({
 											<SubmitButton
 												pending={isStripeSubmitting}
 												pendingText="Saving"
-												className="col-lg-auto m-auto"
+												className="col-lg-auto mx-auto"
 												disabled={
 													!isStripeFieldsValid()
 												}

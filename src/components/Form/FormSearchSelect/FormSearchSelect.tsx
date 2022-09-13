@@ -9,6 +9,7 @@ interface FormSearchSelectProps {
 	defaultValue?: any
 	disabled?: boolean
 	placeholder?: string
+	isClearable?: boolean
 }
 
 export const FormSearchSelect = ({
@@ -18,6 +19,7 @@ export const FormSearchSelect = ({
 	placeholder = '',
 	defaultValue = null,
 	disabled = false,
+	isClearable=true
 }: FormSearchSelectProps) => {
 	return (
 		<Controller
@@ -31,7 +33,7 @@ export const FormSearchSelect = ({
 						getOptionLabel={(opt) => opt.label}
 						options={options}
 						placeholder={placeholder}
-						isClearable
+						isClearable={isClearable}
 						value={
 							(options &&
 								options.find((f) => f.value === field.value)) ||

@@ -6,10 +6,13 @@ type FormRadioGroupProps = {
 	name: string
 	register: UseFormRegister<any>
 	className?: string
+	radioClassName?: string
 	disabled?: boolean
 	children?: React.ReactNode
 	value: any
 	control?: any
+	components?: any
+	labelClassname?: string
 }
 
 export const FormRadioGroup = ({
@@ -20,6 +23,9 @@ export const FormRadioGroup = ({
 	control,
 	children,
 	disabled,
+	radioClassName,
+	components,
+	labelClassname,
 }: FormRadioGroupProps) => {
 	// const { control } = useFormContext()
 	return (
@@ -29,8 +35,8 @@ export const FormRadioGroup = ({
 			render={({ field }) => (
 				<label
 					key={value}
-					{...(disabled && {
-						className: 'disabled',
+					className={classNames(labelClassname, {
+						disabled: disabled,
 					})}
 				>
 					<input
@@ -47,11 +53,14 @@ export const FormRadioGroup = ({
 						})}
 					/>
 					<div
-						className={classNames('box', {
+						className={classNames(radioClassName, {
 							disabled: disabled,
 						})}
 					>
-						<span>{value === true ? 'Yes' : 'No'}</span>
+						{radioClassName === 'box' && (
+							<span>{value === true ? 'Yes' : 'No'}</span>
+						)}
+						{components && components}
 					</div>
 					{children}
 				</label>

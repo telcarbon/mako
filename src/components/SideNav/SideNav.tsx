@@ -1,6 +1,6 @@
 import classNames from 'classnames'
-import logo from 'assets/images/logo.png'
-import { Link } from 'react-router-dom'
+import logo from 'assets/images/Logo_MRx_CareCheckIn.svg'
+import { Link, useLocation } from 'react-router-dom'
 
 export interface SideNavProps {
 	children?: React.ReactNode | React.ReactNode[]
@@ -15,6 +15,7 @@ export const SideNav = ({
 	hasContactInfo,
 	hasRegisterLink,
 }: SideNavProps) => {
+	const location = useLocation()
 	return (
 		<nav
 			className={classNames(
@@ -22,18 +23,15 @@ export const SideNav = ({
 				className
 			)}
 		>
-			<a className="navbar-brand text-secondary" href="#">
+			<a className="navbar-brand text-secondary" href="/">
 				<img src={logo} alt="logo" className="img-fluid pt-0 pt-md-4" />
 			</a>
 			{hasContactInfo && (
 				<div
-					// className={classNames({
-					// 	'position-absolute': hasContactInfo,
-					// })}
 					className="d-lg-block d-none"
 					style={{
 						position: 'relative',
-						left: '-10.4rem',
+						left: '-13rem',
 						top: '4rem',
 					}}
 				>
@@ -45,16 +43,21 @@ export const SideNav = ({
 			)}
 
 			<div className="d-none d-sm-block">{children}</div>
-			{hasRegisterLink && (
-				<div className="ms-auto pe-5 pt-4 d-none d-sm-block">
-					<p className='small'>
-						No Account?{' '}
-						<Link to={'/'} className="link-secondary ps-1 fw-bold">
-							Register Now
-						</Link>
-					</p>
-				</div>
-			)}
+			{hasRegisterLink &&
+				!location.pathname.match('password') &&
+				!location.pathname.match('verify') && (
+					<div className="ms-auto pe-5 pt-4 d-none d-sm-block">
+						<p className="small">
+							No Account?{' '}
+							<Link
+								to={'/'}
+								className="link-secondary ps-1 fw-bold"
+							>
+								Register Now
+							</Link>
+						</p>
+					</div>
+				)}
 		</nav>
 	)
 }

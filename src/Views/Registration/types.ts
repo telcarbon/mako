@@ -53,8 +53,8 @@ export const bankingTypeOptions = [
 		value: 'Savings',
 	},
 	{
-		label: 'Current',
-		value: 'Current',
+		label: 'Checking',
+		value: 'Checking',
 	},
 ]
 

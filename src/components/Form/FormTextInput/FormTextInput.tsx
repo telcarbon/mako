@@ -1,7 +1,7 @@
-import React, { MouseEventHandler } from 'react'
 import { faCirclePlus, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { Path, useForm, UseFormRegister } from 'react-hook-form'
+import React from 'react'
+import { UseFormRegister } from 'react-hook-form'
 
 type InputProps = {
 	name: string
@@ -14,7 +14,7 @@ type InputProps = {
 	fieldCount?: any
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
 	type?: 'text' | 'number' | 'date' | 'time' | 'password'
-	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const FormTextInput = ({
@@ -26,14 +26,8 @@ export const FormTextInput = ({
 	fieldCount,
 	onClickRemove,
 	type = 'text',
-	onChange
+	onChange,
 }: InputProps) => {
-	const formRegister = register(name)
-	// console.log('reg', register(name))
-	const onHandleChange = (e: any) => {
-		const { value } = e.target
-	}
-
 	return (
 		<>
 			<div className="input-group rounded-left">

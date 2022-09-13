@@ -1,4 +1,4 @@
-import { faDownload } from '@fortawesome/free-solid-svg-icons'
+import { faDownload, faEye, faHome } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { ButtonVariety } from 'components'
 import { useState } from 'react'
@@ -24,53 +24,51 @@ export const RegistrationResult = ({
 				<Col lg={6} className="text-center">
 					{success ? (
 						<>
-							<h5 className="text-center mb-4">
+							<h3 className="text-center mb-4">
 								Registration Succesful!
-							</h5>
+							</h3>
 							<p>
-								We’ve also sent a copy of the contract as well
-								as next steps to your e-mail{' '}
+								We have sent the next steps in our confirmation
+								email{' '}
 								<strong className="text-secondary">
 									{email}
 								</strong>
 								.
 							</p>
-							<p>
-								<Button
-									variant="outline-secondary"
-									className="rounded-pill mt-5"
-									onClick={() =>
-										setShowDownloadContractModal(true)
-									}
+							<p className="mt-5">
+								<a
+									className="rounded-pill btn btn-outline-secondary"
+									href={`${BASE_URL}/static/pdf/MakoRx_Pharmacy_Agreement_CommericalRetail_CommercialSpecialty_LoyaltyCard_Tablet_PointOfCareTesting.pdf`}
+									target="_blank"
 								>
 									<FontAwesomeIcon
-										icon={faDownload}
+										icon={faEye}
 										className="me-2"
 									/>
-									Download Contract
-								</Button>
+									Preview of Contract
+								</a>
 							</p>
 						</>
 					) : (
 						<>
-							<h5 className="text-center mb-4 text-danger">
+							<h3 className="text-center mb-4 text-danger">
 								Something went wrong
-							</h5>
+							</h3>
 							<p>
 								We apologize for the inconvenience. Please try
 								again.
 							</p>
-							<Link className="link-secondary" to={'/'}>
+							<Link className="link-secondary h6 text-decoration-none" to={'/'}>
+								<FontAwesomeIcon
+									icon={faHome}
+									className="me-2"
+								/>
 								Back to Home
 							</Link>
 						</>
 					)}
 				</Col>
 			</Row>
-			<DownloadContractModal
-				show={showDownloadContractModal}
-				setShow={() => setShowDownloadContractModal(false)}
-			/>
 		</Container>
 	)
 }

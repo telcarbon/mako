@@ -1,5 +1,33 @@
-@import '~bootstrap/scss/functions';
-@import '~bootstrap/scss/variables';
-
 $navbar-sidebar-width: 280px;
 $navbar-sidebar-breakpoint: 'md';
+
+$navy-blue: #334c6e;
+$dark-blue: #0f2430;
+$light-blue: #e9f3ff;
+$sky-blue: #d1e6ff;
+$nero: #333333;
+$white: #fff;
+$danger: #ed4f32;
+
+$input-placeholder-color: rgba(51, 51, 51, 0.65);
+
+$btn-disabled-opacity: 0.45;
+
+$theme-colors: (
+	'primary': $light-blue,
+	'secondary': $navy-blue,
+	'danger': $danger,
+	'dark': $nero,
+);
+
+$breakpoints: (
+	xs: 576px,
+	sm: 768px,
+	md: 992px,
+	lg: 1200px,
+);
+
+$accordion-icon-active-color: $navy-blue;
+
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/variables';

@@ -1,13 +1,13 @@
-import { SideNav } from 'components'
-import { useEffect } from 'react'
 import {
 	BrowserRouter as Router,
 	Navigate,
 	useNavigate,
 	useRoutes,
 } from 'react-router-dom'
-import { Login } from 'Views/Login'
+import { Booking } from 'Views/Booking'
+// import { Booking } from 'Views/Booking'
 import { Registration } from 'Views/Registration'
+import { User } from 'Views/User'
 
 function AppRoutes() {
 	const navigate = useNavigate()
@@ -16,7 +16,8 @@ function AppRoutes() {
 
 	const routes = useRoutes([
 		{ path: '/*', element: <Registration /> },
-		{ path: '/login', element: <Login /> },
+		{ path: '/user/*', element: <User /> },
+		{ path: '/booking/*', element: <Booking /> },
 	])
 	return routes
 }
