@@ -1,8 +1,10 @@
 import { ContentHeader, SubmitButton } from 'components'
 import { Col, Container, Row } from 'react-bootstrap'
+import { useNavigate } from 'react-router-dom'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 
 export const BookingDetails = () => {
+    const navigate = useNavigate()
 	return (
 		<Container fluid>
 			<ContentHeader
@@ -50,6 +52,7 @@ export const BookingDetails = () => {
 					pending={false}
 					pendingText="Saving"
 					className="col-lg-auto"
+                    onClick={() => navigate('/booking')}
 				>
 					Back to Booking
 				</SubmitButton>

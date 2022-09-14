@@ -80,7 +80,7 @@ export const ConfirmAppointment = () => {
 
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
-		// navigate('select-branch')
+		navigate('/booking/details')
 	}
 
 	return (

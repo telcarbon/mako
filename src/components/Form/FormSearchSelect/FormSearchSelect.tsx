@@ -19,7 +19,7 @@ export const FormSearchSelect = ({
 	placeholder = '',
 	defaultValue = null,
 	disabled = false,
-	isClearable=true
+	isClearable = true,
 }: FormSearchSelectProps) => {
 	return (
 		<Controller
