@@ -78,6 +78,11 @@ export const ConfirmAppointment = () => {
 	} = useFormInstance
 
 	const servicesWatch = watch('services')
+	const birthdayWatch = watch('dob')
+
+	if (checkIfLegalAge(birthdayWatch)) {
+		console.log('im legal')
+	}
 
 	const handleSubmit = async (values: any) => {
 		console.log('test', getValues())
