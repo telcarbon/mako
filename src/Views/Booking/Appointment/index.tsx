@@ -1,7 +1,7 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ifNullOrEmpty } from 'common/Util'
+import { ifNullOrEmpty, restructureCities } from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -54,23 +54,6 @@ export const Appointment = () => {
 
 	const stateWatch: string = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
-
-	const restructureCities = (): any => {
-		if (!ifEmptyState) {
-			var res: string[] | undefined
-			res = stateAndCitiesData.find((f) => f.name === stateWatch)?.cities
-			if (res && res.length > 0) {
-				const restructured = res?.map((m) => {
-					return {
-						label: m,
-						value: m,
-					}
-				})
-				return restructured
-			}
-			return []
-		}
-	}
 
 	const appointmentOptionComponent = (name: string, description: string) => (
 		<div className="radio-card-wrap">
@@ -126,7 +109,11 @@ export const Appointment = () => {
 											name="city"
 											register={register}
 											placeholder="City"
-											options={restructureCities()}
+											options={restructureCities(
+												stateAndCitiesData,
+												ifEmptyState,
+												stateWatch
+											)}
 											control={control}
 										/>
 									</FormField>

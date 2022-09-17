@@ -21,6 +21,7 @@ import {
 	checkLength,
 	ifNullOrEmpty,
 	yupShortTest,
+	restructureCities,
 } from 'common/Util'
 import axios from 'axios'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
@@ -211,23 +212,6 @@ export const BusinessInfo = ({
 	const stateWatch: any = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
 
-	const restructureCities = (): any => {
-		if (!ifEmptyState) {
-			var res: string[] | undefined
-			res = stateAndCitiesData.find((f) => f.name === stateWatch)?.cities
-			if (res && res.length > 0) {
-				const restructured = res?.map((m) => {
-					return {
-						label: m,
-						value: m,
-					}
-				})
-				return restructured
-			}
-			return []
-		}
-	}
-
 	return (
 		<>
 			<Container fluid>
@@ -298,7 +282,11 @@ export const BusinessInfo = ({
 											name="city"
 											register={register}
 											placeholder="City"
-											options={restructureCities()}
+											options={restructureCities(
+												stateAndCitiesData,
+												ifEmptyState,
+												stateWatch
+											)}
 											control={control}
 											disabled={ifEmptyState}
 										/>

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { IQuestionnareInfo, Questions } from 'Views/Registration/types'
+import { AgeFromDateString } from 'age-calculator'
 
 export const isEmpty = (value: any) => {
 	return (
@@ -97,6 +98,50 @@ export const checkObjectIfComplete = (obj: any): boolean => {
 		return Object.values(obj).every((value) => {
 			return value !== undefined && value !== '' && value !== null
 		})
+	}
+	return false
+}
+
+export const restructureCities = (
+	data: any,
+	stateChecker: any,
+	stateWatch: any
+): any => {
+	if (!stateChecker) {
+		var res: string[] | undefined
+		res = data.find((f: any) => f.name === stateWatch)?.cities
+		if (res && res.length > 0) {
+			const restructured = res?.map((m) => {
+				return {
+					label: m,
+					value: m,
+				}
+			})
+			return restructured
+		}
+		return []
+	}
+}
+
+// export const getAge =
+
+export const checkIfLegalAge = (dob: any): any => {
+	if (dob) {
+		// const age = new AgeFromDateString(dob).age
+		// console.log('dsdsd', age)
+		// if (age >= 18) {
+		// 	return true
+		// }
+
+		var today = new Date()
+		var birthDate = new Date(dob)
+		var age = today.getFullYear() - birthDate.getFullYear()
+		var m = today.getMonth() - birthDate.getMonth()
+		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+			age--
+		}
+		console.log('age', age)
+		return age >= 18
 	}
 	return false
 }

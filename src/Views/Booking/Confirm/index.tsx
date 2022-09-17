@@ -25,6 +25,7 @@ import {
 	ServicesRadioOptions,
 } from '../types'
 import { BASE_URL } from 'shared/config'
+import { checkIfLegalAge } from 'common/Util'
 
 export const ConfirmAppointment = () => {
 	const navigate = useNavigate()
@@ -79,8 +80,10 @@ export const ConfirmAppointment = () => {
 	const servicesWatch = watch('services')
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues())
-		navigate('/booking/details')
+		console.log('test', getValues())
+		const val = getValues()
+		console.log('test', checkIfLegalAge(val.dob))
+		//navigate('/booking/details')
 	}
 
 	return (

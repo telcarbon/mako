@@ -112,7 +112,7 @@ export const FormFileUpload = ({
 						</>
 					) : (
 						<img
-							src={window.URL.createObjectURL(value[0].name)}
+							src={window.URL.createObjectURL(value[0])}
 							alt="Thumb"
 						/>
 						// "test"
