@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { IQuestionnareInfo, Questions } from 'Views/Registration/types'
-import { AgeFromDateString } from 'age-calculator'
+import { Questions } from 'Views/Registration/types'
 
 export const isEmpty = (value: any) => {
 	return (
@@ -122,8 +121,6 @@ export const restructureCities = (
 		return []
 	}
 }
-
-// export const getAge =
 
 export const checkIfLegalAge = (dob: any): any => {
 	if (dob) {

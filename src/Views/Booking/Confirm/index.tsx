@@ -25,16 +25,18 @@ import {
 	ServicesRadioOptions,
 } from '../types'
 import { BASE_URL } from 'shared/config'
-import { checkIfLegalAge } from 'common/Util'
+import { checkIfLegalAge, isEmpty } from 'common/Util'
+import { useEffect, useState } from 'react'
 
 export const ConfirmAppointment = () => {
 	const navigate = useNavigate()
+	const [age, setAge] = useState<boolean>(false)
 
 	const validationSchema = Yup.object().shape({
 		firstName: Yup.string().required('First Name is required').nullable(),
 		lastName: Yup.string().required('Last Name is required').nullable(),
 		gender: Yup.string().required('Gender is required').nullable(),
-		dob: Yup.string().required('Birthday is required').nullable(),
+		birthdate: Yup.string().required('Birthday is required').nullable(),
 		phoneNumber: Yup.string()
 			.required('Phone Number is required')
 			.test({
@@ -44,10 +46,6 @@ export const ConfirmAppointment = () => {
 		email: Yup.string()
 			.required('Email address is required')
 			.email('Must be a valid email address'),
-		photo: Yup.mixed().when('isCliaWaivedSite', {
-			is: true,
-			then: Yup.array().min(1, 'Please upload your photo').nullable(),
-		}),
 		services: Yup.string().required('Please select an option').nullable(),
 	})
 
@@ -57,15 +55,19 @@ export const ConfirmAppointment = () => {
 		services: '',
 		middleName: '',
 		gender: '',
-		dob: '',
+		birthdate: '',
 		email: '',
 		phoneNumber: '',
+		guardiansPhoneNumber: '',
+		guardiansEmail: '',
+		guardiansFirstName: '',
+		guardiansLastName: '',
 		photo: '',
 		terms: false,
 	}
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: initialValues,
 	})
 
@@ -75,20 +77,24 @@ export const ConfirmAppointment = () => {
 		formState: { isDirty, isSubmitting, isValid },
 		watch,
 		control,
+		trigger,
+		getFieldState
 	} = useFormInstance
 
-	const servicesWatch = watch('services')
-	const birthdayWatch = watch('dob')
+	const birthdayWatch = watch('birthdate')
 
 	if (checkIfLegalAge(birthdayWatch)) {
-		console.log('im legal')
+		console.log('i am legal')
 	}
 
 	const handleSubmit = async (values: any) => {
 		console.log('test', getValues())
 		const val = getValues()
-		console.log('test', checkIfLegalAge(val.dob))
-		//navigate('/booking/details')
+		console.log('test', checkIfLegalAge(val.birthdate))
+		navigate('/booking/details')
+	}
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+		console.log(event.key)
 	}
 
 	return (
@@ -142,20 +148,14 @@ export const ConfirmAppointment = () => {
 								<Col lg={10}>
 									<Row>
 										<Col lg>
-											<FormField
-												name="firstName"
-												useWrapper={false}
-											>
+											<FormField name="firstName">
 												<FormTextInput
 													placeholder="First Name"
 													name="firstName"
 													register={register}
 												/>
 											</FormField>
-											<FormField
-												name="middleName"
-												useWrapper={false}
-											>
+											<FormField name="middleName">
 												<FormTextInput
 													placeholder="Middle Name"
 													name="middleName"
@@ -164,10 +164,7 @@ export const ConfirmAppointment = () => {
 											</FormField>
 										</Col>
 										<Col lg>
-											<FormField
-												name="lastName"
-												useWrapper={false}
-											>
+											<FormField name="lastName">
 												<FormTextInput
 													placeholder="Last Name"
 													name="lastName"
@@ -178,21 +175,7 @@ export const ConfirmAppointment = () => {
 									</Row>
 									<Row className="mt-4">
 										<Col lg>
-											<FormField
-												name="gender"
-												useWrapper={false}
-											>
-												<FormTextInput
-													placeholder="Gender"
-													name="gender"
-													register={register}
-												/>
-											</FormField>
-											<FormField
-												name="gender"
-												label="Personal Information"
-												centered
-											>
+											<FormField name="gender">
 												<FormSearchSelect
 													name="gender"
 													register={register}
@@ -203,87 +186,175 @@ export const ConfirmAppointment = () => {
 											</FormField>
 										</Col>
 										<Col lg>
-											<FormField
-												name="dob"
-												useWrapper={false}
-											>
+											<FormField name="birthdate">
 												<FormTextInput
 													placeholder="Birthday"
-													name="dob"
+													name="birthdate"
 													register={register}
 													type="date"
+													onChange={() =>
+														trigger("birthdate")
+													}
 												/>
 											</FormField>
 										</Col>
 									</Row>
 									<Row>
-										<Col lg>
-											<FormField
-												name="email"
-												useWrapper={false}
-											>
-												<FormTextInput
-													placeholder="Email Address"
-													name="email"
-													register={register}
-												/>
-											</FormField>
-										</Col>
-										<Col lg>
-											<FormField
-												name="phoneNumber"
-												useWrapper={false}
-												className="form-group"
-											>
-												<Controller
-													control={control}
-													name="phoneNumber"
-													render={({
-														field: {
-															onChange,
-															value,
-														},
-													}) => (
-														<PhoneInput
-															international
-															placeholder="Enter phone number"
-															value={value}
-															onChange={onChange}
-															defaultCountry="US"
-															inputComponent={
-																BootstrapForm.Control as any
-															}
-															countries={['US']}
-															addInternationalOption={
-																false
-															}
+										{checkIfLegalAge(birthdayWatch) ? (
+											<>
+												<Col lg>
+													<FormField name="email">
+														<FormTextInput
+															placeholder="Email Address"
+															name="email"
+															register={register}
 														/>
-													)}
-												/>
-											</FormField>
-										</Col>
+													</FormField>
+												</Col>
+												<Col lg>
+													<FormField
+														name="phoneNumber"
+														className="form-group"
+													>
+														<Controller
+															control={control}
+															name="phoneNumber"
+															render={({
+																field: {
+																	onChange,
+																	value,
+																},
+															}) => (
+																<PhoneInput
+																	international
+																	placeholder="Enter phone number"
+																	value={
+																		value
+																	}
+																	onChange={
+																		onChange
+																	}
+																	defaultCountry="US"
+																	inputComponent={
+																		BootstrapForm.Control as any
+																	}
+																	countries={[
+																		'US',
+																	]}
+																	addInternationalOption={
+																		false
+																	}
+																/>
+															)}
+														/>
+													</FormField>
+												</Col>
+											</>
+										) : !checkIfLegalAge(birthdayWatch) &&
+										  !isEmpty(birthdayWatch) ? (
+											<>
+												<Col lg className="mt-2">
+													<h6>Guardian's Details</h6>
+													<Row>
+														<Col lg>
+															<FormField name="guardiansFirstName">
+																<FormTextInput
+																	placeholder="Guardian's First Name"
+																	name="guardiansFirstName"
+																	register={
+																		register
+																	}
+																/>
+															</FormField>
+														</Col>
+														<Col lg>
+															<FormField name="guardiansLastName">
+																<FormTextInput
+																	placeholder="Guardian's Last Name"
+																	name="guardiansLastName"
+																	register={
+																		register
+																	}
+																/>
+															</FormField>
+														</Col>
+													</Row>
+													<Row>
+														<Col lg>
+															<FormField name="guardiansEmail">
+																<FormTextInput
+																	placeholder="Guardian's Email Address"
+																	name="guardiansEmail"
+																	register={
+																		register
+																	}
+																/>
+															</FormField>
+														</Col>
+														<Col lg>
+															<FormField
+																name="guardiansPhoneNumber"
+																className="form-group"
+															>
+																<Controller
+																	control={
+																		control
+																	}
+																	name="guardiansPhoneNumber"
+																	render={({
+																		field: {
+																			onChange,
+																			value,
+																		},
+																	}) => (
+																		<PhoneInput
+																			international
+																			placeholder="Guardian’s Mobile Number"
+																			value={
+																				value
+																			}
+																			onChange={
+																				onChange
+																			}
+																			defaultCountry="US"
+																			inputComponent={
+																				BootstrapForm.Control as any
+																			}
+																			countries={[
+																				'US',
+																			]}
+																			addInternationalOption={
+																				false
+																			}
+																		/>
+																	)}
+																/>
+															</FormField>
+														</Col>
+													</Row>
+												</Col>
+											</>
+										) : null}
 									</Row>
-									<Row className="mt-4">
-										<Col lg={6}>
-											<FormField
-												name="coupon"
-												useWrapper={false}
-											>
-												<FormTextInput
-													placeholder="Coupon Code (Optional)"
-													name="coupon"
-													register={register}
-												/>
-											</FormField>
-										</Col>
-									</Row>
+									{!isEmpty(birthdayWatch) && (
+										<Row className="mt-4">
+											<Col lg={6}>
+												<FormField name="coupon">
+													<FormTextInput
+														placeholder="Coupon Code (Optional)"
+														name="coupon"
+														register={register}
+													/>
+												</FormField>
+											</Col>
+										</Row>
+									)}
 								</Col>
 							</Row>
 						</div>
 						<div className="mt-5 mx-1">
 							<FormField
 								name="services"
-								useWrapper={false}
 								label="How did you hear about this service?"
 								className="mb-0"
 							>
@@ -303,7 +374,6 @@ export const ConfirmAppointment = () => {
 							{watch('services') === 'Other' && (
 								<FormField
 									name="other"
-									useWrapper={false}
 									className="col-lg-5 ms-4 ps-3"
 								>
 									<FormTextInput

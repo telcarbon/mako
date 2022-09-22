@@ -1,7 +1,7 @@
 export interface IAppointment {
 	city: string
 	state: string
-	appointment: number
+	service: number
 }
 
 export interface IBranch {
@@ -14,11 +14,35 @@ export interface IConfirmAppointment {
 	middleName: string
 	services: string
 	gender: string
-	dob: string
+	birthdate: string
 	email: string
 	phoneNumber: string
+	guardiansPhoneNumber: string
+	guardiansEmail: string
+	guardiansFirstName: string
+	guardiansLastName: string
 	photo: any
 	terms: boolean
+}
+
+export interface IServices {
+	id: number
+	name: string
+	duration: NumberConstructor
+}
+export interface IServicesPricing {
+	id: number
+	price: string
+	service: IServices
+}
+
+export interface IPartners {
+	id: number
+	name: string
+	unitFloorBuilding: string
+	street: string
+	state: string
+	city: string
 }
 
 export const AppointmentOptions = [
@@ -26,41 +50,48 @@ export const AppointmentOptions = [
 		value: 1,
 		name: 'Flu Test',
 		description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+		price: '39.99',
 	},
 	{
 		value: 2,
 		name: 'Strep Test',
 		description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+		price: '39.99',
 	},
 	{
 		value: 3,
 		name: 'HIV Test',
 		description:
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
+		price: '39.99',
 	},
 	{
 		value: 4,
 		name: 'Urinalysis for UTI',
 		description:
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
+		price: '39.99',
 	},
 	{
 		value: 5,
 		name: 'A1C Test',
 		description:
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
+		price: '39.99',
 	},
 	{
 		value: 7,
 		name: 'Annual Physical Medical Visit',
 		description:
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
+		price: '39.99',
 	},
 	{
 		value: 8,
 		name: 'Blood Test',
 		description:
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
+		price: '39.99',
 	},
 ]
 

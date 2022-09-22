@@ -15,6 +15,7 @@ type InputProps = {
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
 	type?: 'text' | 'number' | 'date' | 'time' | 'password'
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
+	onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
 }
 
 export const FormTextInput = ({

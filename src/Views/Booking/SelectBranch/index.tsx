@@ -1,19 +1,28 @@
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import axios from 'axios'
+import { isEmpty } from 'common/Util'
 import {
-    ContentHeader,
-    Form,
-    FormField,
-    FormRadioGroup,
-    SubmitButton
+	ContentHeader,
+	Form,
+	FormField,
+	FormRadioGroup,
+	SubmitButton,
 } from 'components'
+import { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { ClinicOptions, IBranch } from '../types'
+import { API_URL } from 'shared/config'
+import { BookingContext } from '..'
+import { ClinicOptions, IBranch, IPartners } from '../types'
 
 export const SelectBranch = () => {
 	const navigate = useNavigate()
+
+	const { appointmentInfo, headers } = useContext(BookingContext)
+
+	const [partners, setPartners] = useState<IPartners[]>()
 
 	const initialValues: IBranch = {
 		branch: 0,
@@ -34,6 +43,25 @@ export const SelectBranch = () => {
 		console.log(getValues())
 		navigate('/booking/select-time')
 	}
+
+	const getPartnersRequest = () => {
+		axios
+			.get(
+				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=partner_configuration.days&expand=services`,
+				{
+					headers,
+				}
+			)
+			.then((response) => {
+				setPartners(response.data.results)
+			})
+	}
+
+	useEffect(() => {
+		if (appointmentInfo.city) {
+			getPartnersRequest()
+		}
+	}, [appointmentInfo.city])
 
 	const clinicOptionComponent = (name: string, description: string) => (
 		<div className="radio-card-wrap location">
@@ -73,24 +101,27 @@ export const SelectBranch = () => {
 										className="d-block"
 									>
 										<Row className="pe-2">
-											{ClinicOptions.map(
-												(option, index) => (
-													<Col lg={6}>
-														<FormRadioGroup
-															name={'branch'}
-															register={register}
-															value={option.value}
-															key={index}
-															radioClassName="radio-card"
-															components={clinicOptionComponent(
-																option.name,
-																option.address
-															)}
-															labelClassname="d-block mt-2 mb-3"
-														/>
-													</Col>
-												)
-											)}
+											{partners?.map((item, index) => (
+												<Col lg={6}>
+													<FormRadioGroup
+														name={'branch'}
+														register={register}
+														value={item?.id}
+														key={index}
+														radioClassName="radio-card"
+														components={clinicOptionComponent(
+															item.name,
+															[
+																item.unitFloorBuilding,
+																item.street,
+																item.city,
+																item.state,
+															].join(' ')
+														)}
+														labelClassname="d-block mt-2 mb-3"
+													/>
+												</Col>
+											))}
 										</Row>
 									</FormField>
 								</Col>

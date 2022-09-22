@@ -1,7 +1,9 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { ifNullOrEmpty, restructureCities } from 'common/Util'
+import { UserContext } from 'App'
+import axios from 'axios'
+import { ifNullOrEmpty, isEmpty, restructureCities } from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -10,15 +12,27 @@ import {
 	FormSearchSelect,
 	SubmitButton,
 } from 'components'
+import { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
+import { BookingContext } from '..'
 import stateAndCitiesData from '../../../common/state_cities.json'
-import { AppointmentOptions, IAppointment } from '../types'
+import {
+	AppointmentOptions,
+	IAppointment,
+	IServices,
+	IServicesPricing,
+} from '../types'
 
 export const Appointment = () => {
 	const navigate = useNavigate()
+
+	const { appointmentInfo, setAppointmentInfo, headers } = useContext(BookingContext)
+	const [servicesPricing, setServicesPricing] = useState<IServicesPricing[]>()
+	const { accessToken } = useContext(UserContext)
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
@@ -27,15 +41,9 @@ export const Appointment = () => {
 			.nullable(),
 	})
 
-	const initialValues: IAppointment = {
-		state: 'North Carolina',
-		city: '',
-		appointment: 0,
-	}
-
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: initialValues,
+		defaultValues: appointmentInfo,
 	})
 
 	const {
@@ -47,6 +55,8 @@ export const Appointment = () => {
 	} = useFormInstance
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
+		const formValues = getValues()
+		setAppointmentInfo(formValues)
 		navigate('select-branch')
 	}
 	const cityWatch: string = watch('city')
@@ -55,15 +65,35 @@ export const Appointment = () => {
 	const stateWatch: string = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
 
-	const appointmentOptionComponent = (name: string, description: string) => (
+	const appointmentOptionComponent = (
+		name: string,
+		price: string
+		// description: string
+	) => (
 		<div className="radio-card-wrap">
 			<div className="d-flex justify-content-between">
 				<strong>{name}</strong>
-				<p>$0.00</p>
+				<p>${price}</p>
 			</div>
-			<p className="small">{description}</p>
+			{/* {description && <p className="small">{description}</p>} */}
 		</div>
 	)
+
+	const getServicesRequest = () => {
+		axios
+			.get(`${API_URL}/service-pricings/?expand=service&state=NC`, {
+				headers,
+			})
+			.then((response) => {
+				setServicesPricing(response.data.results)
+			})
+	}
+
+	useEffect(() => {
+		if (!isEmpty(stateWatch)) {
+			getServicesRequest()
+		}
+	}, [stateWatch])
 
 	return (
 		<Container fluid>
@@ -130,8 +160,8 @@ export const Appointment = () => {
 											useWrapper={false}
 										>
 											<Row className="pe-2">
-												{AppointmentOptions.map(
-													(option, index) => (
+												{servicesPricing?.map(
+													(item) => (
 														<Col lg={6}>
 															<FormRadioGroup
 																name={
@@ -141,13 +171,19 @@ export const Appointment = () => {
 																	register
 																}
 																value={
-																	option.value
+																	item.service
+																		.id
 																}
-																key={index}
+																key={
+																	item
+																		?.service
+																		?.id
+																}
 																radioClassName="radio-card"
 																components={appointmentOptionComponent(
-																	option.name,
-																	option.description
+																	item.service
+																		.name,
+																	item.price
 																)}
 																labelClassname="d-block mt-2 mb-3"
 															/>

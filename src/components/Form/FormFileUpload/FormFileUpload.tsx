@@ -90,7 +90,7 @@ export const FormFileUpload = ({
 						<i
 							className="fa fa-user-plus fa-2x text-secondary"
 							aria-hidden="true"
-						></i>
+						/>
 					)}
 				</>
 			) : (
@@ -111,11 +111,13 @@ export const FormFileUpload = ({
 							{displayIcon(faTrash, onClear)}
 						</>
 					) : (
-						<img
-							src={window.URL.createObjectURL(value[0])}
-							alt="Thumb"
-						/>
-						// "test"
+						<div className="img-preview">
+							<img
+								src={window.URL.createObjectURL(value[0])}
+								alt="Thumb"
+								className="img-fluid"
+							/>
+						</div>
 					)}
 				</button>
 			)}

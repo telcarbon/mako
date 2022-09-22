@@ -423,6 +423,15 @@ input[type='file'] {
 	justify-content: center;
 	align-items: center;
 	margin: 0 auto;
+	.img-preview {
+		overflow: hidden;
+		height: 100px;
+		width: 100px;
+		border-radius: 50%;
+		img {
+			transform: scale(2.5);
+		}
+	}
 }
 
 // FORMS

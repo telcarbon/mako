@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import Slider from 'react-slick'
-import { ContentHeader, SubmitButton, AccordionWrap } from 'components'
+import { ContentHeader, SubmitButton } from 'components'
 import { Col, Container, Row, Card, Button, Accordion } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { mockData } from './mockData'
