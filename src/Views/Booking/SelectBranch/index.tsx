@@ -20,16 +20,13 @@ import { ClinicOptions, IBranch, IPartners } from '../types'
 export const SelectBranch = () => {
 	const navigate = useNavigate()
 
-	const { appointmentInfo, headers } = useContext(BookingContext)
+	const { appointmentInfo, setSelectBranchInfo, selectBranchInfo, headers } =
+		useContext(BookingContext)
 
 	const [partners, setPartners] = useState<IPartners[]>()
 
-	const initialValues: IBranch = {
-		branch: 0,
-	}
-
 	const useFormInstance = useForm({
-		defaultValues: initialValues,
+		defaultValues: selectBranchInfo,
 	})
 
 	const {
@@ -41,13 +38,15 @@ export const SelectBranch = () => {
 	} = useFormInstance
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
+		const formValues = getValues()
+		setSelectBranchInfo(formValues)
 		navigate('/booking/select-time')
 	}
 
 	const getPartnersRequest = () => {
 		axios
 			.get(
-				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=partner_configuration.days&expand=services`,
+				`${API_URL}/partners/?city=${appointmentInfo.city}`,
 				{
 					headers,
 				}
@@ -112,11 +111,11 @@ export const SelectBranch = () => {
 														components={clinicOptionComponent(
 															item.name,
 															[
-																item.unitFloorBuilding,
+																item.unit_floor_building,
 																item.street,
 																item.city,
 																item.state,
-															].join(' ')
+															].join(', ')
 														)}
 														labelClassname="d-block mt-2 mb-3"
 													/>
@@ -135,7 +134,7 @@ export const SelectBranch = () => {
 						pending={isSubmitting}
 						pendingText="Saving"
 						className="col-lg-auto pull-right"
-						disabled={!isDirty}
+						disabled={(!isDirty && !isValid) || isSubmitting}
 					>
 						Next
 					</SubmitButton>

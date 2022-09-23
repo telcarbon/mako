@@ -1,3 +1,4 @@
+import setBodyClass from 'common/Util'
 import { SideNav } from 'components'
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
@@ -9,6 +10,7 @@ import { ResetPasswordSuccess } from './ResetPasswordSuccess'
 import { VerifyEmail } from './VerifyEmail'
 
 export const User = () => {
+	setBodyClass(['full-width'])
 	return (
 		<>
 			<SideNav
@@ -21,7 +23,10 @@ export const User = () => {
 				<Route path="/forgot-password" element={<ForgotPassword />} />
 				<Route path="/verify-email" element={<VerifyEmail />} />
 				<Route path="/reset-password" element={<ResetPassword />} />
-				<Route path="/reset-password-success" element={<ResetPasswordSuccess />} />
+				<Route
+					path="/reset-password-success"
+					element={<ResetPasswordSuccess />}
+				/>
 			</Routes>
 		</>
 	)

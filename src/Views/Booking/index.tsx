@@ -1,4 +1,5 @@
 import { UserContext } from 'App'
+import setBodyClass from 'common/Util'
 import { SideNav } from 'components'
 import React, { createContext, useContext, useState } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom'
@@ -34,7 +35,7 @@ export const Booking = () => {
 
 	// if (accessToken === '') {
 	// 	console.log('sample')
-	// 	return <Route path="/error-404" element={<NotFound />} />
+	// 	return <NotFound />
 	// 	navigate('/error-404')
 	// }
 
@@ -72,6 +73,7 @@ export const Booking = () => {
 				}}
 			>
 				<Routes>
+					
 					<Route path="/" element={<Appointment />} />
 					<Route path="/select-branch" element={<SelectBranch />} />
 					<Route path="/select-time" element={<SelectTime />} />

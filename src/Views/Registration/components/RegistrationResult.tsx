@@ -1,5 +1,6 @@
 import { faDownload, faEye, faHome } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import setBodyClass from 'common/Util'
 import { ButtonVariety } from 'components'
 import { useState } from 'react'
 import { Col, Container, Row, Button } from 'react-bootstrap'
@@ -18,6 +19,9 @@ export const RegistrationResult = ({
 }: RegistrationResultProps) => {
 	const [showDownloadContractModal, setShowDownloadContractModal] =
 		useState<boolean>(false)
+
+	setBodyClass(['full-width'])
+
 	return (
 		<Container fluid className="v-middle">
 			<Row className="justify-content-center align-items-center vh-100">
@@ -58,7 +62,10 @@ export const RegistrationResult = ({
 								We apologize for the inconvenience. Please try
 								again.
 							</p>
-							<Link className="link-secondary h6 text-decoration-none" to={'/'}>
+							<Link
+								className="link-secondary h6 text-decoration-none"
+								to={'/'}
+							>
 								<FontAwesomeIcon
 									icon={faHome}
 									className="me-2"

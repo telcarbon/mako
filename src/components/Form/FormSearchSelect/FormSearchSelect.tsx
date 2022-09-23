@@ -21,6 +21,9 @@ export const FormSearchSelect = ({
 	disabled = false,
 	isClearable = true,
 }: FormSearchSelectProps) => {
+
+	console.log(options, "options");
+	
 	return (
 		<Controller
 			control={control}

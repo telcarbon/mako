@@ -20,18 +20,15 @@ import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
 import stateAndCitiesData from '../../../common/state_cities.json'
-import {
-	AppointmentOptions,
-	IAppointment,
-	IServices,
-	IServicesPricing,
-} from '../types'
+import { AppointmentOptions, IAppointment, IServicesPricing } from '../types'
 
 export const Appointment = () => {
 	const navigate = useNavigate()
 
-	const { appointmentInfo, setAppointmentInfo, headers } = useContext(BookingContext)
-	const [servicesPricing, setServicesPricing] = useState<IServicesPricing[]>()
+	const { appointmentInfo, setAppointmentInfo, headers } =
+		useContext(BookingContext)
+	const [services, setServices] = useState<IServicesPricing[]>()
+	const [availableCity, setAvailableCity] = useState<any[]>()
 	const { accessToken } = useContext(UserContext)
 
 	const validationSchema = Yup.object().shape({
@@ -79,21 +76,64 @@ export const Appointment = () => {
 		</div>
 	)
 
-	const getServicesRequest = () => {
+	const getCitiesRequest = () => {
 		axios
-			.get(`${API_URL}/service-pricings/?expand=service&state=NC`, {
-				headers,
-			})
+			.get(
+				`${API_URL}/partners/get_all_partner_cities/?state=${stateWatch}`,
+				{
+					headers,
+				}
+			)
 			.then((response) => {
-				setServicesPricing(response.data.results)
+				if (response.data.cities.length > 0) {
+					const cities = response.data.cities.map(
+						(m: any, k: any) => ({
+							value: m,
+							label: m,
+						})
+					)
+					setAvailableCity(cities)
+				}
 			})
 	}
+
+	const getServicesRequest = () => {
+		axios
+			.get(
+				`${API_URL}/partners/?city=${cityWatch}&expand=services.service`,
+				{
+					headers,
+				}
+			)
+			.then((response) => {
+				if (response.data.count > 0) {
+					const serve = response.data.results[0].services.map(
+						(m: any) => ({
+							id: m.service.id,
+							name: m.service.name,
+							price: m.price,
+							duration: m.service.duration,
+						})
+					)
+					setServices(serve)
+				}
+			})
+	}
+
+	console.log(cityWatch, 'city')
+	console.log(availableCity, 'city avail')
+
+	useEffect(() => {
+		if (!isEmpty(stateWatch)) {
+			getCitiesRequest()
+		}
+	}, [stateWatch])
 
 	useEffect(() => {
 		if (!isEmpty(stateWatch)) {
 			getServicesRequest()
 		}
-	}, [stateWatch])
+	}, [cityWatch])
 
 	return (
 		<Container fluid>
@@ -139,11 +179,7 @@ export const Appointment = () => {
 											name="city"
 											register={register}
 											placeholder="City"
-											options={restructureCities(
-												stateAndCitiesData,
-												ifEmptyState,
-												stateWatch
-											)}
+											options={availableCity ?? []}
 											control={control}
 										/>
 									</FormField>
@@ -160,36 +196,22 @@ export const Appointment = () => {
 											useWrapper={false}
 										>
 											<Row className="pe-2">
-												{servicesPricing?.map(
-													(item) => (
-														<Col lg={6}>
-															<FormRadioGroup
-																name={
-																	'appointment'
-																}
-																register={
-																	register
-																}
-																value={
-																	item.service
-																		.id
-																}
-																key={
-																	item
-																		?.service
-																		?.id
-																}
-																radioClassName="radio-card"
-																components={appointmentOptionComponent(
-																	item.service
-																		.name,
-																	item.price
-																)}
-																labelClassname="d-block mt-2 mb-3"
-															/>
-														</Col>
-													)
-												)}
+												{services?.map((item) => (
+													<Col lg={6}>
+														<FormRadioGroup
+															name={'appointment'}
+															register={register}
+															value={item.id}
+															key={item?.id}
+															radioClassName="radio-card"
+															components={appointmentOptionComponent(
+																item.name,
+																item.price
+															)}
+															labelClassname="d-block mt-2 mb-3"
+														/>
+													</Col>
+												))}
 											</Row>
 										</FormField>
 									</Col>

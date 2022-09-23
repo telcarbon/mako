@@ -24,22 +24,17 @@ export interface IConfirmAppointment {
 	photo: any
 	terms: boolean
 }
-
-export interface IServices {
-	id: number
-	name: string
-	duration: NumberConstructor
-}
 export interface IServicesPricing {
 	id: number
 	price: string
-	service: IServices
+	name: string
+	duration: number
 }
 
 export interface IPartners {
 	id: number
 	name: string
-	unitFloorBuilding: string
+	unit_floor_building: string
 	street: string
 	state: string
 	city: string

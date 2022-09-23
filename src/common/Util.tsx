@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { useEffect } from 'react'
 import { Questions } from 'Views/Registration/types'
 
 export const isEmpty = (value: any) => {
@@ -141,4 +142,25 @@ export const checkIfLegalAge = (dob: any): any => {
 		return age >= 18
 	}
 	return false
+}
+
+const addBodyClass = (className: string) =>
+	document.body.classList.add(className)
+const removeBodyClass = (className: string) =>
+	document.body.classList.remove(className)
+
+export default function setBodyClass(className: any) {
+	useEffect(() => {
+		// Set up
+		className instanceof Array
+			? className.map(addBodyClass)
+			: addBodyClass(className)
+
+		// Clean up
+		return () => {
+			className instanceof Array
+				? className.map(removeBodyClass)
+				: removeBodyClass(className)
+		}
+	}, [className])
 }

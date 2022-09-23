@@ -1,8 +1,9 @@
-import React from 'react'
+import setBodyClass from 'common/Util'
 import { Container, Row, Col } from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 
 export const NotFound = () => {
+	setBodyClass(['full-width'])
 	return (
 		<Container fluid className="v-middle">
 			<Row className="justify-content-center align-items-center vh-100">

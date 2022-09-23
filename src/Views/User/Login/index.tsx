@@ -90,6 +90,7 @@ export const Login = () => {
 									placeholder="Password"
 									name="password"
 									register={register}
+									type="password"
 								/>
 							</FormField>
 							<div className="text-center">
