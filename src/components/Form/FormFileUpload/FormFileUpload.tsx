@@ -43,7 +43,8 @@ export const FormFileUpload = ({
 	value,
 	hasPhotoPreview,
 }: InputFileProps) => {
-	const [selectedFile, setSelectedFile] = useState<string>('')
+	const [selectedFile, setSelectedFile] = useState<any>('')
+	const [selectedFilename, setSelectedFilename] = useState<string>('')
 	const [preview, setPreview] = useState<any>()
 	const { onChange } = register(name)
 
@@ -57,7 +58,7 @@ export const FormFileUpload = ({
 				} ${className || ''}`
 			)}
 		>
-			{selectedFile === '' && value.length === 0 ? (
+			{selectedFilename === '' && value.length === 0 ? (
 				<>
 					<input
 						type="file"
@@ -69,15 +70,8 @@ export const FormFileUpload = ({
 						{...register(name)}
 						onChange={(event) => {
 							const fileName = event.target.value.split('\\')
-							setSelectedFile(fileName[fileName.length - 1])
-							// if (event?.target?.files?.length !== 0) {
-							// 	setPreview({
-							// 		image: URL.createObjectURL(
-							// 			// @ts-ignore: Object is possibly 'null'.
-							// 			event?.target?.files[0]
-							// 		),
-							// 	})
-							// }
+							setSelectedFile(event.target.files)
+							setSelectedFilename(fileName[fileName.length - 1])
 							onChange(event)
 						}}
 					/>
@@ -106,14 +100,18 @@ export const FormFileUpload = ({
 						<>
 							{displayIcon(faChain)}
 							<span className="pe-5 ps-2">
-								{selectedFile ? selectedFile : value[0].name}
+								{selectedFilename
+									? selectedFilename
+									: value[0].name}
 							</span>
 							{displayIcon(faTrash, onClear)}
 						</>
 					) : (
 						<div className="img-preview">
 							<img
-								src={window.URL.createObjectURL(value[0])}
+								src={window.URL.createObjectURL(
+									selectedFile ? selectedFile[0] : value[0]
+								)}
 								alt="Thumb"
 								className="img-fluid"
 							/>
