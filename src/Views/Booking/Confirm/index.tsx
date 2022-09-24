@@ -78,7 +78,7 @@ export const ConfirmAppointment = () => {
 		watch,
 		control,
 		trigger,
-		getFieldState
+		getFieldState,
 	} = useFormInstance
 
 	const birthdayWatch = watch('birthdate')
@@ -192,9 +192,6 @@ export const ConfirmAppointment = () => {
 													name="birthdate"
 													register={register}
 													type="date"
-													onChange={() =>
-														trigger("birthdate")
-													}
 												/>
 											</FormField>
 										</Col>
