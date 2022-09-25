@@ -1,33 +1,59 @@
-import { useEffect, useState, useRef } from 'react'
 import Slider from 'react-slick'
 import { ContentHeader, SubmitButton } from 'components'
 import { Col, Container, Row, Card, Button, Accordion } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
-import { mockData } from './mockData'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import classNames from 'classnames'
+import {
+	formatDate,
+	transformDateToStringMonth,
+	WEEKDAY_NAMES,
+} from 'common/Util'
 
-export const SelectTime = () => {
+interface ISelectTimeProps {
+	bookingDate?: any // new Date format
+	setbookingDate: (value: any) => void
+}
+
+export const SelectTime = ({
+	bookingDate,
+	setbookingDate,
+}: ISelectTimeProps) => {
 	const navigate = useNavigate()
+	const renderSlides = () => {
+		const today = new Date()
+		var todayMoment = formatDate(today)
+		var lastLoopDate = today
 
-	const [selectedDate, setSelectedDate] = useState<any>(null)
+		return [...Array(100)].map((data, key) => {
+			var x = key === 0 ? 0 : 1
+			var currDate = new Date(
+				lastLoopDate.setDate(lastLoopDate.getDate() + x)
+			)
+			var dayOfTheWeek = WEEKDAY_NAMES[currDate.getDay()]
+				.slice(0, 3)
+				.toLocaleUpperCase()
 
-	console.log(selectedDate)
-
-	const renderSlides = () =>
-		mockData.map((data) => (
-			<div
-				className={classNames('date-card', {
-					'date-selected': selectedDate === data.id,
-					'date-current': data.isCurrentDay,
-				})}
-				onClick={() => setSelectedDate(data.id)}
-			>
-				<small>{data.weekday.slice(0, 3).toLocaleUpperCase()}</small>
-				<h3>{data.date}</h3>
-			</div>
-		))
+			var currDateMoment = formatDate(currDate)
+			var startingDate = todayMoment === currDateMoment
+			var selectedDate = bookingDate === currDateMoment
+			lastLoopDate = currDate
+			return (
+				<div
+					key={key}
+					className={classNames('date-card', {
+						'date-selected': selectedDate,
+						'date-current': startingDate,
+					})}
+					onClick={() => setbookingDate(currDateMoment)}
+				>
+					<small>{dayOfTheWeek}</small>
+					<h3>{currDate.getDate()}</h3>
+				</div>
+			)
+		})
+	}
 
 	return (
 		<Container fluid>
@@ -58,7 +84,11 @@ export const SelectTime = () => {
 								<div className="mx-3 mb-3">
 									<h6 className="mb-1">Select a date</h6>
 									<div className="d-flex justify-content-between">
-										<h5>September 23, 2022</h5>
+										<h5>
+											{transformDateToStringMonth(
+												bookingDate
+											)}
+										</h5>
 										<FontAwesomeIcon
 											icon={faCalendar}
 											className="text-secondary me-2"
@@ -76,11 +106,13 @@ export const SelectTime = () => {
 									{renderSlides()}
 								</Slider>
 
-								{selectedDate && (
+								{bookingDate && (
 									<div className="time-available-display">
 										<h6>
-											Showing available time slots for
-											September 23, 2022
+											Showing available time slots
+											{` ${transformDateToStringMonth(
+												bookingDate
+											)}`}
 										</h6>
 
 										<p className="small mt-3">Morning</p>
@@ -109,6 +141,7 @@ export const SelectTime = () => {
 					pendingText="Saving"
 					className="col-lg-auto pull-right"
 					onClick={() => navigate('/booking/confirm-appointment')}
+					disabled={bookingDate === null}
 				>
 					Next
 				</SubmitButton>

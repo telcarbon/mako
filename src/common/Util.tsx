@@ -1,6 +1,47 @@
 import axios from 'axios'
+import moment from 'moment'
 import { useEffect } from 'react'
 import { Questions } from 'Views/Registration/types'
+
+export const WEEKDAY_NAMES = [
+	'Sunday',
+	'Monday',
+	'Tuesday',
+	'Wednesday',
+	'Thursday',
+	'Friday',
+	'Saturday',
+]
+
+export const MONTH_NAMES = [
+	'January',
+	'February',
+	'March',
+	'April',
+	'May',
+	'June',
+	'July',
+	'August',
+	'September',
+	'October',
+	'November',
+	'December',
+]
+
+const BOOKING_DAY_FORMAT = 'YYYY-MM-DD'
+export const formatDate = (dt: any) => {
+	return moment(dt).format(BOOKING_DAY_FORMAT)
+}
+
+/**
+ * if date parameter has no value,  date today will be the default
+ */
+export const transformDateToStringMonth = (date: any) => {
+	const dt = date ? date.split('-') : formatDate(new Date()).split('-')
+	var monthString = MONTH_NAMES[Number(dt[1] - 1)]
+
+	return `${monthString} ${dt[2]}, ${dt[0]}`
+}
 
 export const isEmpty = (value: any) => {
 	return (
@@ -13,7 +54,6 @@ export const isEmpty = (value: any) => {
 
 export const isNumericDigits = (val: any) => {
 	const reg = new RegExp('^\\d+$')
-	// const reg = new RegExp('^[0-9]+$');
 	return reg.test(val)
 }
 
@@ -125,12 +165,6 @@ export const restructureCities = (
 
 export const checkIfLegalAge = (dob: any): any => {
 	if (dob) {
-		// const age = new AgeFromDateString(dob).age
-		// console.log('dsdsd', age)
-		// if (age >= 18) {
-		// 	return true
-		// }
-
 		var today = new Date()
 		var birthDate = new Date(dob)
 		var age = today.getFullYear() - birthDate.getFullYear()
@@ -138,7 +172,6 @@ export const checkIfLegalAge = (dob: any): any => {
 		if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
 			age--
 		}
-		console.log('age', age)
 		return age >= 18
 	}
 	return false

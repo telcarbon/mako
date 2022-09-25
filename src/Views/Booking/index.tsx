@@ -1,5 +1,5 @@
 import { UserContext } from 'App'
-import setBodyClass from 'common/Util'
+import setBodyClass, { formatDate } from 'common/Util'
 import { SideNav } from 'components'
 import React, { createContext, useContext, useState } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom'
@@ -28,7 +28,6 @@ export const BookingContext = createContext<BookingContextProps>({
 })
 
 export const Booking = () => {
-	const navigate = useNavigate()
 	const { accessToken } = useContext(UserContext)
 
 	console.log(accessToken === '', 'test')
@@ -52,7 +51,7 @@ export const Booking = () => {
 		'Content-Type': 'application/json',
 		Authorization: `Bearer ${accessToken}`,
 	}
-
+	const [bookingDate, setbookingDate] = useState<any>(null) // yyyy-mm-dd
 	return (
 		<>
 			<button
@@ -73,10 +72,17 @@ export const Booking = () => {
 				}}
 			>
 				<Routes>
-					
 					<Route path="/" element={<Appointment />} />
 					<Route path="/select-branch" element={<SelectBranch />} />
-					<Route path="/select-time" element={<SelectTime />} />
+					<Route
+						path="/select-time"
+						element={
+							<SelectTime
+								bookingDate={bookingDate}
+								setbookingDate={setbookingDate}
+							/>
+						}
+					/>
 					<Route
 						path="/confirm-appointment"
 						element={<ConfirmAppointment />}
