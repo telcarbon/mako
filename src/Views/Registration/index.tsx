@@ -56,6 +56,7 @@ export const Registration = () => {
 		hasParkingLot: null,
 		offerPrescription: null,
 		cliaCertification: [],
+		hasPublicBathroom: null,
 	})
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [stripeToken, setStripeToken] = useState<string>('')
@@ -135,7 +136,6 @@ export const Registration = () => {
 	return (
 		<>
 			<Elements stripe={stripePromise}>
-				{/* <button onClick={() => handleSubmit()}>test</button> */}
 				<SideNav
 					className={
 						!location.pathname.includes('success') &&

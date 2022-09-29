@@ -4,11 +4,11 @@ export interface IAppointment {
 	service: number
 }
 
-export interface IBranch {
-	branch: number
+export interface IPartner {
+	partner: number
 }
 
-export interface IConfirmAppointment {
+export interface IPatient {
 	firstName: string
 	lastName: string
 	middleName: string
@@ -17,12 +17,11 @@ export interface IConfirmAppointment {
 	birthdate: string
 	email: string
 	phoneNumber: string
-	guardiansPhoneNumber: string
-	guardiansEmail: string
 	guardiansFirstName: string
 	guardiansLastName: string
-	photo: any
+	patientPhoto: any
 	terms: boolean
+	couponCode: string
 }
 export interface IServicesPricing {
 	id: number
@@ -38,6 +37,13 @@ export interface IPartners {
 	street: string
 	state: string
 	city: string
+	partner_configuration: []
+}
+
+export interface IAvailableTime {
+	service: number
+	partner: number
+	date: string[]
 }
 
 export const AppointmentOptions = [

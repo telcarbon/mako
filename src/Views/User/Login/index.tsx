@@ -1,3 +1,5 @@
+import { yupResolver } from '@hookform/resolvers/yup'
+import axios from 'axios'
 import {
 	ContentHeader,
 	Form,
@@ -6,21 +8,16 @@ import {
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import { useState } from 'react'
 import { Alert, Col, Container, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL, TOKEN } from 'shared/config'
-import axios from 'axios'
-import { useContext, useState } from 'react'
-import { UserContext } from 'App'
+import * as Yup from 'yup'
 
 export const Login = () => {
 	const navigate = useNavigate()
 	const [apiError, setApiError] = useState<string>('')
-
-	const { setAccessToken } = useContext(UserContext)
 
 	const validationSchema = Yup.object().shape({
 		username: Yup.string().required('Username is required'),
@@ -57,9 +54,7 @@ export const Login = () => {
 				headers,
 			})
 			.then((response) => {
-				console.log(response.data.access, ' response')
 				localStorage.setItem('accessToken', response.data.access)
-				setAccessToken(response.data.access)
 				navigate('/booking')
 			})
 			.catch((error) => {

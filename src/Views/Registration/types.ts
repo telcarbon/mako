@@ -104,6 +104,7 @@ export interface IQuestionnareInfo {
 	isCliaWaivedSite: boolean | null
 	hasParkingLot: boolean | null
 	offerPrescription: boolean | null
+	hasPublicBathroom: boolean | null
 	cliaCertification: any
 }
 
@@ -128,6 +129,8 @@ export const Questions: Record<string, string> = {
 	isCliaWaivedSite: 'Is your business a CLIA WAIVED site?',
 	hasParkingLot:
 		'Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?',
+	hasPublicBathroom:
+		'Does your business have a public bathroom for patients?',
 	offerPrescription:
 		'Does your business offer prescription delivery via company driver or courier service?',
 }

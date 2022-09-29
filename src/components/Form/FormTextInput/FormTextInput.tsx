@@ -27,9 +27,8 @@ export const FormTextInput = ({
 	fieldCount,
 	onClickRemove,
 	type = 'text',
-}: // onChange,
-InputProps) => {
-	const { onChange } = register(name)
+	// onChange,
+}: InputProps) => {
 	return (
 		<>
 			<div className="input-group rounded-left">
@@ -38,7 +37,7 @@ InputProps) => {
 					className="form-control rounded-right"
 					{...register(name)}
 					placeholder={placeholder}
-					onChange={(evt) => onChange(evt)}
+					// onChange={() => onChange}
 				/>
 				{fieldCount > 1 && (
 					<button

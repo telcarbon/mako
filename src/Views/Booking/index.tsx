@@ -1,36 +1,51 @@
-import { UserContext } from 'App'
-import setBodyClass, { formatDate } from 'common/Util'
+import { convertFieldsToSnakeCase } from 'common/Util'
 import { SideNav } from 'components'
-import React, { createContext, useContext, useState } from 'react'
-import { Routes, Route, useNavigate } from 'react-router-dom'
-import { NotFound } from 'Views/NotFound'
+import { createContext, useState } from 'react'
+import { Route, Routes, useNavigate } from 'react-router-dom'
 import { Appointment } from './Appointment'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
 import { SelectBranch } from './SelectBranch'
 import { SelectTime } from './SelectTime'
-import { IAppointment, IBranch } from './types'
+import { IAppointment, IPartner, IPatient } from './types'
 
 interface BookingContextProps {
+	headers: any
 	appointmentInfo: any
 	setAppointmentInfo: any
-	selectBranchInfo: any
-	setSelectBranchInfo: any
-	headers: any
+	partnerInfo: any
+	setPartnerInfo: any
+	bookingDate: any
+	setBookingDate: any
+	bookingTime: any
+	setBookingTime: any
+	patientInfo: any
+	setPatientInfo: any
+	serviceDetail: any
+	setServiceDetail: any
+	handleSubmitAll: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
+	headers: null,
 	appointmentInfo: null,
 	setAppointmentInfo: () => {},
-	selectBranchInfo: null,
-	setSelectBranchInfo: () => {},
-	headers: null,
+	partnerInfo: null,
+	setPartnerInfo: () => {},
+	bookingDate: null,
+	setBookingDate: () => {},
+	bookingTime: null,
+	setBookingTime: () => {},
+	patientInfo: null,
+	setPatientInfo: () => {},
+	serviceDetail: null,
+	setServiceDetail: () => {},
+	handleSubmitAll: () => {},
 })
 
 export const Booking = () => {
-	const { accessToken } = useContext(UserContext)
-
-	console.log(accessToken === '', 'test')
+	const navigate = useNavigate()
+	const accessToken = localStorage.getItem('accessToken')
 
 	// if (accessToken === '') {
 	// 	console.log('sample')
@@ -44,19 +59,84 @@ export const Booking = () => {
 		service: 0,
 	})
 
-	const [selectBranchInfo, setSelectBranchInfo] = useState<IBranch>({
-		branch: 0,
+	const [partnerInfo, setPartnerInfo] = useState<IPartner>({
+		partner: 0,
 	})
+
+	const [patientInfo, setPatientInfo] = useState<IPatient>({
+		firstName: '',
+		lastName: '',
+		services: '',
+		middleName: '',
+		gender: '',
+		birthdate: '',
+		email: '',
+		phoneNumber: '',
+		guardiansFirstName: '',
+		guardiansLastName: '',
+		patientPhoto: '',
+		terms: false,
+		couponCode: '',
+	})
+
+	const [bookingDate, setBookingDate] = useState()
+	const [bookingTime, setBookingTime] = useState()
+
+	const [serviceDetail, setServiceDetail] = useState<any>()
+
 	const headers = {
 		'Content-Type': 'application/json',
 		Authorization: `Bearer ${accessToken}`,
 	}
-	const [bookingDate, setbookingDate] = useState<any>(null) // yyyy-mm-dd
+
+	console.log(serviceDetail, 'detail')
+
+	const handleSubmitAll = (patientx: any) => {
+		// if (appointmentInfo && partnerInfo && patientInfo) {
+			const patientDetails = {
+				firstName: patientx?.firstName,
+				middleName: patientx?.middleName || null,
+				lastName: patientx?.lastName,
+				gender: patientx?.gender,
+				birthdate: patientx?.birthdate,
+				guardianFirstName: patientx?.guardiansFirstName || null,
+				guardianLastName: patientx?.guardiansLastName || null,
+				email: patientx?.email,
+				phoneNumber: patientx?.phoneNumber,
+				couponCode: patientx?.couponCode || null,
+			}
+
+			const appointmentDetails = [
+				{
+					partner: partnerInfo?.partner,
+					service: appointmentInfo?.service,
+					practitioner: null,
+					scheduled_time: bookingTime,
+					scheduled_date: bookingDate,
+					notes: 'test',
+				},
+			]
+
+			const params = {
+				patient: convertFieldsToSnakeCase(patientDetails),
+				appointments: convertFieldsToSnakeCase(appointmentDetails),
+			}
+
+			console.log(params, 'all params')
+		// }
+	}
+
 	return (
 		<>
 			<button
 				onClick={() => {
-					console.log(appointmentInfo)
+					console.log(
+						appointmentInfo,
+						partnerInfo,
+						patientInfo,
+						bookingDate,
+						bookingTime
+					)
 				}}
 			>
 				test
@@ -66,23 +146,24 @@ export const Booking = () => {
 				value={{
 					appointmentInfo,
 					setAppointmentInfo,
-					selectBranchInfo,
-					setSelectBranchInfo,
+					partnerInfo,
+					setPartnerInfo,
 					headers,
+					bookingDate,
+					setBookingDate,
+					patientInfo,
+					setPatientInfo,
+					bookingTime,
+					setBookingTime,
+					serviceDetail,
+					setServiceDetail,
+					handleSubmitAll,
 				}}
 			>
 				<Routes>
 					<Route path="/" element={<Appointment />} />
 					<Route path="/select-branch" element={<SelectBranch />} />
-					<Route
-						path="/select-time"
-						element={
-							<SelectTime
-								bookingDate={bookingDate}
-								setbookingDate={setbookingDate}
-							/>
-						}
-					/>
+					<Route path="/select-time" element={<SelectTime />} />
 					<Route
 						path="/confirm-appointment"
 						element={<ConfirmAppointment />}

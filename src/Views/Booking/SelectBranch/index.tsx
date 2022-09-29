@@ -15,18 +15,18 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
-import { ClinicOptions, IBranch, IPartners } from '../types'
+import { IPartners } from '../types'
 
 export const SelectBranch = () => {
 	const navigate = useNavigate()
 
-	const { appointmentInfo, setSelectBranchInfo, selectBranchInfo, headers } =
+	const { appointmentInfo, setPartnerInfo, partnerInfo, headers } =
 		useContext(BookingContext)
 
-	const [partners, setPartners] = useState<IPartners[]>()
+	const [partnerArray, setPartnerArray] = useState<IPartners[]>()
 
 	const useFormInstance = useForm({
-		defaultValues: selectBranchInfo,
+		defaultValues: partnerInfo,
 	})
 
 	const {
@@ -39,20 +39,17 @@ export const SelectBranch = () => {
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
 		const formValues = getValues()
-		setSelectBranchInfo(formValues)
+		setPartnerInfo(formValues)
 		navigate('/booking/select-time')
 	}
 
 	const getPartnersRequest = () => {
 		axios
-			.get(
-				`${API_URL}/partners/?city=${appointmentInfo.city}`,
-				{
-					headers,
-				}
-			)
+			.get(`${API_URL}/partners/?city=${appointmentInfo.city}`, {
+				headers,
+			})
 			.then((response) => {
-				setPartners(response.data.results)
+				setPartnerArray(response.data.results)
 			})
 	}
 
@@ -95,32 +92,35 @@ export const SelectBranch = () => {
 							<Row>
 								<Col lg={12}>
 									<FormField
-										name="branch"
+										name="partner"
 										useWrapper={false}
 										className="d-block"
 									>
 										<Row className="pe-2">
-											{partners?.map((item, index) => (
-												<Col lg={6}>
-													<FormRadioGroup
-														name={'branch'}
-														register={register}
-														value={item?.id}
-														key={index}
-														radioClassName="radio-card"
-														components={clinicOptionComponent(
-															item.name,
-															[
-																item.unit_floor_building,
-																item.street,
-																item.city,
-																item.state,
-															].join(', ')
-														)}
-														labelClassname="d-block mt-2 mb-3"
-													/>
-												</Col>
-											))}
+											{partnerArray?.map((item, index) =>
+												item?.partner_configuration
+													?.length === 0 ? null : (
+													<Col lg={6}>
+														<FormRadioGroup
+															name={'partner'}
+															register={register}
+															value={item?.id}
+															key={index}
+															radioClassName="radio-card"
+															components={clinicOptionComponent(
+																item.name,
+																[
+																	item.unit_floor_building,
+																	item.street,
+																	item.city,
+																	item.state,
+																].join(', ')
+															)}
+															labelClassname="d-block mt-2 mb-3"
+														/>
+													</Col>
+												)
+											)}
 										</Row>
 									</FormField>
 								</Col>

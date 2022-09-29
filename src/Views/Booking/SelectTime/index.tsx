@@ -7,20 +7,33 @@ import { faCalendar, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import classNames from 'classnames'
 import {
 	formatDate,
+	isEmpty,
 	transformDateToStringMonth,
 	WEEKDAY_NAMES,
 } from 'common/Util'
+import { useContext, useEffect, useState } from 'react'
+import { BookingContext } from '..'
+import axios from 'axios'
+import { API_URL } from 'shared/config'
+import { IAvailableTime } from '../types'
+import moment from 'moment'
 
-interface ISelectTimeProps {
-	bookingDate?: any // new Date format
-	setbookingDate: (value: any) => void
-}
+export const SelectTime = () => {
+	const {
+		bookingDate,
+		setBookingDate,
+		headers,
+		partnerInfo,
+		appointmentInfo,
+		bookingTime,
+		setBookingTime,
+		serviceDetail,
+	} = useContext(BookingContext)
 
-export const SelectTime = ({
-	bookingDate,
-	setbookingDate,
-}: ISelectTimeProps) => {
 	const navigate = useNavigate()
+	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [availableTime, setAvailableTime] = useState<any>()
+
 	const renderSlides = () => {
 		const today = new Date()
 		var todayMoment = formatDate(today)
@@ -46,7 +59,7 @@ export const SelectTime = ({
 						'date-selected': selectedDate,
 						'date-current': startingDate,
 					})}
-					onClick={() => setbookingDate(currDateMoment)}
+					onClick={() => setBookingDate(currDateMoment)}
 				>
 					<small>{dayOfTheWeek}</small>
 					<h3>{currDate.getDate()}</h3>
@@ -54,6 +67,53 @@ export const SelectTime = ({
 			)
 		})
 	}
+
+	const handleSubmit = async () => {
+		navigate('/booking/confirm-appointment')
+	}
+
+	const getAvailableTimeRequest = () => {
+		const partner = partnerInfo.partner
+		const service = appointmentInfo.service
+		axios
+			.get(
+				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${bookingDate}`,
+				{
+					headers,
+				}
+			)
+			.then((response) => {
+				if (!isEmpty(response.data)) {
+					setAvailableTime(response.data)
+				}
+			})
+	}
+
+	const getTimeAndSlot = () => {
+		if (
+			availableTime &&
+			bookingDate &&
+			availableTime[bookingDate]?.length > 0
+		) {
+			return Object.values(availableTime[bookingDate])
+		}
+		return []
+	}
+
+	const getStartAndEndTime = (time: any) => {
+		const startTime = moment(time, 'hh:mm').format('LT')
+		const endTime = moment(time, 'hh:mm').add('15', 'minutes').format('LT')
+		return `${startTime} - ${endTime}`
+	}
+
+	console.log(getStartAndEndTime('13:00'), 'time')
+
+	useEffect(() => {
+		if (!isEmpty(bookingDate)) {
+			getAvailableTimeRequest()
+			// setBookingTime(null)
+		}
+	}, [bookingDate])
 
 	return (
 		<Container fluid>
@@ -63,20 +123,29 @@ export const SelectTime = ({
 				backLink={-1}
 			/>
 
-			<Row className="justify-content-center">
+			<Row className="justify-content-center mb-5">
 				<Col lg={10}>
 					<Accordion className="border-2 border-dark">
 						<Accordion.Item eventKey="0">
 							<Accordion.Header>
-								<Col lg={9}>
-									<h6 className="fw-bold">Flu Test</h6>
-									<p className="small mb-0">
+								<Col lg={8}>
+									<h6 className="fw-bold mt-2">Flu Test</h6>
+									{/* <p className="small mb-0">
 										this is a sample label
-									</p>
+									</p> */}
 								</Col>
 								<Col className="me-auto text-end">
 									<h6 className="fw-bold me-3 mt-2">
-										Select a time slot
+										{bookingDate && bookingTime
+											? [
+													getStartAndEndTime(
+														bookingTime
+													),
+													moment(bookingDate).format(
+														'ddd, MMM DD'
+													),
+											  ].join(', ')
+											: 'Select time slot'}
 									</h6>
 								</Col>
 							</Accordion.Header>
@@ -98,6 +167,7 @@ export const SelectTime = ({
 								</div>
 
 								<Slider
+									swipeToSlide
 									dots={false}
 									slidesToShow={7}
 									infinite={false}
@@ -106,30 +176,61 @@ export const SelectTime = ({
 									{renderSlides()}
 								</Slider>
 
-								{bookingDate && (
-									<div className="time-available-display">
+								<div className="time-available-display">
+									{getTimeAndSlot()?.length > 0 ? (
+										<>
+											<h6>
+												Showing available time slots for
+												{` ${transformDateToStringMonth(
+													bookingDate
+												)}`}
+											</h6>
+
+											<ul className="time-slot row mt-4">
+												{getTimeAndSlot()?.map(
+													(
+														item: any,
+														index: number
+													) => (
+														<li
+															className="col-lg-3"
+															key={index}
+														>
+															<div
+																className={classNames(
+																	{
+																		'time-selected':
+																			bookingTime ===
+																			item.time,
+																		'time-disabled':
+																			item.available_slots <
+																			1,
+																	}
+																)}
+																onClick={() =>
+																	setBookingTime(
+																		item.time
+																	)
+																}
+															>
+																{getStartAndEndTime(
+																	item.time
+																)}
+															</div>
+														</li>
+													)
+												)}
+											</ul>
+										</>
+									) : (
 										<h6>
-											Showing available time slots
-											{` ${transformDateToStringMonth(
-												bookingDate
-											)}`}
+											{bookingDate &&
+												`There's no available time slots for ${transformDateToStringMonth(
+													bookingDate
+												)}`}
 										</h6>
-
-										<p className="small mt-3">Morning</p>
-
-										<ul className="time-slot">
-											<li>9:00 AM - 9:30 AM</li>
-											<li className="time-selected">
-												9:30 AM - 10:00 AM
-											</li>
-											<li className="time-disabled">
-												10:00 AM - 10:30 AM
-											</li>
-											<li>10:30 AM - 11:00 AM</li>
-											<li>11:00 AM - 11:30 AM</li>
-										</ul>
-									</div>
-								)}
+									)}
+								</div>
 							</Accordion.Body>
 						</Accordion.Item>
 					</Accordion>
@@ -140,8 +241,9 @@ export const SelectTime = ({
 					pending={false}
 					pendingText="Saving"
 					className="col-lg-auto pull-right"
-					onClick={() => navigate('/booking/confirm-appointment')}
-					disabled={bookingDate === null}
+					onClick={handleSubmit}
+					disabled={!bookingDate || !bookingTime}
+					type="button"
 				>
 					Next
 				</SubmitButton>

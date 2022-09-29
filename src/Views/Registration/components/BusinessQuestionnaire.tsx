@@ -53,7 +53,7 @@ export const BusinessQuestionnaire = ({
 			),
 		}),
 		trainExistingStaff: Yup.mixed().when('licensed', {
-			is: true,
+			is: false,
 			then: Yup.boolean().required('Please select an option').nullable(),
 		}),
 		offerClia: Yup.mixed().required('Please select an option').nullable(),
@@ -67,6 +67,9 @@ export const BusinessQuestionnaire = ({
 				.nullable(),
 		}),
 		hasParkingLot: Yup.mixed()
+			.required('Please select an option')
+			.nullable(),
+		hasPublicBathroom: Yup.mixed()
 			.required('Please select an option')
 			.nullable(),
 		offerPrescription: Yup.mixed()
@@ -120,7 +123,7 @@ export const BusinessQuestionnaire = ({
 	}
 
 	useEffect(() => {
-		if (q1Watch === true || q1Watch === null) {
+		if (q1Watch === true || q1Watch === null || q2Watch !== null) {
 			setValue('licensed', null)
 		} else {
 			setValue('licensed', false)
@@ -128,12 +131,12 @@ export const BusinessQuestionnaire = ({
 	}, [q1Watch])
 
 	useEffect(() => {
-		if (q2Watch === true || q2Watch === null) {
-			setValue('trainExistingStaff', null)
-		} else {
+		if (q2Watch === true || (q1Watch === false && q2Watch === false)) {
 			setValue('trainExistingStaff', false)
+		} else if (q2Watch === null || q2Watch === false) {
+			setValue('trainExistingStaff', null)
 		}
-	}, [q2Watch])
+	}, [q2Watch, q1Watch])
 
 	return (
 		<>
@@ -225,7 +228,11 @@ export const BusinessQuestionnaire = ({
 								useWrapper={false}
 								className="form-radio-wrap rounded-2 d-flex ps-3"
 								isRadio
-								disabled={!q1Watch || !q2Watch}
+								disabled={
+									!q1Watch ||
+									q2Watch === true ||
+									q2Watch === null
+								}
 							>
 								<div className="d-flex">
 									{RadioLabelOptions.map((option, index) => (
@@ -234,7 +241,11 @@ export const BusinessQuestionnaire = ({
 											register={register}
 											value={option.value}
 											key={index}
-											disabled={!q1Watch || !q2Watch}
+											disabled={
+												!q1Watch ||
+												q2Watch === true ||
+												q2Watch === null
+											}
 											radioClassName="box"
 										/>
 									))}
@@ -313,6 +324,25 @@ export const BusinessQuestionnaire = ({
 									{RadioLabelOptions.map((option, index) => (
 										<FormRadioGroup
 											name={'hasParkingLot'}
+											register={register}
+											value={option.value}
+											key={index}
+											radioClassName="box"
+										/>
+									))}
+								</div>
+							</FormField>
+							<FormField
+								name="hasPublicBathroom"
+								label="Does your business have a public bathroom for patients?"
+								className="form-radio-wrap rounded-2 d-flex ps-3"
+								isRadio
+								useWrapper={false}
+							>
+								<div className="d-flex">
+									{RadioLabelOptions.map((option, index) => (
+										<FormRadioGroup
+											name={'hasPublicBathroom'}
 											register={register}
 											value={option.value}
 											key={index}

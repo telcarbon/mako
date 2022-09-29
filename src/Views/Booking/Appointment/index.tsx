@@ -1,7 +1,6 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { UserContext } from 'App'
 import axios from 'axios'
 import { ifNullOrEmpty, isEmpty, restructureCities } from 'common/Util'
 import {
@@ -25,15 +24,19 @@ import { AppointmentOptions, IAppointment, IServicesPricing } from '../types'
 export const Appointment = () => {
 	const navigate = useNavigate()
 
-	const { appointmentInfo, setAppointmentInfo, headers } =
-		useContext(BookingContext)
+	const {
+		appointmentInfo,
+		setAppointmentInfo,
+		headers,
+		serviceDetail,
+		setServiceDetail,
+	} = useContext(BookingContext)
 	const [services, setServices] = useState<IServicesPricing[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
-	const { accessToken } = useContext(UserContext)
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
-		appointment: Yup.number()
+		service: Yup.number()
 			.required('Please select an appointment')
 			.nullable(),
 	})
@@ -49,6 +52,7 @@ export const Appointment = () => {
 		formState: { isDirty, isSubmitting, isValid },
 		watch,
 		control,
+		setValue,
 	} = useFormInstance
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
@@ -57,7 +61,7 @@ export const Appointment = () => {
 		navigate('select-branch')
 	}
 	const cityWatch: string = watch('city')
-	const appointmentWatch: number = watch('appointment')
+	const service: number = watch('service')
 
 	const stateWatch: string = watch('state')
 	const ifEmptyState = ifNullOrEmpty(stateWatch)
@@ -107,21 +111,20 @@ export const Appointment = () => {
 			)
 			.then((response) => {
 				if (response.data.count > 0) {
-					const serve = response.data.results[0].services.map(
-						(m: any) => ({
-							id: m.service.id,
-							name: m.service.name,
-							price: m.price,
-							duration: m.service.duration,
+					console.log(response, 'response')
+
+					const serviceType = response.data.results[0].services.map(
+						(item: any) => ({
+							id: item.service.id,
+							name: item.service.name,
+							price: item.price,
+							duration: item.service.duration,
 						})
 					)
-					setServices(serve)
+					setServices(serviceType)
 				}
 			})
 	}
-
-	console.log(cityWatch, 'city')
-	console.log(availableCity, 'city avail')
 
 	useEffect(() => {
 		if (!isEmpty(stateWatch)) {
@@ -130,10 +133,27 @@ export const Appointment = () => {
 	}, [stateWatch])
 
 	useEffect(() => {
-		if (!isEmpty(stateWatch)) {
+		if (!isEmpty(cityWatch)) {
 			getServicesRequest()
+			console.log('kahit ano')
 		}
+
+		if (isDirty) {
+			setValue('service', null)
+		}
+		console.log(cityWatch, 'city aa')
 	}, [cityWatch])
+
+	useEffect(() => {
+		console.log(service, 'useEffect service')
+
+		if (service !== 0) {
+			const selectedService: any = services?.filter(
+				(item) => item?.id === service
+			)
+			setServiceDetail(selectedService)
+		}
+	}, [service])
 
 	return (
 		<Container fluid>
@@ -192,14 +212,14 @@ export const Appointment = () => {
 								<Row>
 									<Col lg={12}>
 										<FormField
-											name="appointment"
+											name="service"
 											useWrapper={false}
 										>
 											<Row className="pe-2">
 												{services?.map((item) => (
 													<Col lg={6}>
 														<FormRadioGroup
-															name={'appointment'}
+															name={'service'}
 															register={register}
 															value={item.id}
 															key={item?.id}
@@ -226,7 +246,7 @@ export const Appointment = () => {
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={appointmentWatch === 0}
+							disabled={service === 0 || service === null}
 						>
 							Next
 						</SubmitButton>
