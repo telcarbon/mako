@@ -31,7 +31,8 @@ export const Appointment = () => {
 		serviceDetail,
 		setServiceDetail,
 	} = useContext(BookingContext)
-	const [services, setServices] = useState<IServicesPricing[]>()
+	// const [services, setServices] = useState<IServicesPricing[]>()
+	const [services, setServices] = useState<any[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 
 	const validationSchema = Yup.object().shape({
@@ -96,7 +97,13 @@ export const Appointment = () => {
 							label: m,
 						})
 					)
-					setAvailableCity(cities)
+					// setAvailableCity(cities)
+					setAvailableCity([
+						{
+							label: 'Aberdeen',
+							value: 'Aberdeen',
+						},
+					])
 				}
 			})
 	}
@@ -121,7 +128,8 @@ export const Appointment = () => {
 							duration: item.service.duration,
 						})
 					)
-					setServices(serviceType)
+					// setServices(serviceType)
+					setServices(AppointmentOptions)
 				}
 			})
 	}

@@ -49,7 +49,7 @@ export interface IAvailableTime {
 export const AppointmentOptions = [
 	{
 		value: 1,
-		name: 'Flu Test',
+		name: 'Flu Testsasasa',
 		description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 		price: '39.99',
 	},
