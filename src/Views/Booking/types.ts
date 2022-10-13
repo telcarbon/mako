@@ -22,6 +22,7 @@ export interface IPatient {
 	patientPhoto: any
 	terms: boolean
 	couponCode: string
+	howDidYouHearAboutThisService: string
 }
 export interface IServicesPricing {
 	id: number
@@ -44,6 +45,18 @@ export interface IAvailableTime {
 	service: number
 	partner: number
 	date: string[]
+}
+
+export interface BookingDetail {
+	appointments: [
+		{
+			reference_number: string
+		}
+	]
+
+	patient: {
+		email: string
+	}
 }
 
 export const AppointmentOptions = [

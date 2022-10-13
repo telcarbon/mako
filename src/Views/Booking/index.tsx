@@ -1,7 +1,9 @@
+import axios from 'axios'
 import { convertFieldsToSnakeCase } from 'common/Util'
 import { SideNav } from 'components'
 import { createContext, useState } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
+import { API_URL, TOKEN } from 'shared/config'
 import { Appointment } from './Appointment'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
@@ -19,11 +21,13 @@ interface BookingContextProps {
 	setBookingDate: any
 	bookingTime: any
 	setBookingTime: any
-	patientInfo: any
-	setPatientInfo: any
 	serviceDetail: any
 	setServiceDetail: any
+	partnerDetail: any
+	setPartnerDetail: any
 	handleSubmitAll: any
+	bookingId: any
+	setBookingId: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -36,11 +40,13 @@ export const BookingContext = createContext<BookingContextProps>({
 	setBookingDate: () => {},
 	bookingTime: null,
 	setBookingTime: () => {},
-	patientInfo: null,
-	setPatientInfo: () => {},
 	serviceDetail: null,
 	setServiceDetail: () => {},
+	partnerDetail: null,
+	setPartnerDetail: () => {},
 	handleSubmitAll: () => {},
+	bookingId: null,
+	setBookingId: () => {},
 })
 
 export const Booking = () => {
@@ -63,26 +69,14 @@ export const Booking = () => {
 		partner: 0,
 	})
 
-	const [patientInfo, setPatientInfo] = useState<IPatient>({
-		firstName: '',
-		lastName: '',
-		services: '',
-		middleName: '',
-		gender: '',
-		birthdate: '',
-		email: '',
-		phoneNumber: '',
-		guardiansFirstName: '',
-		guardiansLastName: '',
-		patientPhoto: '',
-		terms: false,
-		couponCode: '',
-	})
-
 	const [bookingDate, setBookingDate] = useState()
 	const [bookingTime, setBookingTime] = useState()
 
+	const [bookingId, setBookingId] = useState<string>('')
+
 	const [serviceDetail, setServiceDetail] = useState<any>()
+
+	const [partnerDetail, setPartnerDetail] = useState<any>()
 
 	const headers = {
 		'Content-Type': 'application/json',
@@ -91,44 +85,68 @@ export const Booking = () => {
 
 	console.log(serviceDetail, 'detail')
 
-	const handleSubmitAll = (patientx: any) => {
+	const handleSubmitAll = (patientInfo: IPatient) => {
 		// if (appointmentInfo && partnerInfo && patientInfo) {
-			const patientDetails = {
-				firstName: patientx?.firstName,
-				middleName: patientx?.middleName || null,
-				lastName: patientx?.lastName,
-				gender: patientx?.gender,
-				birthdate: patientx?.birthdate,
-				guardianFirstName: patientx?.guardiansFirstName || null,
-				guardianLastName: patientx?.guardiansLastName || null,
-				email: patientx?.email,
-				phoneNumber: patientx?.phoneNumber,
-				couponCode: patientx?.couponCode || null,
-			}
+		const patientDetails = {
+			firstName: patientInfo?.firstName,
+			middleName: patientInfo?.middleName || null,
+			lastName: patientInfo?.lastName,
+			gender: patientInfo?.gender,
+			birthdate: patientInfo?.birthdate,
+			guardianFirstName: patientInfo?.guardiansFirstName || null,
+			guardianLastName: patientInfo?.guardiansLastName || null,
+			email: patientInfo?.email,
+			phoneNumber: patientInfo?.phoneNumber,
+			couponCode: patientInfo?.couponCode || null,
+			howDidYouHearAboutThisService:
+				patientInfo?.howDidYouHearAboutThisService,
+		}
 
-			const appointmentDetails = [
-				{
-					partner: partnerInfo?.partner,
-					service: appointmentInfo?.service,
-					practitioner: null,
-					scheduled_time: bookingTime,
-					scheduled_date: bookingDate,
-					notes: 'test',
-				},
-			]
+		const appointmentDetails = {
+			partner: partnerInfo?.partner,
+			service: appointmentInfo?.service,
+			practitioner: null,
+			scheduledTime: bookingTime || '09:30:00',
+			scheduledDate: bookingDate,
+			notes: 'test',
+		}
 
-			const params = {
-				patient: convertFieldsToSnakeCase(patientDetails),
-				appointments: convertFieldsToSnakeCase(appointmentDetails),
-			}
+		const params = {
+			patient: convertFieldsToSnakeCase(patientDetails),
+			appointments: [convertFieldsToSnakeCase(appointmentDetails)],
+		}
 
-			console.log(params, 'all params')
+		const formData = new FormData()
+
+		formData.append('data', JSON.stringify(params))
+		formData.append('patient_photo', patientInfo.patientPhoto[0])
+
+		console.log(formData, 'all params')
+
+		const headers = {
+			'Content-Type': 'multipart/data',
+			Authorization: `Token ${TOKEN}`,
+		}
+
+		axios
+			.post(`${API_URL}/booking/`, formData, {
+				headers,
+			})
+			.then((response) => {
+				if (response.data.data) {
+					console.log(response.data.data.id)
+					setBookingId(response.data.data.id)
+				}
+			})
+			.catch((err) => {
+				console.log(err, 'error')
+			})
 		// }
 	}
 
 	return (
 		<>
-			<button
+			{/* <button
 				onClick={() => {
 					console.log(
 						appointmentInfo,
@@ -140,8 +158,15 @@ export const Booking = () => {
 				}}
 			>
 				test
-			</button>
-			<SideNav className="fixed-left bg-primary" />
+			</button> */}
+			<SideNav
+				className={
+					!location.pathname.includes('details')
+						? 'bg-primary fixed-left'
+						: 'fixed-top bg-white'
+				}
+				careConnectLogo
+			/>
 			<BookingContext.Provider
 				value={{
 					appointmentInfo,
@@ -151,13 +176,15 @@ export const Booking = () => {
 					headers,
 					bookingDate,
 					setBookingDate,
-					patientInfo,
-					setPatientInfo,
 					bookingTime,
 					setBookingTime,
 					serviceDetail,
 					setServiceDetail,
+					partnerDetail,
+					setPartnerDetail,
 					handleSubmitAll,
+					bookingId,
+					setBookingId,
 				}}
 			>
 				<Routes>

@@ -3,10 +3,11 @@ import { ContentHeader, SubmitButton } from 'components'
 import { Col, Container, Row, Card, Button, Accordion } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCalendar, faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 import classNames from 'classnames'
 import {
 	formatDate,
+	getStartAndEndTime,
 	isEmpty,
 	transformDateToStringMonth,
 	WEEKDAY_NAMES,
@@ -15,8 +16,12 @@ import { useContext, useEffect, useState } from 'react'
 import { BookingContext } from '..'
 import axios from 'axios'
 import { API_URL } from 'shared/config'
-import { IAvailableTime } from '../types'
 import moment from 'moment'
+import {
+	useMediaQuery,
+	MediaQueryType,
+	MediaQueryUnit,
+} from 'common/MediaQuery'
 
 export const SelectTime = () => {
 	const {
@@ -33,6 +38,12 @@ export const SelectTime = () => {
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [availableTime, setAvailableTime] = useState<any>()
+
+	const smallDevices = useMediaQuery({
+		mediaQueryType: MediaQueryType.MAX_WIDTH,
+		value: 768,
+		unit: MediaQueryUnit.PX,
+	})
 
 	const renderSlides = () => {
 		const today = new Date()
@@ -52,12 +63,17 @@ export const SelectTime = () => {
 			var startingDate = todayMoment === currDateMoment
 			var selectedDate = bookingDate === currDateMoment
 			lastLoopDate = currDate
+
+			const checkIfWeekend =
+				currDate.getDay() === 6 || currDate.getDay() === 0
+
 			return (
 				<div
 					key={key}
 					className={classNames('date-card', {
 						'date-selected': selectedDate,
 						'date-current': startingDate,
+						'date-disabled': startingDate || checkIfWeekend,
 					})}
 					onClick={() => setBookingDate(currDateMoment)}
 				>
@@ -100,14 +116,6 @@ export const SelectTime = () => {
 		return []
 	}
 
-	const getStartAndEndTime = (time: any) => {
-		const startTime = moment(time, 'hh:mm').format('LT')
-		const endTime = moment(time, 'hh:mm').add('15', 'minutes').format('LT')
-		return `${startTime} - ${endTime}`
-	}
-
-	console.log(getStartAndEndTime('13:00'), 'time')
-
 	useEffect(() => {
 		if (!isEmpty(bookingDate)) {
 			getAvailableTimeRequest()
@@ -129,7 +137,9 @@ export const SelectTime = () => {
 						<Accordion.Item eventKey="0">
 							<Accordion.Header>
 								<Col lg={8}>
-									<h6 className="fw-bold mt-2">Flu Test</h6>
+									<h6 className="fw-bold mt-2">
+										{serviceDetail?.name}
+									</h6>
 									{/* <p className="small mb-0">
 										this is a sample label
 									</p> */}
@@ -139,7 +149,8 @@ export const SelectTime = () => {
 										{bookingDate && bookingTime
 											? [
 													getStartAndEndTime(
-														bookingTime
+														bookingTime,
+														serviceDetail?.duration
 													),
 													moment(bookingDate).format(
 														'ddd, MMM DD'
@@ -169,7 +180,7 @@ export const SelectTime = () => {
 								<Slider
 									swipeToSlide
 									dots={false}
-									slidesToShow={7}
+									slidesToShow={smallDevices ? 3 : 7}
 									infinite={false}
 									className="custom-slider"
 								>
@@ -214,7 +225,8 @@ export const SelectTime = () => {
 																}
 															>
 																{getStartAndEndTime(
-																	item.time
+																	item.time,
+																	serviceDetail?.duration
 																)}
 															</div>
 														</li>
@@ -242,7 +254,7 @@ export const SelectTime = () => {
 					pendingText="Saving"
 					className="col-lg-auto pull-right"
 					onClick={handleSubmit}
-					disabled={!bookingDate || !bookingTime}
+					// disabled={!bookingDate || !bookingTime}
 					type="button"
 				>
 					Next
