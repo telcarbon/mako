@@ -111,6 +111,7 @@ export interface IQuestionnareInfo {
 export interface ITermsInfo {
 	termsOfUse: boolean
 	privacyStatement: boolean
+	pharmacyPrivacy: boolean
 }
 
 export enum StripeFields {

@@ -24,6 +24,7 @@ export const TermsAndAgreement = ({
 	const initialValues: ITermsInfo = {
 		termsOfUse: false,
 		privacyStatement: false,
+		pharmacyPrivacy: false,
 	}
 
 	const useFormInstance = useForm({
@@ -47,9 +48,11 @@ export const TermsAndAgreement = ({
 		})
 	}
 
-	const allTermsHasFalse = watch(['termsOfUse', 'privacyStatement']).includes(
-		false
-	)
+	const allTermsHasFalse = watch([
+		'termsOfUse',
+		'privacyStatement',
+		'pharmacyPrivacy',
+	]).includes(false)
 
 	return (
 		<>
@@ -71,10 +74,11 @@ export const TermsAndAgreement = ({
 									I agree and accept the{' '}
 									<a
 										className="link-secondary"
-										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_8.9.22.pdf`}
+										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_9.29.22.pdf`}
 										target="_blank"
 									>
-										MakoRx Care Check-In Terms of Use
+										MakoRX Care Connect Care Check-In Terms
+										Of Use
 									</a>
 									.
 								</FormCheckBox>
@@ -87,10 +91,26 @@ export const TermsAndAgreement = ({
 									I agree and accept the{' '}
 									<a
 										className="link-secondary"
-										href={`${BASE_URL}/static/pdf/MakoRx_Privacy_Statement_8.9.22.pdf`}
+										href={`${BASE_URL}/static/pdf/MakoRx_Privacy_Statement_Care Connect_Check in Tablet_9.29.22.pdf`}
 										target="_blank"
 									>
-										MakoRx Privacy Statement
+										MakoRX Privacy Statement Care Connect
+										Care Check-In
+									</a>
+									.
+								</FormCheckBox>
+								<FormCheckBox
+									name="pharmacyPrivacy"
+									register={register}
+									value={'pharmacyPrivacy'}
+								>
+									I agree and accept the{' '}
+									<a
+										className="link-secondary"
+										href={`${BASE_URL}/static/pdf/MakoRx_CareCheckIn_PharmacyAgreement_9.29.22.pdf`}
+										target="_blank"
+									>
+										MakoRx Care Check-In Pharmacy Agreement
 									</a>
 									.
 								</FormCheckBox>

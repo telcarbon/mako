@@ -37,7 +37,6 @@ export const BusinessQuestionnaire = ({
 
 	const validationSchema = Yup.object().shape({
 		plebotomy: Yup.mixed().required('Please select an option').nullable(),
-
 		licensed: Yup.mixed().when('plebotomy', {
 			is: true,
 			then: Yup.boolean().required('Please select an option').nullable(),
@@ -62,10 +61,26 @@ export const BusinessQuestionnaire = ({
 			.nullable(),
 		cliaCertification: Yup.mixed().when('isCliaWaivedSite', {
 			is: true,
-			then: Yup.array()
-				.min(1, 'Please upload your CLIA Certificate')
-				.nullable(),
+			then: Yup.mixed()
+				.test(
+					'upload-certificate',
+					'Please upload your CLIA Certificate',
+					(value: any) => value?.length > 0
+				)
+				.test(
+					'fileSize',
+					"File size exceeds it's maximum limit 100MB.",
+					(value: any) => {
+						return value?.length && value[0]?.size <= 100000000
+					}
+				),
 		}),
+		// cliaCertification: Yup.mixed().when('isCliaWaivedSite', {
+		// 	is: (isCliaWaivedSite: boolean) => !isCliaWaivedSite,
+		// 	then: Yup.array()
+		// 		.min(1, 'Please upload your CLIA Certificate')
+		// 		.nullable(),
+		// }),
 		hasParkingLot: Yup.mixed()
 			.required('Please select an option')
 			.nullable(),
@@ -137,6 +152,12 @@ export const BusinessQuestionnaire = ({
 			setValue('trainExistingStaff', null)
 		}
 	}, [q2Watch, q1Watch])
+
+	useEffect(() => {
+		if (!q5Watch) {
+			setValue('cliaCertification', [])
+		}
+	}, [q5Watch])
 
 	return (
 		<>

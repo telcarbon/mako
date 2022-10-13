@@ -45,7 +45,6 @@ export const FormFileUpload = ({
 }: InputFileProps) => {
 	const [selectedFile, setSelectedFile] = useState<any>('')
 	const [selectedFilename, setSelectedFilename] = useState<string>('')
-	const [preview, setPreview] = useState<any>()
 	const { onChange } = register(name)
 
 	return (
@@ -58,7 +57,7 @@ export const FormFileUpload = ({
 				} ${className || ''}`
 			)}
 		>
-			{selectedFilename === '' && value.length === 0 ? (
+			{selectedFile === '' && value.length === 0 ? (
 				<>
 					<input
 						type="file"

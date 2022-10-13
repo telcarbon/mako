@@ -11,11 +11,13 @@ import { DownloadContractModal } from './Modal/DownloadContractModal'
 interface RegistrationResultProps {
 	email: string | undefined
 	success?: boolean
+	errorMsg?: string
 }
 
 export const RegistrationResult = ({
 	email,
 	success,
+	errorMsg,
 }: RegistrationResultProps) => {
 	const [showDownloadContractModal, setShowDownloadContractModal] =
 		useState<boolean>(false)
@@ -58,19 +60,32 @@ export const RegistrationResult = ({
 							<h3 className="text-center mb-4 text-danger">
 								Something went wrong
 							</h3>
+							{errorMsg && (
+								<h5 className="text-danger my-4">{errorMsg}</h5>
+							)}
+
 							<p>
-								We apologize for the inconvenience. Please try
-								again.
+								We apologize for the inconvenience. <br />
+								Please try again
+								{errorMsg &&
+									' and enter a valid credit card details'}
+								.
 							</p>
 							<Link
 								className="link-secondary h6 text-decoration-none"
-								to={'/'}
+								to={errorMsg ? '/banking-info' : '/'}
 							>
-								<FontAwesomeIcon
-									icon={faHome}
-									className="me-2"
-								/>
-								Back to Home
+								{errorMsg ? (
+									'Back to Banking Information'
+								) : (
+									<>
+										<FontAwesomeIcon
+											icon={faHome}
+											className="me-2"
+										/>
+										Back to Home
+									</>
+								)}
 							</Link>
 						</>
 					)}

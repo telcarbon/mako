@@ -337,8 +337,8 @@ export const BusinessInfo = ({
 												field: { onChange, value },
 											}) => (
 												<PhoneInput
-													international
-													placeholder="Enter phone number"
+													international={false}
+													placeholder="Phone number"
 													value={value}
 													onChange={onChange}
 													defaultCountry="US"
