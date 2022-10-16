@@ -1,34 +1,81 @@
+import axios from 'axios'
+import setBodyClass, { getStartAndEndTime } from 'common/Util'
 import { ContentHeader, SubmitButton } from 'components'
+import moment from 'moment'
+import { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
+import { API_URL } from 'shared/config'
+import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
+import { BookingDetail } from '../types'
 
 export const BookingDetails = () => {
-    const navigate = useNavigate()
+	const navigate = useNavigate()
+
+	const {
+		headers,
+		bookingId,
+		bookingTime,
+		serviceDetail,
+		bookingDate,
+		partnerDetail,
+	} = useContext(BookingContext)
+
+	const [bookingDetail, setBookingDetail] = useState<BookingDetail>()
+
+	console.log(bookingId, 'booking')
+
+	setBodyClass(['full-width'])
+
+	const getAppointmentDetails = () => {
+		axios
+			.get(
+				`${API_URL}/booking/${bookingId}/?expand=patient,appointments`,
+				{
+					headers,
+				}
+			)
+			.then((response) => {
+				if (response.data) {
+					setBookingDetail(response.data)
+				}
+			})
+	}
+
+	useEffect(() => {
+		getAppointmentDetails()
+	}, [])
+
 	return (
-		<Container fluid>
-			<ContentHeader
-				title="Here are your booking details"
-				backText="Back"
-				backLink={-1}
-			/>
+		<Container fluid className="pt-5 mt-3">
+			<ContentHeader title="Here are your booking details" />
 			<Row className="my-4 justify-content-center ">
 				<Col lg={7}>
 					<p className="pb-4 text-center">
 						You will receive an e-mail at{' '}
 						<strong className="text-secondary">
-							luke.fisher@gmail.com
+							{bookingDetail?.patient?.email}
 						</strong>{' '}
 						regarding <br />
 						your appointment.
 					</p>
 					<AppointmentDetailsCard
-						service={'Flu Test'}
-						price={'0.00'}
-						reference={'Reference No. 123 456 789'}
-						location={'Clinic A'}
-						time={'9:30 AM - 10:00 AM '}
-						date={'Wednesday, June 23, 2022'}
+						service={serviceDetail?.name}
+						price={serviceDetail?.price}
+						reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
+						partner={partnerDetail?.name}
+						location={[
+							partnerDetail?.unit_floor_building,
+							partnerDetail?.street,
+							partnerDetail?.city,
+							partnerDetail?.state,
+						].join(', ')}
+						time={getStartAndEndTime(
+							bookingTime,
+							serviceDetail?.duration
+						)}
+						date={moment(bookingDate).format('dddd, MMMM DD, YYYY')}
 						isConfirmed
 					/>
 					<p className="py-4 text-center">
@@ -38,11 +85,11 @@ export const BookingDetails = () => {
 					</p>
 					<div className="text-center">
 						<p>
-							<strong>Clinic A Contact Details</strong>
+							<strong>
+								{partnerDetail?.name} Contact Details
+							</strong>
 							<br />
-							+1 987 6543
-							<br />
-							clinica@gmail.com
+							{partnerDetail?.phone_number}
 						</p>
 					</div>
 				</Col>
@@ -52,7 +99,7 @@ export const BookingDetails = () => {
 					pending={false}
 					pendingText="Saving"
 					className="col-lg-auto"
-                    onClick={() => navigate('/booking')}
+					onClick={() => navigate('/booking')}
 				>
 					Back to Booking
 				</SubmitButton>

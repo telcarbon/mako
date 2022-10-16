@@ -15,6 +15,7 @@ export const User = () => {
 				className={`fixed-top bg-lg-primary`}
 				hasContactInfo
 				hasRegisterLink
+				careConnectLogo
 			/>
 			<Routes>
 				<Route path="/" element={<Login />} />

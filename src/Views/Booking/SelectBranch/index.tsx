@@ -20,8 +20,15 @@ import { IPartners } from '../types'
 export const SelectBranch = () => {
 	const navigate = useNavigate()
 
-	const { appointmentInfo, setPartnerInfo, partnerInfo, headers } =
-		useContext(BookingContext)
+	const {
+		appointmentInfo,
+		setPartnerInfo,
+		partnerInfo,
+		headers,
+		setPartnerDetail,
+		partnerDetail,
+		serviceDetail,
+	} = useContext(BookingContext)
 
 	const [partnerArray, setPartnerArray] = useState<IPartners[]>()
 
@@ -36,18 +43,32 @@ export const SelectBranch = () => {
 		watch,
 		control,
 	} = useFormInstance
+
+	const partner: number = watch('partner')
+
 	const handleSubmit = async (values: any) => {
 		console.log(getValues())
 		const formValues = getValues()
 		setPartnerInfo(formValues)
+		const partner = formValues['partner']
+		if (!isEmpty(partner)) {
+			const selectedPartner: any = partnerArray?.filter(
+				(item) => item?.id === partner
+			)
+			setPartnerDetail(selectedPartner[0])
+		}
 		navigate('/booking/select-time')
 	}
 
 	const getPartnersRequest = () => {
 		axios
-			.get(`${API_URL}/partners/?city=${appointmentInfo.city}`, {
-				headers,
-			})
+			.get(
+				// `${API_URL}/partners/?city=${appointmentInfo.city}&is_approved=true&is_verified=true&expand=type`,
+				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=services.service&state=${appointmentInfo.state}&expand=type&is_approved=true&is_verified=true&service=${serviceDetail?.id}`,
+				{
+					headers,
+				}
+			)
 			.then((response) => {
 				setPartnerArray(response.data.results)
 			})
@@ -134,7 +155,7 @@ export const SelectBranch = () => {
 						pending={isSubmitting}
 						pendingText="Saving"
 						className="col-lg-auto pull-right"
-						disabled={(!isDirty && !isValid) || isSubmitting}
+						disabled={partner === 0}
 					>
 						Next
 					</SubmitButton>

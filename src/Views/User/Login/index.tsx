@@ -89,12 +89,15 @@ export const Login = () => {
 								/>
 							</FormField>
 							<div className="text-center">
-								<Link
-									to={'/user/forgot-password'}
-									className="pt-3 pb-5 h6 text-dark d-block text-decoration-none"
-								>
-									Forgot Password?
-								</Link>
+								<div>
+									<Link
+										to={'/user/forgot-password'}
+										className="pt-3 pb-4 h6 text-dark d-inline-block text-decoration-none"
+									>
+										Forgot Password?
+									</Link>
+								</div>
+
 								<SubmitButton
 									pending={isSubmitting}
 									pendingText="Submitting"

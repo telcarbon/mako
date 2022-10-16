@@ -1,3 +1,6 @@
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { checkIfLegalAge, getStartAndEndTime, isEmpty } from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -9,25 +12,29 @@ import {
 	FormTextInput,
 	SubmitButton,
 } from 'components'
-import { Col, Container, Row } from 'react-bootstrap'
+import { useContext } from 'react'
+import { Col, Container, Form as BootstrapForm, Row } from 'react-bootstrap'
 import { Controller, useForm } from 'react-hook-form'
-import { Form as BootstrapForm } from 'react-bootstrap'
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as Yup from 'yup'
-import { useNavigate } from 'react-router-dom'
-import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { genderOptions, ServicesRadioOptions } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
-import { checkIfLegalAge, isEmpty } from 'common/Util'
-import { useCallback, useContext, useEffect, useState } from 'react'
+import * as Yup from 'yup'
 import { BookingContext } from '..'
+import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
+import { genderOptions, ServicesRadioOptions } from '../types'
+import { yupResolver } from '@hookform/resolvers/yup'
+import moment from 'moment'
 
 export const ConfirmAppointment = () => {
-	const { patientInfo, setPatientInfo, headers, handleSubmitAll } =
-		useContext(BookingContext)
+	const {
+		headers,
+		handleSubmitAll,
+		setBookingId,
+		serviceDetail,
+		partnerDetail,
+		bookingTime,
+		bookingDate,
+	} = useContext(BookingContext)
 	const navigate = useNavigate()
 
 	const validationSchema = Yup.object().shape({
@@ -44,7 +51,9 @@ export const ConfirmAppointment = () => {
 		email: Yup.string()
 			.required('Email address is required')
 			.email('Must be a valid email address'),
-		services: Yup.string().required('Please select an option').nullable(),
+		howDidYouHearAboutThisService: Yup.string()
+			.required('Please select an option')
+			.nullable(),
 		guardiansFirstName: Yup.string().when('birthdate', {
 			is: (value: number) => checkIfLegalAge(value) === false,
 			then: Yup.string()
@@ -57,11 +66,29 @@ export const ConfirmAppointment = () => {
 				.required("Guardian's Last Name is required")
 				.nullable(),
 		}),
+		other: Yup.string().when('howDidYouHearAboutThisService', {
+			is: (value: string) => value === 'Other',
+			then: Yup.string().required('This is required.').nullable(),
+		}),
 	})
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: patientInfo,
+		defaultValues: {
+			firstName: '',
+			lastName: '',
+			middleName: '',
+			gender: '',
+			birthdate: '',
+			email: '',
+			phoneNumber: '',
+			guardiansFirstName: '',
+			guardiansLastName: '',
+			patientPhoto: '',
+			terms: false,
+			couponCode: '',
+			howDidYouHearAboutThisService: '',
+		},
 	})
 
 	const {
@@ -70,26 +97,21 @@ export const ConfirmAppointment = () => {
 		formState: { isDirty, isSubmitting, isValid },
 		watch,
 		control,
-		trigger,
-		getFieldState,
 	} = useFormInstance
 
 	const birthdayWatch = watch('birthdate')
 
-	// const testCallback = useCallback(() => handleSubmitAll(), [patientInfo])
-
 	const handleSubmit = async () => {
 		const formValues = getValues()
-		// setPatientInfo(formValues)
 		handleSubmitAll(formValues)
-
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate(`/booking/details`)
+			}, 1000)
+		})
 	}
 
-	// useEffect(() => {
-	// 	if (window.location.pathname.includes('confirm')) {
-	// 		handleSubmitAll()
-	// 	}
-	// }, [patientInfo])
+	console.log(partnerDetail, 'partner')
 
 	return (
 		<Container fluid>
@@ -116,15 +138,27 @@ export const ConfirmAppointment = () => {
 					</Col>
 				</Row>
 				<Row className="my-5 justify-content-center">
-					<Col lg={7}>
+					<Col lg={8}>
 						<AppointmentDetailsCard
 							title="Appointment Details"
-							service={'Flu Test'}
-							price={'0.00'}
+							service={serviceDetail?.name}
+							price={serviceDetail?.price}
 							// description={'This is a sample description'}
-							location={'Clinic A'}
-							time={'9:30 AM - 10:00 AM '}
-							date={'Wednesday, June 23, 2022'}
+							partner={partnerDetail?.name}
+							// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
+							location={[
+								partnerDetail?.unit_floor_building,
+								partnerDetail?.street,
+								partnerDetail?.city,
+								partnerDetail?.state,
+							].join(', ')}
+							time={getStartAndEndTime(
+								bookingTime,
+								serviceDetail?.duration
+							)}
+							date={moment(bookingDate).format(
+								'dddd, MMMM DD, YYYY'
+							)}
 						/>
 						<div className="mt-5">
 							<h5 className="mb-4">Patient Details</h5>
@@ -182,13 +216,10 @@ export const ConfirmAppointment = () => {
 										<Col lg>
 											<FormField name="birthdate">
 												<FormTextInput
-													placeholder="Birthday"
+													placeholder="MM/DD/YYYY"
 													name="birthdate"
 													register={register}
 													type="date"
-													onChange={() =>
-														trigger('birthdate')
-													}
 												/>
 											</FormField>
 										</Col>
@@ -268,12 +299,15 @@ export const ConfirmAppointment = () => {
 																		},
 																	}) => (
 																		<PhoneInput
-																			international
+																			international={
+																				false
+																			}
 																			placeholder={`${
 																				!checkIfLegalAge(
 																					birthdayWatch
-																				) &&
-																				"Guardian's"
+																				)
+																					? "Guardian's "
+																					: ''
 																			} Phone Number`}
 																			value={
 																				value
@@ -319,13 +353,13 @@ export const ConfirmAppointment = () => {
 						</div>
 						<div className="mt-5 mx-1">
 							<FormField
-								name="services"
+								name="howDidYouHearAboutThisService"
 								label="How did you hear about this service?"
 								className="mb-0"
 							>
 								{ServicesRadioOptions.map((option, index) => (
 									<FormRadioGroup
-										name={'services'}
+										name={'howDidYouHearAboutThisService'}
 										register={register}
 										value={option.label}
 										key={index}
@@ -336,7 +370,8 @@ export const ConfirmAppointment = () => {
 									</FormRadioGroup>
 								))}
 							</FormField>
-							{watch('services') === 'Other' && (
+							{watch('howDidYouHearAboutThisService') ===
+								'Other' && (
 								<FormField
 									name="other"
 									className="col-lg-5 ms-4 ps-3"

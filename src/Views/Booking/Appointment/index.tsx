@@ -18,7 +18,6 @@ import { useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
-import stateAndCitiesData from '../../../common/state_cities.json'
 import { AppointmentOptions, IAppointment, IServicesPricing } from '../types'
 
 export const Appointment = () => {
@@ -31,8 +30,7 @@ export const Appointment = () => {
 		serviceDetail,
 		setServiceDetail,
 	} = useContext(BookingContext)
-	// const [services, setServices] = useState<IServicesPricing[]>()
-	const [services, setServices] = useState<any[]>()
+	const [services, setServices] = useState<IServicesPricing[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 
 	const validationSchema = Yup.object().shape({
@@ -55,10 +53,18 @@ export const Appointment = () => {
 		control,
 		setValue,
 	} = useFormInstance
-	const handleSubmit = async (values: any) => {
+	const handleSubmit = async () => {
 		console.log(getValues())
 		const formValues = getValues()
 		setAppointmentInfo(formValues)
+
+		const serv = formValues['service']
+		if (!isEmpty(serv)) {
+			const selectedService: any = services?.filter(
+				(item) => item?.id === serv
+			)
+			setServiceDetail(selectedService[0])
+		}
 		navigate('select-branch')
 	}
 	const cityWatch: string = watch('city')
@@ -97,13 +103,7 @@ export const Appointment = () => {
 							label: m,
 						})
 					)
-					// setAvailableCity(cities)
-					setAvailableCity([
-						{
-							label: 'Aberdeen',
-							value: 'Aberdeen',
-						},
-					])
+					setAvailableCity(cities)
 				}
 			})
 	}
@@ -111,16 +111,16 @@ export const Appointment = () => {
 	const getServicesRequest = () => {
 		axios
 			.get(
-				`${API_URL}/partners/?city=${cityWatch}&expand=services.service`,
+				// `${API_URL}/partners/?city=${cityWatch}&expand=services.service`,
+				// `${API_URL}/partners/?city=${cityWatch}&expand=services.service&expand=type&is_approved=true&is_verified=true`,
+				`${API_URL}/service-pricings/?state=${stateWatch}&expand=service`,
 				{
 					headers,
 				}
 			)
 			.then((response) => {
 				if (response.data.count > 0) {
-					console.log(response, 'response')
-
-					const serviceType = response.data.results[0].services.map(
+					const serviceType = response.data.results.map(
 						(item: any) => ({
 							id: item.service.id,
 							name: item.service.name,
@@ -128,8 +128,7 @@ export const Appointment = () => {
 							duration: item.service.duration,
 						})
 					)
-					// setServices(serviceType)
-					setServices(AppointmentOptions)
+					setServices(serviceType)
 				}
 			})
 	}
@@ -143,25 +142,12 @@ export const Appointment = () => {
 	useEffect(() => {
 		if (!isEmpty(cityWatch)) {
 			getServicesRequest()
-			console.log('kahit ano')
 		}
 
 		if (isDirty) {
 			setValue('service', null)
 		}
-		console.log(cityWatch, 'city aa')
 	}, [cityWatch])
-
-	useEffect(() => {
-		console.log(service, 'useEffect service')
-
-		if (service !== 0) {
-			const selectedService: any = services?.filter(
-				(item) => item?.id === service
-			)
-			setServiceDetail(selectedService)
-		}
-	}, [service])
 
 	return (
 		<Container fluid>

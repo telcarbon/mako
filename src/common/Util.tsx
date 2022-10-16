@@ -72,7 +72,7 @@ export const yupShortTest = (val: any, checker: boolean) => {
 export const convertFieldsToSnakeCase = (oldObject: any) => {
 	if (oldObject !== undefined) {
 		const convertKey = (key: any) =>
-			key.replace(/([A-Z])/g, '_$1').toLowerCase()
+			key.replace(/([A-Z])/g, '_$1')?.toLowerCase()
 		const newObject: any = {}
 		for (var camel in oldObject) {
 			newObject[convertKey(camel)] = oldObject[camel]
@@ -196,4 +196,10 @@ export default function setBodyClass(className: any) {
 				: removeBodyClass(className)
 		}
 	}, [className])
+}
+
+export const getStartAndEndTime = (time: string, duration: number) => {
+	const startTime = moment(time, 'hh:mm').format('LT')
+	const endTime = moment(time, 'hh:mm').add(duration, 'minutes').format('LT')
+	return `${startTime} - ${endTime}`
 }

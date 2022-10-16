@@ -1,5 +1,6 @@
 import classNames from 'classnames'
-import logo from 'assets/images/Logo_MRx_CareCheckIn.svg'
+import logoCareCheckIn from 'assets/images/Logo_MRx_CareCheckIn.svg'
+import logoCareConnect from 'assets/images/Logo_MRx_CareConnect.svg'
 import { Link, useLocation } from 'react-router-dom'
 
 export interface SideNavProps {
@@ -7,6 +8,7 @@ export interface SideNavProps {
 	className?: string
 	hasContactInfo?: boolean
 	hasRegisterLink?: boolean
+	careConnectLogo?: boolean
 }
 
 export const SideNav = ({
@@ -14,6 +16,7 @@ export const SideNav = ({
 	className,
 	hasContactInfo,
 	hasRegisterLink,
+	careConnectLogo,
 }: SideNavProps) => {
 	const location = useLocation()
 	return (
@@ -24,7 +27,11 @@ export const SideNav = ({
 			)}
 		>
 			<a className="navbar-brand text-secondary" href="/">
-				<img src={logo} alt="logo" className="img-fluid pt-0 pt-md-4" />
+				<img
+					src={careConnectLogo ? logoCareConnect : logoCareCheckIn}
+					alt="logo"
+					className="img-fluid pt-0 pt-md-4"
+				/>
 			</a>
 			{hasContactInfo && (
 				<div

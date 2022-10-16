@@ -14,6 +14,7 @@ interface AppointmentDetailsCardProps {
 	description?: string
 	reference?: string
 	location: string
+	partner?: string
 	time: any
 	date: any
 	title?: string
@@ -26,6 +27,7 @@ export const AppointmentDetailsCard = ({
 	description,
 	reference,
 	location,
+	partner,
 	time,
 	date,
 	title,
@@ -60,7 +62,8 @@ export const AppointmentDetailsCard = ({
 							size="1x"
 						/>
 						<span>
-							<strong className="pe-2">{location}</strong>
+							<strong className="pe-2">{partner}</strong>
+							<small className="pe-2">{location}</small>
 						</span>
 					</div>
 					<div className="equal-width mt-md-0 mt-2">

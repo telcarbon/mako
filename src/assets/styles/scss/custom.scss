@@ -429,7 +429,7 @@ input[type='file'] {
 		width: 100px;
 		border-radius: 50%;
 		img {
-			transform: scale(2.5);
+			transform: scale(1);
 		}
 	}
 }
@@ -583,6 +583,11 @@ input[type='file'] {
 				font-weight: 600;
 			}
 		}
+		&.date-disabled {
+			cursor: auto;
+			pointer-events: none;
+			opacity: 0.4;
+		}
 		&.date-selected {
 			background-color: $navy-blue;
 			color: $white;
@@ -627,7 +632,7 @@ input[type='file'] {
 
 				&.time-disabled {
 					background-color: #e5e5e5;
-					color: $white;
+					color: rgba(51, 51, 51, 0.50);
 					cursor: auto;
 				}
 			}

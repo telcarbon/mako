@@ -62,6 +62,7 @@ export const Registration = () => {
 	const [stripeToken, setStripeToken] = useState<string>('')
 	const [currentStep, setCurrentStep] = useState<Number>(0)
 	const [isSuccess, setIsSuccess] = useState<boolean>(false)
+	const [apiErrorMsg, setApiErrorMsg] = useState<string>('')
 
 	const headers = {
 		'Content-Type': 'multipart/data',
@@ -128,6 +129,7 @@ export const Registration = () => {
 				})
 				.catch((err) => {
 					console.log(err, 'error')
+					setApiErrorMsg(err.response.data[0])
 					navigate('/error')
 				})
 		}
@@ -216,6 +218,8 @@ export const Registration = () => {
 							<RegistrationResult
 								email={businessInfo?.email}
 								success={isSuccess}
+								errorMsg={apiErrorMsg
+									?.split(':')[1]}
 							/>
 						}
 					/>
