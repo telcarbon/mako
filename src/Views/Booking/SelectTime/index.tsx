@@ -33,6 +33,7 @@ export const SelectTime = () => {
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [availableTime, setAvailableTime] = useState<any>()
+	const [currentTime, setCurrentTime] = useState<string>()
 
 	const renderSlides = () => {
 		const today = new Date()
@@ -72,7 +73,16 @@ export const SelectTime = () => {
 		navigate('/booking/confirm-appointment')
 	}
 
+	const getCurrentTime = () => {
+		const dt = new Date()
+		return `${dt.getHours().toString().padStart(2, '0')}:${dt
+			.getMinutes()
+			.toString()
+			.padStart(2, '0')}:00`
+	}
+
 	const getAvailableTimeRequest = () => {
+		setCurrentTime(getCurrentTime())
 		const partner = partnerInfo.partner
 		const service = appointmentInfo.service
 		axios
@@ -106,14 +116,22 @@ export const SelectTime = () => {
 		return `${startTime} - ${endTime}`
 	}
 
-	console.log(getStartAndEndTime('13:00'), 'time')
-
 	useEffect(() => {
 		if (!isEmpty(bookingDate)) {
 			getAvailableTimeRequest()
 			// setBookingTime(null)
 		}
 	}, [bookingDate])
+
+	const checkTimeIfDisable = (itm: any, checkTime: boolean = false) => {
+		const timeData = checkTime ? getCurrentTime() : currentTime
+		if (checkTime) {
+			setCurrentTime(timeData)
+		}
+		const pastTime = timeData ? itm.time <= timeData : false
+		const hasAvailSlot = itm.available_slot === 0
+		return hasAvailSlot || pastTime
+	}
 
 	return (
 		<Container fluid>
@@ -203,15 +221,23 @@ export const SelectTime = () => {
 																			bookingTime ===
 																			item.time,
 																		'time-disabled':
-																			item.available_slots <
-																			1,
+																			checkTimeIfDisable(
+																				item
+																			),
 																	}
 																)}
-																onClick={() =>
-																	setBookingTime(
-																		item.time
-																	)
-																}
+																onClick={() => {
+																	if (
+																		!checkTimeIfDisable(
+																			item,
+																			true
+																		)
+																	) {
+																		setBookingTime(
+																			item.time
+																		)
+																	}
+																}}
 															>
 																{getStartAndEndTime(
 																	item.time
