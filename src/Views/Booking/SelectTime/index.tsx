@@ -140,11 +140,18 @@ export const SelectTime = () => {
 	}, [bookingDate])
 
 	const checkTimeIfDisable = (itm: any, checkTime: boolean = false) => {
+		const today = new Date()
+		var todayMoment = formatDate(today)
 		const timeData = checkTime ? getCurrentTime() : currentTime
 		if (checkTime) {
 			setCurrentTime(timeData)
 		}
-		const pastTime = timeData ? itm.time <= timeData : false
+		const pastTime =
+			bookingDate === todayMoment
+				? timeData
+					? itm.time <= timeData
+					: false
+				: false
 		const hasAvailSlot = itm.available_slot === 0
 		return hasAvailSlot || pastTime
 	}
