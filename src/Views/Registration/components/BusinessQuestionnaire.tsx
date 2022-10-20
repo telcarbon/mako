@@ -16,6 +16,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { IQuestionnareInfo } from '../types'
+import { disableUrlType } from 'common/Util'
 
 export const RadioLabelOptions = [
 	{ value: true, name: 'YES' },
@@ -26,14 +27,20 @@ interface IBusinessQuestionnaireProps {
 	businessQs: IQuestionnareInfo | undefined
 	setBusinessQs: (value: IQuestionnareInfo) => void
 	setCurrentStep: (value: Number) => void
+	currentStep: Number
 }
 
 export const BusinessQuestionnaire = ({
 	businessQs,
 	setBusinessQs,
 	setCurrentStep,
+	currentStep,
 }: IBusinessQuestionnaireProps) => {
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		disableUrlType(3, navigate, currentStep)
+	}, [])
 
 	const validationSchema = Yup.object().shape({
 		plebotomy: Yup.mixed().required('Please select an option').nullable(),
@@ -161,255 +168,282 @@ export const BusinessQuestionnaire = ({
 
 	return (
 		<>
-			<Container fluid>
-				<ContentHeader
-					title="Business Questionnaire"
-					backText="Back"
-					backLink={-1}
-				/>
-				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center mb-5">
-						<Col lg={10}>
-							<FormField
-								name="plebotomy"
-								label="Would you like to offer phlebotomy/blood draw services?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'plebotomy'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-							<FormField
-								name="licensed"
-								label="Do you have a licensed phlebotomist?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-								disabled={!q1Watch}
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'licensed'}
-											register={register}
-											value={option.value}
-											key={index}
-											disabled={!q1Watch}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-								{q2Watch && (
-									<div style={{ flexBasis: '100%' }}>
-										{fields.map((item, index) => {
-											return (
-												<FormField
-													name={`phlebotomist[${index}].phlebotomistName`}
-													key={item.id}
-													className="col-lg-5 mb-2"
-													isRadio
-												>
-													<FormTextInput
-														name={`phlebotomist[${index}].phlebotomistName`}
-														register={register}
-														placeholder="Phlebotomist Name"
-														hasAppendButton={true}
-														onClickAppend={() =>
-															handleAppend({
-																phlebotomistName:
-																	'',
-															})
-														}
-														fieldCount={
-															fields?.length
-														}
-														onClickRemove={() =>
-															handleRemove(index)
-														}
-													/>
-												</FormField>
+			{currentStep === 3 && (
+				<Container fluid>
+					<ContentHeader
+						title="Business Questionnaire"
+						backText="Back"
+						backLink={-1}
+					/>
+					<Form
+						useFormInstance={useFormInstance}
+						onSubmit={handleSubmit}
+					>
+						<Row className="justify-content-center mb-5">
+							<Col lg={10}>
+								<FormField
+									name="plebotomy"
+									label="Would you like to offer phlebotomy/blood draw services?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'plebotomy'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
 											)
-										})}
+										)}
 									</div>
-								)}
-							</FormField>
-							<FormField
-								name="trainExistingStaff"
-								label="Would you like to train your existing staff in phlebotomy?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
+								</FormField>
+								<FormField
+									name="licensed"
+									label="Do you have a licensed phlebotomist?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+									disabled={!q1Watch}
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'licensed'}
+													register={register}
+													value={option.value}
+													key={index}
+													disabled={!q1Watch}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+									{q2Watch && (
+										<div style={{ flexBasis: '100%' }}>
+											{fields.map((item, index) => {
+												return (
+													<FormField
+														name={`phlebotomist[${index}].phlebotomistName`}
+														key={item.id}
+														className="col-lg-5 mb-2"
+														isRadio
+													>
+														<FormTextInput
+															name={`phlebotomist[${index}].phlebotomistName`}
+															register={register}
+															placeholder="Phlebotomist Name"
+															hasAppendButton={
+																true
+															}
+															onClickAppend={() =>
+																handleAppend({
+																	phlebotomistName:
+																		'',
+																})
+															}
+															fieldCount={
+																fields?.length
+															}
+															onClickRemove={() =>
+																handleRemove(
+																	index
+																)
+															}
+														/>
+													</FormField>
+												)
+											})}
+										</div>
+									)}
+								</FormField>
+								<FormField
+									name="trainExistingStaff"
+									label="Would you like to train your existing staff in phlebotomy?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+									disabled={
+										!q1Watch ||
+										q2Watch === true ||
+										q2Watch === null
+									}
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'trainExistingStaff'}
+													register={register}
+													value={option.value}
+													key={index}
+													disabled={
+														!q1Watch ||
+														q2Watch === true ||
+														q2Watch === null
+													}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+								<FormField
+									name="offerClia"
+									label="Would you like to offer CLIA waived point of care testing
+                                services to the general public (Strep, HIV, UTI, Flu, A1c, Blood Pressure, etc)?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+									labelClassName="w-75"
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'offerClia'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+								<FormField
+									name="isCliaWaivedSite"
+									label="Is your business a CLIA WAIVED site?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'isCliaWaivedSite'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+									{q5Watch && (
+										<div style={{ flexBasis: '100%' }}>
+											<FormField name="cliaCertification">
+												<FormFileUpload
+													name="cliaCertification"
+													register={register}
+													label="Upload CLIA certification"
+													className="col-lg-5"
+													value={getValues(
+														'cliaCertification'
+													)}
+													onClear={() => {
+														setValue(
+															'cliaCertification',
+															[]
+														)
+													}}
+												/>
+											</FormField>
+										</div>
+									)}
+								</FormField>
+								<FormField
+									name="hasParkingLot"
+									label="Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+									labelClassName="w-75"
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'hasParkingLot'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+								<FormField
+									name="hasPublicBathroom"
+									label="Does your business have a public bathroom for patients?"
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+									useWrapper={false}
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'hasPublicBathroom'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+								<FormField
+									name="offerPrescription"
+									label="Does your business offer prescription delivery via company driver or courier service?"
+									useWrapper={false}
+									className="form-radio-wrap rounded-2 d-flex ps-3"
+									isRadio
+								>
+									<div className="d-flex">
+										{RadioLabelOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={'offerPrescription'}
+													register={register}
+													value={option.value}
+													key={index}
+													radioClassName="box"
+												/>
+											)
+										)}
+									</div>
+								</FormField>
+							</Col>
+						</Row>
+						<div className="footer w-75">
+							<ProgressBar
+								variant="secondary"
+								now={80}
+								className="col-lg-7 pull-left mt-3"
+							/>
+							<SubmitButton
+								pending={isSubmitting}
+								pendingText="Saving"
+								className="col-lg-auto pull-right"
 								disabled={
-									!q1Watch ||
-									q2Watch === true ||
-									q2Watch === null
+									(!isDirty && !isValid) || isSubmitting
 								}
 							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'trainExistingStaff'}
-											register={register}
-											value={option.value}
-											key={index}
-											disabled={
-												!q1Watch ||
-												q2Watch === true ||
-												q2Watch === null
-											}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-							<FormField
-								name="offerClia"
-								label="Would you like to offer CLIA waived point of care testing
-                                services to the general public (Strep, HIV, UTI, Flu, A1c, Blood Pressure, etc)?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-								labelClassName="w-75"
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'offerClia'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-							<FormField
-								name="isCliaWaivedSite"
-								label="Is your business a CLIA WAIVED site?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'isCliaWaivedSite'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-								{q5Watch && (
-									<div style={{ flexBasis: '100%' }}>
-										<FormField name="cliaCertification">
-											<FormFileUpload
-												name="cliaCertification"
-												register={register}
-												label="Upload CLIA certification"
-												className="col-lg-5"
-												value={getValues(
-													'cliaCertification'
-												)}
-												onClear={() => {
-													setValue(
-														'cliaCertification',
-														[]
-													)
-												}}
-											/>
-										</FormField>
-									</div>
-								)}
-							</FormField>
-							<FormField
-								name="hasParkingLot"
-								label="Does your business have parking lot area for MakoRx mobile medical unit to complete annual physical exams for patients?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-								labelClassName="w-75"
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'hasParkingLot'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-							<FormField
-								name="hasPublicBathroom"
-								label="Does your business have a public bathroom for patients?"
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-								useWrapper={false}
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'hasPublicBathroom'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-							<FormField
-								name="offerPrescription"
-								label="Does your business offer prescription delivery via company driver or courier service?"
-								useWrapper={false}
-								className="form-radio-wrap rounded-2 d-flex ps-3"
-								isRadio
-							>
-								<div className="d-flex">
-									{RadioLabelOptions.map((option, index) => (
-										<FormRadioGroup
-											name={'offerPrescription'}
-											register={register}
-											value={option.value}
-											key={index}
-											radioClassName="box"
-										/>
-									))}
-								</div>
-							</FormField>
-						</Col>
-					</Row>
-					<div className="footer w-75">
-						<ProgressBar
-							variant="secondary"
-							now={80}
-							className="col-lg-7 pull-left mt-3"
-						/>
-						<SubmitButton
-							pending={isSubmitting}
-							pendingText="Saving"
-							className="col-lg-auto pull-right"
-							disabled={(!isDirty && !isValid) || isSubmitting}
-						>
-							Next
-						</SubmitButton>
-					</div>
-				</Form>
-			</Container>
+								Next
+							</SubmitButton>
+						</div>
+					</Form>
+				</Container>
+			)}
 			{isSubmitting && <LoadingMaskWrap />}
 		</>
 	)

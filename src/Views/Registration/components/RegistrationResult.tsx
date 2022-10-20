@@ -2,27 +2,38 @@ import { faDownload, faEye, faHome } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import setBodyClass from 'common/Util'
 import { ButtonVariety } from 'components'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Col, Container, Row, Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
 import { DownloadContractModal } from './Modal/DownloadContractModal'
 
 interface RegistrationResultProps {
 	email: string | undefined
-	success?: boolean
+	success?: any
 	errorMsg?: string
+	setCurrentStep: (value: Number) => void
 }
 
 export const RegistrationResult = ({
 	email,
 	success,
 	errorMsg,
+	setCurrentStep,
 }: RegistrationResultProps) => {
+	const navigate = useNavigate()
 	const [showDownloadContractModal, setShowDownloadContractModal] =
 		useState<boolean>(false)
 
 	setBodyClass(['full-width'])
+
+	console.log(success, 'success')
+
+	// useEffect(() => {
+	// 	if (success === '') {
+	// 		navigate('/page-not-found')
+	// 	}
+	// }, [])
 
 	return (
 		<Container fluid className="v-middle">
@@ -73,7 +84,13 @@ export const RegistrationResult = ({
 							</p>
 							<Link
 								className="link-secondary h6 text-decoration-none"
-								to={errorMsg ? '/banking-info' : '/'}
+								to={!errorMsg ? '/banking-info' : '/'}
+								onClick={(e) => {
+									console.log('test')
+									// e.preventDefault()
+									setCurrentStep(2)
+									navigate('/banking-info')
+								}}
 							>
 								{errorMsg ? (
 									'Back to Banking Information'

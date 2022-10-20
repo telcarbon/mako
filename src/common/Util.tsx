@@ -203,3 +203,17 @@ export const getStartAndEndTime = (time: string, duration: number) => {
 	const endTime = moment(time, 'hh:mm').add(duration, 'minutes').format('LT')
 	return `${startTime} - ${endTime}`
 }
+
+export const disableUrlType = (
+	pageStep: Number,
+	navigate: any,
+	currentStep: Number,
+	location: string = ''
+) => {
+	console.log('labas')
+
+	if (currentStep !== pageStep) {
+		console.log('l0ob', navigate)
+		navigate(`/${location}`)
+	}
+}

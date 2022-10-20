@@ -66,7 +66,7 @@ export const Login = () => {
 		<>
 			<Container fluid className="v-middle">
 				<Row className="justify-content-center align-items-center vh-100">
-					<Col lg={3}>
+					<Col className='col-lg-3 col-md-6'>
 						<ContentHeader title="Welcome Back" />
 						{apiError && <Alert variant="danger">{apiError}</Alert>}
 						<Form

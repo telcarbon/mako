@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import axios from 'axios'
-import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import {
+	Navigate,
+	Route,
+	Routes,
+	useLocation,
+	useNavigate,
+} from 'react-router-dom'
 import { SideNav } from 'components'
 import { BankingInfo } from './components/BankingInfo'
 import { BusinessInfo } from './components/BusinessInfo'
@@ -61,7 +67,7 @@ export const Registration = () => {
 	const [termsInfo, setTermsInfo] = useState<ITermsInfo>()
 	const [stripeToken, setStripeToken] = useState<string>('')
 	const [currentStep, setCurrentStep] = useState<Number>(0)
-	const [isSuccess, setIsSuccess] = useState<boolean>(false)
+	const [isSuccess, setIsSuccess] = useState<any>('')
 	const [apiErrorMsg, setApiErrorMsg] = useState<string>('')
 
 	const headers = {
@@ -129,11 +135,14 @@ export const Registration = () => {
 				})
 				.catch((err) => {
 					console.log(err, 'error')
+					setIsSuccess(false)
 					setApiErrorMsg(err.response.data[0])
 					navigate('/error')
 				})
 		}
 	}
+
+	console.log('currentStep', currentStep)
 
 	return (
 		<>
@@ -169,6 +178,7 @@ export const Registration = () => {
 								businessRepInfo={businessRepInfo}
 								setBusinessRepInfo={setBusinessRepInfo}
 								setCurrentStep={handleChangeStep}
+								currentStep={currentStep}
 							/>
 						}
 					/>
@@ -181,6 +191,7 @@ export const Registration = () => {
 								setCurrentStep={handleChangeStep}
 								setStripeToken={setStripeToken}
 								stripeToken={stripeToken}
+								currentStep={currentStep}
 							/>
 						}
 					/>
@@ -191,6 +202,7 @@ export const Registration = () => {
 								businessQs={businessQs}
 								setBusinessQs={setBusinessQs}
 								setCurrentStep={setCurrentStep}
+								currentStep={currentStep}
 							/>
 						}
 					/>
@@ -200,6 +212,8 @@ export const Registration = () => {
 							<TermsAndAgreement
 								onSubmit={handleSubmit}
 								setTermsInfo={setTermsInfo}
+								setCurrentStep={setCurrentStep}
+								currentStep={currentStep}
 							/>
 						}
 					/>
@@ -209,6 +223,7 @@ export const Registration = () => {
 							<RegistrationResult
 								email={businessRepInfo?.email}
 								success={isSuccess}
+								setCurrentStep={setCurrentStep}
 							/>
 						}
 					/>
@@ -218,10 +233,14 @@ export const Registration = () => {
 							<RegistrationResult
 								email={businessInfo?.email}
 								success={isSuccess}
-								errorMsg={apiErrorMsg
-									?.split(':')[1]}
+								errorMsg={apiErrorMsg?.split(':')[1]}
+								setCurrentStep={setCurrentStep}
 							/>
 						}
+					/>
+					<Route
+						path="*"
+						element={<Navigate to="/page-not-found" replace />}
 					/>
 				</Routes>
 			</Elements>

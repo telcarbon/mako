@@ -20,11 +20,16 @@ export const BookingDetails = () => {
 		serviceDetail,
 		bookingDate,
 		partnerDetail,
+		setAppointmentInfo,
+		setPartnerInfo,
+		setBookingDate,
+		setBookingTime,
+		setServiceDetail,
+		setPartnerDetail,
+		setBookingId,
 	} = useContext(BookingContext)
 
 	const [bookingDetail, setBookingDetail] = useState<BookingDetail>()
-
-	console.log(bookingId, 'booking')
 
 	setBodyClass(['full-width'])
 
@@ -44,8 +49,22 @@ export const BookingDetails = () => {
 	}
 
 	useEffect(() => {
-		getAppointmentDetails()
-	}, [])
+		if (bookingId) {
+			getAppointmentDetails()
+		}
+	}, [bookingId])
+
+	const backToBooking = () => {
+		setAppointmentInfo({})
+		setPartnerInfo({})
+		setBookingDate({})
+		setBookingTime({})
+		setServiceDetail({})
+		setPartnerDetail({})
+		setBookingId({})
+		navigate('/booking')
+		window.location.reload()
+	}
 
 	return (
 		<Container fluid className="pt-5 mt-3">
@@ -79,9 +98,10 @@ export const BookingDetails = () => {
 						isConfirmed
 					/>
 					<p className="py-4 text-center">
-						Please contact the pharmacy/clinic if you don’t receive
-						a confirmation email
-						<br /> within the next 30 minutes.
+						Payment for the services booked will be settled at the
+						pharmacy / clinic.
+						<br /> Forms of payment available will depend on the
+						pharmacy / clinic.
 					</p>
 					<div className="text-center">
 						<p>
@@ -99,7 +119,7 @@ export const BookingDetails = () => {
 					pending={false}
 					pendingText="Saving"
 					className="col-lg-auto"
-					onClick={() => navigate('/booking')}
+					onClick={backToBooking}
 				>
 					Back to Booking
 				</SubmitButton>

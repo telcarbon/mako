@@ -1,5 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
+import { disableUrlType } from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -9,6 +10,7 @@ import {
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import { useEffect } from 'react'
 import {
 	Col,
 	Container,
@@ -28,14 +30,20 @@ interface IBusinessRepInfoProps {
 	businessRepInfo: IBusinessRepInfo | undefined
 	setBusinessRepInfo: (value: IBusinessRepInfo) => void
 	setCurrentStep: (value: Number) => void
+	currentStep: Number
 }
 
 export const BusinessRepInfo = ({
 	businessRepInfo,
 	setBusinessRepInfo,
 	setCurrentStep,
+	currentStep,
 }: IBusinessRepInfoProps) => {
 	const navigate = useNavigate()
+
+	useEffect(() => {
+		disableUrlType(1, navigate, currentStep)
+	}, [])
 
 	const headers = {
 		'Content-Type': 'application/json',
@@ -135,121 +143,129 @@ export const BusinessRepInfo = ({
 			}, 1000)
 		})
 	}
+
 	return (
 		<>
-			<Container fluid>
-				<ContentHeader
-					title="Business Representative Information"
-					backText="Back"
-					backLink={-1}
-				/>
-				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center mb-5">
-						<Col lg={5} className="px-3">
-							<Row className="justify-content-center">
-								<Col className="px-3">
-									<FormField
-										name="email"
-										label="Account Log-in Credentials"
-										centered
-									>
-										<FormTextInput
-											placeholder="Email"
+			{currentStep === 1 && (
+				<Container fluid>
+					<ContentHeader
+						title="Business Representative Information"
+						backText="Back"
+						backLink={-1}
+					/>
+					<Form
+						useFormInstance={useFormInstance}
+						onSubmit={handleSubmit}
+					>
+						<Row className="justify-content-center mb-5">
+							<Col lg={5} className="px-3">
+								<Row className="justify-content-center">
+									<Col className="px-3">
+										<FormField
 											name="email"
-											register={register}
-										/>
-									</FormField>
-									<FormField name="password">
-										<FormTextInput
-											placeholder="Password"
-											name="password"
-											register={register}
-											type="password"
-										/>
-									</FormField>
-								</Col>
-							</Row>
-							<Row className="justify-content-center mt-5">
-								<Col className="px-3">
-									<FormField
-										name="salutation"
-										label="Personal Information"
-										centered
-									>
-										<FormSearchSelect
+											label="Account Log-in Credentials"
+											centered
+										>
+											<FormTextInput
+												placeholder="Email"
+												name="email"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="password">
+											<FormTextInput
+												placeholder="Password"
+												name="password"
+												register={register}
+												type="password"
+											/>
+										</FormField>
+									</Col>
+								</Row>
+								<Row className="justify-content-center mt-5">
+									<Col className="px-3">
+										<FormField
 											name="salutation"
-											register={register}
-											placeholder="Salutation"
-											control={control}
-											options={salutationOptions}
-										/>
-									</FormField>
-									<FormField name="firstName">
-										<FormTextInput
-											placeholder="First Name"
-											name="firstName"
-											register={register}
-										/>
-									</FormField>
-									<FormField name="middleName">
-										<FormTextInput
-											placeholder="Middle Name"
-											name="middleName"
-											register={register}
-										/>
-									</FormField>
-									<FormField name="lastName">
-										<FormTextInput
-											placeholder="Last Name"
-											name="lastName"
-											register={register}
-										/>
-									</FormField>
-									<FormField
-										name="phoneNumber"
-										useWrapper={false}
-										className="form-group"
-									>
-										<Controller
-											control={control}
+											label="Personal Information"
+											centered
+										>
+											<FormSearchSelect
+												name="salutation"
+												register={register}
+												placeholder="Salutation"
+												control={control}
+												options={salutationOptions}
+											/>
+										</FormField>
+										<FormField name="firstName">
+											<FormTextInput
+												placeholder="First Name"
+												name="firstName"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="middleName">
+											<FormTextInput
+												placeholder="Middle Name"
+												name="middleName"
+												register={register}
+											/>
+										</FormField>
+										<FormField name="lastName">
+											<FormTextInput
+												placeholder="Last Name"
+												name="lastName"
+												register={register}
+											/>
+										</FormField>
+										<FormField
 											name="phoneNumber"
-											render={({
-												field: { onChange, value },
-											}) => (
-												<PhoneInput
-													international={false}
-													placeholder="Phone number"
-													value={value}
-													onChange={onChange}
-													defaultCountry="US"
-													inputComponent={
-														BootstrapForm.Control as any
-													}
-												/>
-											)}
-										/>
-									</FormField>
-								</Col>
-							</Row>
-						</Col>
-					</Row>
-					<div className="footer w-75">
-						<ProgressBar
-							variant="secondary"
-							now={40}
-							className="col-lg-7 pull-left mt-3"
-						/>
-						<SubmitButton
-							pending={isSubmitting}
-							pendingText="Saving"
-							className="col-lg-auto pull-right"
-							disabled={(!isDirty && !isValid) || isSubmitting}
-						>
-							Next
-						</SubmitButton>
-					</div>
-				</Form>
-			</Container>
+											useWrapper={false}
+											className="form-group"
+										>
+											<Controller
+												control={control}
+												name="phoneNumber"
+												render={({
+													field: { onChange, value },
+												}) => (
+													<PhoneInput
+														international={false}
+														placeholder="Phone number"
+														value={value}
+														onChange={onChange}
+														defaultCountry="US"
+														inputComponent={
+															BootstrapForm.Control as any
+														}
+													/>
+												)}
+											/>
+										</FormField>
+									</Col>
+								</Row>
+							</Col>
+						</Row>
+						<div className="footer w-75">
+							<ProgressBar
+								variant="secondary"
+								now={40}
+								className="col-lg-7 pull-left mt-3"
+							/>
+							<SubmitButton
+								pending={isSubmitting}
+								pendingText="Saving"
+								className="col-lg-auto pull-right"
+								disabled={
+									(!isDirty && !isValid) || isSubmitting
+								}
+							>
+								Next
+							</SubmitButton>
+						</div>
+					</Form>
+				</Container>
+			)}
 			{isSubmitting && <LoadingMaskWrap />}
 		</>
 	)

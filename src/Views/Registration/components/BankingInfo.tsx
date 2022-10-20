@@ -7,6 +7,7 @@ import {
 import stripeLogo from 'assets/images/stripe.png'
 import {
 	checkObjectIfComplete,
+	disableUrlType,
 	isNumericDigits,
 	yupShortTest,
 } from 'common/Util'
@@ -21,10 +22,10 @@ import {
 	SubmitButton,
 } from 'components'
 import { ContentHeader } from 'components/ContentHeader'
-import { useState } from 'react'
+import { useEffect, useLayoutEffect, useState } from 'react'
 import { Col, Container, ProgressBar, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { bankingTypeOptions, IBankDetailsInfo } from '../types'
 import { PaymentForm } from './PaymentForm'
@@ -35,6 +36,7 @@ interface IBankingInfoProps {
 	setCurrentStep: (value: Number) => void
 	setStripeToken: (value: any) => void
 	stripeToken: any
+	currentStep: Number
 }
 
 export const BankingInfo = ({
@@ -43,6 +45,7 @@ export const BankingInfo = ({
 	setCurrentStep,
 	setStripeToken,
 	stripeToken,
+	currentStep,
 }: IBankingInfoProps) => {
 	const navigate = useNavigate()
 	const stripe = useStripe()
@@ -84,6 +87,10 @@ export const BankingInfo = ({
 	} = useFormInstance
 
 	// NOTE: REFACTOR \/
+
+	useEffect(() => {
+		disableUrlType(2, navigate, currentStep)
+	}, [currentStep])
 
 	const [stripeErrors, setStripeErrors] = useState({
 		cardNumber: undefined,
@@ -171,164 +178,175 @@ export const BankingInfo = ({
 
 	return (
 		<>
-			<Container fluid className="banking-info">
-				<ContentHeader
-					title="Banking Information"
-					subtitle="Enter either of the following"
-					backText="Back"
-					backLink={-1}
-				/>
-				<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
-					<Row className="justify-content-center mb-5">
-						<Col lg={10}>
-							<div className="card border-0">
-								<div className="mb-5 m-auto button-tab">
-									<Button
-										variety={
-											tabKey === 'bank'
-												? Variety.Secondary
-												: Variety.Primary
-										}
-										onClick={() => setTabKey('bank')}
-										className="me-3"
-									>
-										Bank
-									</Button>
-									<Button
-										variety={
-											tabKey !== 'bank'
-												? Variety.Secondary
-												: Variety.Primary
-										}
-										onClick={() => setTabKey('credit')}
-									>
-										Credit
-									</Button>
-								</div>
-								<Row className="justify-content-center">
-									<Col
-										lg={6}
-										className={`card border-2 border-dark rounded-2 m-auto ${
-											tabKey === 'bank'
-												? 'd-block'
-												: 'd-none'
-										}`}
-									>
-										<div className="card-body d-flex flex-column">
-											<FormField
-												name="bankName"
-												label="Bank Account"
-											>
-												<FormTextInput
-													placeholder="Bank Name"
+			{currentStep === 2 && (
+				<Container fluid className="banking-info">
+					<ContentHeader
+						title="Banking Information"
+						subtitle="Enter either of the following"
+						backText="Back"
+						backLink={-1}
+					/>
+					<Form
+						useFormInstance={useFormInstance}
+						onSubmit={handleSubmit}
+					>
+						<Row className="justify-content-center mb-5">
+							<Col lg={10}>
+								<div className="card border-0">
+									<div className="mb-5 m-auto button-tab">
+										<Button
+											variety={
+												tabKey === 'bank'
+													? Variety.Secondary
+													: Variety.Primary
+											}
+											onClick={() => setTabKey('bank')}
+											className="me-3"
+										>
+											Bank
+										</Button>
+										<Button
+											variety={
+												tabKey !== 'bank'
+													? Variety.Secondary
+													: Variety.Primary
+											}
+											onClick={() => setTabKey('credit')}
+										>
+											Credit
+										</Button>
+									</div>
+									<Row className="justify-content-center">
+										<Col
+											lg={6}
+											className={`card border-2 border-dark rounded-2 m-auto ${
+												tabKey === 'bank'
+													? 'd-block'
+													: 'd-none'
+											}`}
+										>
+											<div className="card-body d-flex flex-column">
+												<FormField
 													name="bankName"
-													register={register}
+													label="Bank Account"
+												>
+													<FormTextInput
+														placeholder="Bank Name"
+														name="bankName"
+														register={register}
+													/>
+												</FormField>
+												<FormField name="bankAccountType">
+													<FormSearchSelect
+														name="bankAccountType"
+														register={register}
+														placeholder="Bank Account Type"
+														control={control}
+														options={
+															bankingTypeOptions
+														}
+													/>
+												</FormField>
+												<FormField name="accountName">
+													<FormTextInput
+														placeholder="Account Name"
+														name="accountName"
+														register={register}
+													/>
+												</FormField>
+												<FormField name="accountNumber">
+													<FormTextInput
+														placeholder="Account Number"
+														name="accountNumber"
+														register={register}
+														type="number"
+													/>
+												</FormField>
+												<FormField name="abaRoutingNumber">
+													<FormTextInput
+														placeholder="ABA Routing Number"
+														name="abaRoutingNumber"
+														register={register}
+														type="number"
+													/>
+												</FormField>
+												<SubmitButton
+													pending={isBankSubmitting}
+													pendingText="Saving"
+													className="col-lg-auto m-auto"
+													disabled={!isDirty}
+												>
+													Save
+												</SubmitButton>
+											</div>
+										</Col>
+										<Col
+											lg={6}
+											className={`card border-2 border-dark rounded-2 m-auto ${
+												tabKey === 'credit'
+													? 'd-block'
+													: 'd-none'
+											}`}
+										>
+											<div className="card-body d-flex flex-column">
+												<PaymentForm
+													setStripeToken={
+														setStripeToken
+													}
+													setStripeErrors={
+														setStripeErrors
+													}
+													stripeErrors={stripeErrors}
+													setStripeValid={
+														setStripeValid
+													}
+													stripeValid={stripeValid}
 												/>
-											</FormField>
-											<FormField name="bankAccountType">
-												<FormSearchSelect
-													name="bankAccountType"
-													register={register}
-													placeholder="Bank Account Type"
-													control={control}
-													options={bankingTypeOptions}
+												<SubmitButton
+													pending={isStripeSubmitting}
+													pendingText="Saving"
+													className="col-lg-auto mx-auto"
+													disabled={
+														!isStripeFieldsValid()
+													}
+													onClick={async () => {
+														await handleStripeTokenSubmit()
+													}}
+													type="button"
+												>
+													Save
+												</SubmitButton>
+												<img
+													src={stripeLogo}
+													alt="logo"
+													className="img-fluid mt-auto w-25 align-self-center"
 												/>
-											</FormField>
-											<FormField name="accountName">
-												<FormTextInput
-													placeholder="Account Name"
-													name="accountName"
-													register={register}
-												/>
-											</FormField>
-											<FormField name="accountNumber">
-												<FormTextInput
-													placeholder="Account Number"
-													name="accountNumber"
-													register={register}
-													type="number"
-												/>
-											</FormField>
-											<FormField name="abaRoutingNumber">
-												<FormTextInput
-													placeholder="ABA Routing Number"
-													name="abaRoutingNumber"
-													register={register}
-													type="number"
-												/>
-											</FormField>
-											<SubmitButton
-												pending={isBankSubmitting}
-												pendingText="Saving"
-												className="col-lg-auto m-auto"
-												disabled={!isDirty}
-											>
-												Save
-											</SubmitButton>
-										</div>
-									</Col>
-									<Col
-										lg={6}
-										className={`card border-2 border-dark rounded-2 m-auto ${
-											tabKey === 'credit'
-												? 'd-block'
-												: 'd-none'
-										}`}
-									>
-										<div className="card-body d-flex flex-column">
-											<PaymentForm
-												setStripeToken={setStripeToken}
-												setStripeErrors={
-													setStripeErrors
-												}
-												stripeErrors={stripeErrors}
-												setStripeValid={setStripeValid}
-												stripeValid={stripeValid}
-											/>
-											<SubmitButton
-												pending={isStripeSubmitting}
-												pendingText="Saving"
-												className="col-lg-auto mx-auto"
-												disabled={
-													!isStripeFieldsValid()
-												}
-												onClick={async () => {
-													await handleStripeTokenSubmit()
-												}}
-												type="button"
-											>
-												Save
-											</SubmitButton>
-											<img
-												src={stripeLogo}
-												alt="logo"
-												className="img-fluid mt-auto w-25 align-self-center"
-											/>
-										</div>
-									</Col>
-								</Row>
-							</div>
-						</Col>
-					</Row>
-					<div className="footer w-75">
-						<ProgressBar
-							variant="secondary"
-							now={60}
-							className="col-lg-7 pull-left mt-3"
-						/>
-						<SubmitButton
-							pending={isDataSubmitting}
-							pendingText="Saving"
-							disabled={handleDisable()}
-							onClick={() => handleNext()}
-							className="col-lg-auto pull-right"
-							type="button"
-						>
-							Next
-						</SubmitButton>
-					</div>
-				</Form>
-			</Container>
+											</div>
+										</Col>
+									</Row>
+								</div>
+							</Col>
+						</Row>
+						<div className="footer w-75">
+							<ProgressBar
+								variant="secondary"
+								now={60}
+								className="col-lg-7 pull-left mt-3"
+							/>
+							<SubmitButton
+								pending={isDataSubmitting}
+								pendingText="Saving"
+								disabled={handleDisable()}
+								onClick={() => handleNext()}
+								className="col-lg-auto pull-right"
+								type="button"
+							>
+								Next
+							</SubmitButton>
+						</div>
+					</Form>
+				</Container>
+			)}
 			{(isDataSubmitting || isStripeSubmitting || isBankSubmitting) && (
 				<LoadingMaskWrap />
 			)}

@@ -1,6 +1,7 @@
 import { faLocationDot } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
+import classNames from 'classnames'
 import { isEmpty } from 'common/Util'
 import {
 	ContentHeader,
@@ -10,7 +11,7 @@ import {
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Badge, Col, Container, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
@@ -80,7 +81,11 @@ export const SelectBranch = () => {
 		}
 	}, [appointmentInfo.city])
 
-	const clinicOptionComponent = (name: string, description: string) => (
+	const clinicOptionComponent = (
+		name: string,
+		description: string,
+		type: string
+	) => (
 		<div className="radio-card-wrap location">
 			<div className="d-flex justify-content-between">
 				<div>
@@ -89,12 +94,22 @@ export const SelectBranch = () => {
 						className="text-secondary me-2"
 						size="1x"
 					/>
-					<strong>{name}</strong>
+					<strong className="me-2">{name}</strong>
+					<Badge
+						pill
+						className={classNames({
+							clinic: type === 'Clinic',
+							mobile: type === 'Mobile Clinic',
+							pharmacy: type === 'Pharmacy',
+						})}
+					>
+						{type}
+					</Badge>
 				</div>
 
 				<p className="select-text">SELECT</p>
 			</div>
-			<p className="small">{description}</p>
+			<p className="small pb-5">{description}</p>
 		</div>
 	)
 
@@ -135,7 +150,8 @@ export const SelectBranch = () => {
 																	item.street,
 																	item.city,
 																	item.state,
-																].join(', ')
+																].join(', '),
+																item.type.name
 															)}
 															labelClassname="d-block mt-2 mb-3"
 														/>

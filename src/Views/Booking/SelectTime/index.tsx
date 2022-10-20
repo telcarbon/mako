@@ -74,7 +74,7 @@ export const SelectTime = () => {
 					className={classNames('date-card', {
 						'date-selected': selectedDate,
 						'date-current': startingDate,
-						'date-disabled': startingDate || checkIfWeekend,
+						'date-disabled': checkIfWeekend,
 					})}
 					onClick={() => setBookingDate(currDateMoment)}
 				>
@@ -126,12 +126,6 @@ export const SelectTime = () => {
 		return []
 	}
 
-	const getStartAndEndTime = (time: any) => {
-		const startTime = moment(time, 'hh:mm').format('LT')
-		const endTime = moment(time, 'hh:mm').add('15', 'minutes').format('LT')
-		return `${startTime} - ${endTime}`
-	}
-
 	useEffect(() => {
 		if (!isEmpty(bookingDate)) {
 			getAvailableTimeRequest()
@@ -152,7 +146,7 @@ export const SelectTime = () => {
 					? itm.time <= timeData
 					: false
 				: false
-		const hasAvailSlot = itm.available_slot === 0
+		const hasAvailSlot = itm.available_slots === 0
 		return hasAvailSlot || pastTime
 	}
 
@@ -295,7 +289,7 @@ export const SelectTime = () => {
 					pendingText="Saving"
 					className="col-lg-auto pull-right"
 					onClick={handleSubmit}
-					// disabled={!bookingDate || !bookingTime}
+					disabled={!bookingDate || !bookingTime}
 					type="button"
 				>
 					Next

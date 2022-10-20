@@ -85,7 +85,8 @@ export const ConfirmAppointment = () => {
 			guardiansFirstName: '',
 			guardiansLastName: '',
 			patientPhoto: '',
-			terms: false,
+			termsOfUse: false,
+			consentToTreatment: false,
 			couponCode: '',
 			howDidYouHearAboutThisService: '',
 		},
@@ -110,6 +111,11 @@ export const ConfirmAppointment = () => {
 			}, 1000)
 		})
 	}
+
+	const allTermsHasFalse = watch([
+		'termsOfUse',
+		'consentToTreatment',
+	]).includes(false)
 
 	console.log(partnerDetail, 'partner')
 
@@ -385,17 +391,33 @@ export const ConfirmAppointment = () => {
 							)}
 						</div>
 
-						<div className="text-center mt-5">
+						<div className="mt-5 d-flex justify-content-center">
 							<FormField name="terms">
 								<FormCheckBox
-									name="terms"
+									name="consentToTreatment"
+									register={register}
+									value={'consentToTreatment'}
+								>
+									I agree with{' '}
+									<a
+										className="link-secondary"
+										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_ConsentToTreatment_10.13.22.pdf`}
+										target="_blank"
+									>
+										Consent to Treatment
+									</a>
+									.
+								</FormCheckBox>
+								<FormCheckBox
+									name="termsOfUse"
 									register={register}
 									value={'termsOfUse'}
+									className="my-2"
 								>
 									I agree with the{' '}
 									<a
 										className="link-secondary"
-										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_CareCheckIn_Terms_of_Use_8.9.22.pdf`}
+										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_TermsAndConditions_10.13.22.pdf`}
 										target="_blank"
 									>
 										Terms and Conditions
@@ -411,6 +433,7 @@ export const ConfirmAppointment = () => {
 						pending={false}
 						pendingText="Saving"
 						className="col-lg-auto pull-right"
+						disabled={allTermsHasFalse}
 					>
 						Next
 					</SubmitButton>

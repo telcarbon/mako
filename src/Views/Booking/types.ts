@@ -31,6 +31,11 @@ export interface IServicesPricing {
 	duration: number
 }
 
+export interface TypeOfLocation {
+	id: number
+	name: string
+}
+
 export interface IPartners {
 	id: number
 	name: string
@@ -39,6 +44,7 @@ export interface IPartners {
 	state: string
 	city: string
 	partner_configuration: []
+	type: TypeOfLocation
 }
 
 export interface IAvailableTime {

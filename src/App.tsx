@@ -1,5 +1,6 @@
 import {
 	BrowserRouter as Router,
+	Navigate,
 	useNavigate,
 	useRoutes,
 } from 'react-router-dom'
@@ -15,7 +16,7 @@ function AppRoutes() {
 		{ path: '/*', element: <Registration /> },
 		{ path: '/user/*', element: <User /> },
 		{ path: '/booking/*', element: <Booking /> },
-		{ path: '/error-404', element: <NotFound /> },
+		{ path: '/page-not-found', element: <NotFound /> },
 	])
 	return routes
 }
