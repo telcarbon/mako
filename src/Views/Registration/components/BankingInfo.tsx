@@ -6,6 +6,7 @@ import {
 } from '@stripe/react-stripe-js'
 import stripeLogo from 'assets/images/stripe.png'
 import {
+	BUSINESS_REP_URL,
 	checkObjectIfComplete,
 	disableUrlType,
 	isNumericDigits,
@@ -89,7 +90,7 @@ export const BankingInfo = ({
 	// NOTE: REFACTOR \/
 
 	useEffect(() => {
-		disableUrlType(2, navigate, currentStep)
+		disableUrlType(2, navigate, currentStep, setCurrentStep)
 	}, [currentStep])
 
 	const [stripeErrors, setStripeErrors] = useState({
@@ -184,7 +185,9 @@ export const BankingInfo = ({
 						title="Banking Information"
 						subtitle="Enter either of the following"
 						backText="Back"
-						backLink={-1}
+						backLink={`/${BUSINESS_REP_URL}`}
+						pageStep={1}
+						setCurrentStep={setCurrentStep}
 					/>
 					<Form
 						useFormInstance={useFormInstance}

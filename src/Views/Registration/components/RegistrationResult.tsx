@@ -12,7 +12,7 @@ interface RegistrationResultProps {
 	email: string | undefined
 	success?: any
 	errorMsg?: string
-	setCurrentStep: (value: Number) => void
+	setCurrentStep: any
 }
 
 export const RegistrationResult = ({
@@ -88,8 +88,9 @@ export const RegistrationResult = ({
 								onClick={(e) => {
 									console.log('test')
 									// e.preventDefault()
-									setCurrentStep(2)
-									navigate('/banking-info')
+									setCurrentStep(2, () => {
+										navigate('/banking-info')
+									})
 								}}
 							>
 								{errorMsg ? (

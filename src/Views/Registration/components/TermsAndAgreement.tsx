@@ -1,4 +1,4 @@
-import { disableUrlType } from 'common/Util'
+import { BUSINESS_QUESTIONNAIRE_URL, disableUrlType } from 'common/Util'
 import {
 	Button,
 	ContentHeader,
@@ -64,7 +64,7 @@ export const TermsAndAgreement = ({
 	]).includes(false)
 
 	useEffect(() => {
-		disableUrlType(4, navigate, currentStep)
+		disableUrlType(4, navigate, currentStep, setCurrentStep)
 	}, [])
 
 	return (
@@ -74,7 +74,9 @@ export const TermsAndAgreement = ({
 					<ContentHeader
 						title="Terms & Agreement"
 						backText="Back"
-						backLink={-1}
+						backLink={`/${BUSINESS_QUESTIONNAIRE_URL}`}
+						pageStep={3}
+						setCurrentStep={setCurrentStep}
 					/>
 					<Form
 						useFormInstance={useFormInstance}

@@ -16,7 +16,7 @@ import { useFieldArray, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import * as Yup from 'yup'
 import { IQuestionnareInfo } from '../types'
-import { disableUrlType } from 'common/Util'
+import { BANKING_INFO_URL, disableUrlType } from 'common/Util'
 
 export const RadioLabelOptions = [
 	{ value: true, name: 'YES' },
@@ -38,8 +38,9 @@ export const BusinessQuestionnaire = ({
 }: IBusinessQuestionnaireProps) => {
 	const navigate = useNavigate()
 
+
 	useEffect(() => {
-		disableUrlType(3, navigate, currentStep)
+		disableUrlType(3, navigate, currentStep, setCurrentStep)
 	}, [])
 
 	const validationSchema = Yup.object().shape({
@@ -146,10 +147,10 @@ export const BusinessQuestionnaire = ({
 
 	useEffect(() => {
 		if (q1Watch === true || q1Watch === null || q2Watch !== null) {
-			setValue('licensed', null)
+				setValue('licensed', null)
 		} else {
-			setValue('licensed', false)
-		}
+				setValue('licensed', false)
+			}
 	}, [q1Watch])
 
 	useEffect(() => {
@@ -173,7 +174,9 @@ export const BusinessQuestionnaire = ({
 					<ContentHeader
 						title="Business Questionnaire"
 						backText="Back"
-						backLink={-1}
+						backLink={`/${BANKING_INFO_URL}`}
+						pageStep={2}
+						setCurrentStep={setCurrentStep}
 					/>
 					<Form
 						useFormInstance={useFormInstance}
@@ -350,7 +353,11 @@ export const BusinessQuestionnaire = ({
 													onClear={() => {
 														setValue(
 															'cliaCertification',
-															[]
+															[],
+															{
+																shouldDirty:
+																	true,
+															}
 														)
 													}}
 												/>

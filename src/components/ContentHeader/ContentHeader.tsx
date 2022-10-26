@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { faArrowLeft, faHeart } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classnames from 'classnames'
+import { AnyMessageParams } from 'yup/lib/types'
 
 export interface ContentHeaderProps {
 	title: string
@@ -9,6 +10,8 @@ export interface ContentHeaderProps {
 	backLink?: any
 	subtitle?: string
 	useReactRouterLink?: boolean
+	pageStep?: Number
+	setCurrentStep?: any
 }
 export const ContentHeader = ({
 	title,
@@ -16,7 +19,10 @@ export const ContentHeader = ({
 	backLink = '#',
 	useReactRouterLink = false,
 	subtitle,
+	pageStep,
+	setCurrentStep,
 }: ContentHeaderProps) => {
+	const navigate = useNavigate()
 	return (
 		<div className="content-header mt-0 mt-md-4 mb-0 mb-md-5">
 			<div
@@ -28,7 +34,17 @@ export const ContentHeader = ({
 				})}
 			>
 				{backText && (
-					<Link className="link-secondary" to={backLink}>
+					<Link
+						className="link-secondary"
+						to={backLink}
+						onClick={(e) => {
+							if (pageStep) {
+								setCurrentStep(pageStep, () => {
+									navigate(`/${backLink}`)
+								})
+							}
+						}}
+					>
 						<FontAwesomeIcon icon={faArrowLeft} className="pe-2" />
 						{backText}
 					</Link>

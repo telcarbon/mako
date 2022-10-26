@@ -22,7 +22,9 @@ type InputFileProps = {
 const displayIcon = (icon: any, handleDelete?: any) => {
 	return (
 		<FontAwesomeIcon
-			onClick={() => handleDelete()}
+			onClick={() => {
+				handleDelete()
+			}}
 			icon={icon}
 			className="text-secondary"
 			size="1x"
@@ -91,6 +93,7 @@ export const FormFileUpload = ({
 					type="button"
 					onClick={(e) => {
 						setSelectedFile('')
+						setSelectedFilename('')
 						e.preventDefault()
 					}}
 					className="d-block bg-transparent border-0 m-auto py-0"

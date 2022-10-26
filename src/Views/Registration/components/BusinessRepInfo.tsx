@@ -42,7 +42,7 @@ export const BusinessRepInfo = ({
 	const navigate = useNavigate()
 
 	useEffect(() => {
-		disableUrlType(1, navigate, currentStep)
+		disableUrlType(1, navigate, currentStep, setCurrentStep)
 	}, [])
 
 	const headers = {
@@ -151,7 +151,9 @@ export const BusinessRepInfo = ({
 					<ContentHeader
 						title="Business Representative Information"
 						backText="Back"
-						backLink={-1}
+						backLink={'/'}
+						pageStep={0}
+						setCurrentStep={setCurrentStep}
 					/>
 					<Form
 						useFormInstance={useFormInstance}

@@ -1,7 +1,13 @@
 import axios from 'axios'
+import { AnyNsRecord } from 'dns'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { Questions } from 'Views/Registration/types'
+
+export const BUSINESS_QUESTIONNAIRE_URL = 'business-questionnaire'
+export const BUSINESS_REP_URL = 'busines-rep-info'
+export const BANKING_INFO_URL = 'banking-info'
+export const TERMS_URL = 'terms'
 
 export const WEEKDAY_NAMES = [
 	'Sunday',
@@ -208,12 +214,11 @@ export const disableUrlType = (
 	pageStep: Number,
 	navigate: any,
 	currentStep: Number,
+	setCurrentStep: any,
 	location: string = ''
 ) => {
-	console.log('labas')
-
 	if (currentStep !== pageStep) {
-		console.log('l0ob', navigate)
+		setCurrentStep(pageStep)
 		navigate(`/${location}`)
 	}
 }
