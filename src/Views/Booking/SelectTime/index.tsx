@@ -38,7 +38,7 @@ export const SelectTime = () => {
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [availableTime, setAvailableTime] = useState<any>()
-	const [currentTime, setCurrentTime] = useState<string>()
+	const [minBookingTime, setMinBookingTime] = useState<string>()
 
 	const smallDevices = useMediaQuery({
 		mediaQueryType: MediaQueryType.MAX_WIDTH,
@@ -89,16 +89,17 @@ export const SelectTime = () => {
 		navigate('/booking/confirm-appointment')
 	}
 
-	const getCurrentTime = () => {
+	const getMinBookingTime = () => {
 		const dt = new Date()
-		return `${dt.getHours().toString().padStart(2, '0')}:${dt
+		const newDt = moment(dt).add(59, 'm').toDate()
+		return `${newDt.getHours().toString().padStart(2, '0')}:${newDt
 			.getMinutes()
 			.toString()
 			.padStart(2, '0')}:00`
 	}
 
 	const getAvailableTimeRequest = () => {
-		setCurrentTime(getCurrentTime())
+		setMinBookingTime(getMinBookingTime())
 		const partner = partnerInfo.partner
 		const service = appointmentInfo.service
 		axios
@@ -136,9 +137,10 @@ export const SelectTime = () => {
 	const checkTimeIfDisable = (itm: any, checkTime: boolean = false) => {
 		const today = new Date()
 		var todayMoment = formatDate(today)
-		const timeData = checkTime ? getCurrentTime() : currentTime
+		const timeData = checkTime ? getMinBookingTime() : minBookingTime
+
 		if (checkTime) {
-			setCurrentTime(timeData)
+			setMinBookingTime(timeData)
 		}
 		const pastTime =
 			bookingDate === todayMoment
@@ -146,6 +148,7 @@ export const SelectTime = () => {
 					? itm.time <= timeData
 					: false
 				: false
+
 		const hasAvailSlot = itm.available_slots === 0
 		return hasAvailSlot || pastTime
 	}
