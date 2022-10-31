@@ -157,7 +157,10 @@ export const Registration = () => {
 				>
 					{!location.pathname.includes('success') &&
 						!location.pathname.includes('error') && (
-							<RegistrationNav currentStep={currentStep} />
+							<RegistrationNav
+								currentStep={currentStep}
+								setCurrentStep={setCurrentStep}
+							/>
 						)}
 				</SideNav>
 				<Routes>
