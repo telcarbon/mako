@@ -38,10 +38,11 @@ export const BusinessQuestionnaire = ({
 }: IBusinessQuestionnaireProps) => {
 	const navigate = useNavigate()
 
+	// useEffect(() => {
+	// 	console.log(currentStep, 'current')
 
-	useEffect(() => {
-		disableUrlType(3, navigate, currentStep, setCurrentStep)
-	}, [])
+	// 	disableUrlType(3, navigate, currentStep, setCurrentStep)
+	// }, [])
 
 	const validationSchema = Yup.object().shape({
 		plebotomy: Yup.mixed().required('Please select an option').nullable(),
@@ -147,10 +148,10 @@ export const BusinessQuestionnaire = ({
 
 	useEffect(() => {
 		if (q1Watch === true || q1Watch === null || q2Watch !== null) {
-				setValue('licensed', null)
+			setValue('licensed', null)
 		} else {
-				setValue('licensed', false)
-			}
+			setValue('licensed', false)
+		}
 	}, [q1Watch])
 
 	useEffect(() => {

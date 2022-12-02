@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { Questions } from 'Views/Registration/types'
 
 export const BUSINESS_QUESTIONNAIRE_URL = 'business-questionnaire'
-export const BUSINESS_REP_URL = 'busines-rep-info'
+export const BUSINESS_REP_URL = 'business-rep-info'
 export const BANKING_INFO_URL = 'banking-info'
 export const TERMS_URL = 'terms'
 
@@ -217,8 +217,11 @@ export const disableUrlType = (
 	setCurrentStep: any,
 	location: string = ''
 ) => {
+	console.log('test labas')
 	if (currentStep !== pageStep) {
-		setCurrentStep(pageStep)
-		navigate(`/${location}`)
+		console.log('test loob')
+		setCurrentStep(pageStep, () => {
+			navigate(`/${location}`)
+		})
 	}
 }

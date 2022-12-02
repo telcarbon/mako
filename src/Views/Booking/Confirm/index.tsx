@@ -1,5 +1,6 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { checkIfLegalAge, getStartAndEndTime, isEmpty } from 'common/Util'
 import {
 	ContentHeader,
@@ -10,10 +11,13 @@ import {
 	FormRadioGroup,
 	FormSearchSelect,
 	FormTextInput,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import moment from 'moment'
 import { useContext } from 'react'
 import { Col, Container, Form as BootstrapForm, Row } from 'react-bootstrap'
+import ReactDatePicker from 'react-datepicker'
 import { Controller, useForm } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import { useNavigate } from 'react-router-dom'
@@ -22,14 +26,12 @@ import * as Yup from 'yup'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import { genderOptions, ServicesRadioOptions } from '../types'
-import { yupResolver } from '@hookform/resolvers/yup'
-import moment from 'moment'
+import 'react-datepicker/dist/react-datepicker.css'
+import 'react-phone-number-input/style.css'
 
 export const ConfirmAppointment = () => {
 	const {
-		headers,
 		handleSubmitAll,
-		setBookingId,
 		serviceDetail,
 		partnerDetail,
 		bookingTime,
@@ -66,7 +68,7 @@ export const ConfirmAppointment = () => {
 				.required("Guardian's Last Name is required")
 				.nullable(),
 		}),
-		other: Yup.string().when('howDidYouHearAboutThisService', {
+		others: Yup.string().when('howDidYouHearAboutThisService', {
 			is: (value: string) => value === 'Other',
 			then: Yup.string().required('This is required.').nullable(),
 		}),
@@ -89,26 +91,27 @@ export const ConfirmAppointment = () => {
 			consentToTreatment: false,
 			couponCode: '',
 			howDidYouHearAboutThisService: '',
+			others: '',
 		},
 	})
 
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting, isValid },
+		formState: { isSubmitting },
 		watch,
 		control,
 	} = useFormInstance
 
-	const birthdayWatch = watch('birthdate')
+	const birthdayWatch = moment(watch('birthdate')).format('YYYY-MM-DD')
 
 	const handleSubmit = async () => {
 		const formValues = getValues()
 		handleSubmitAll(formValues)
 		return new Promise(() => {
 			setTimeout(() => {
-				navigate(`/booking/details`)
-			}, 1000)
+				navigate('../details')
+			}, 2000)
 		})
 	}
 
@@ -116,8 +119,6 @@ export const ConfirmAppointment = () => {
 		'termsOfUse',
 		'consentToTreatment',
 	]).includes(false)
-
-	console.log(partnerDetail, 'partner')
 
 	return (
 		<Container fluid>
@@ -152,12 +153,7 @@ export const ConfirmAppointment = () => {
 							// description={'This is a sample description'}
 							partner={partnerDetail?.name}
 							// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
-							location={[
-								partnerDetail?.unit_floor_building,
-								partnerDetail?.street,
-								partnerDetail?.city,
-								partnerDetail?.state,
-							].join(', ')}
+							location={`${partnerDetail.street} ${partnerDetail.unit_floor_building}, ${partnerDetail.city}, NC, ${partnerDetail.zip_code}`}
 							time={getStartAndEndTime(
 								bookingTime,
 								serviceDetail?.duration
@@ -191,7 +187,7 @@ export const ConfirmAppointment = () => {
 											</FormField>
 											<FormField name="middleName">
 												<FormTextInput
-													placeholder="Middle Name"
+													placeholder="Middle Name (Optional)"
 													name="middleName"
 													register={register}
 												/>
@@ -221,17 +217,33 @@ export const ConfirmAppointment = () => {
 										</Col>
 										<Col lg>
 											<FormField name="birthdate">
-												<FormTextInput
-													placeholder="MM/DD/YYYY"
+												<Controller
+													control={control}
 													name="birthdate"
-													register={register}
-													type="date"
+													render={({ field }) => (
+														<ReactDatePicker
+															className="form-control rounded-right"
+															placeholderText="Birthday"
+															onChange={(
+																e: any
+															) =>
+																field.onChange(
+																	e
+																)
+															}
+															selected={
+																field.value
+															}
+															maxDate={moment().toDate()}
+															dateFormat="MM/dd/yyyy"
+														/>
+													)}
 												/>
 											</FormField>
 										</Col>
 									</Row>
 									<Row>
-										{!isEmpty(birthdayWatch) ? (
+										{!birthdayWatch.includes('Invalid') ? (
 											<>
 												<Col lg className="mt-2">
 													{!checkIfLegalAge(
@@ -341,7 +353,7 @@ export const ConfirmAppointment = () => {
 											</>
 										) : null}
 									</Row>
-									{!isEmpty(birthdayWatch) && (
+									{!birthdayWatch.includes('Invalid') && (
 										<Row className="mt-4">
 											<Col lg={6}>
 												<FormField name="couponCode">
@@ -357,88 +369,98 @@ export const ConfirmAppointment = () => {
 								</Col>
 							</Row>
 						</div>
-						<div className="mt-5 mx-1">
-							<FormField
-								name="howDidYouHearAboutThisService"
-								label="How did you hear about this service?"
-								className="mb-0"
-							>
-								{ServicesRadioOptions.map((option, index) => (
-									<FormRadioGroup
-										name={'howDidYouHearAboutThisService'}
-										register={register}
-										value={option.label}
-										key={index}
-										labelClassname="d-flex mb-2"
-										className="radio-default me-3 ms-2"
+						{!birthdayWatch.includes('Invalid') && (
+							<>
+								<div className="mt-5 mx-1">
+									<FormField
+										name="howDidYouHearAboutThisService"
+										label="How did you hear about this service?"
+										className="mb-0"
 									>
-										{option.label}
-									</FormRadioGroup>
-								))}
-							</FormField>
-							{watch('howDidYouHearAboutThisService') ===
-								'Other' && (
-								<FormField
-									name="other"
-									className="col-lg-5 ms-4 ps-3"
-								>
-									<FormTextInput
-										placeholder="Other"
-										name="other"
-										register={register}
-									/>
-								</FormField>
-							)}
-						</div>
-
-						<div className="mt-5 d-flex justify-content-center">
-							<FormField name="terms">
-								<FormCheckBox
-									name="consentToTreatment"
-									register={register}
-									value={'consentToTreatment'}
-								>
-									I agree with{' '}
-									<a
-										className="link-secondary"
-										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_ConsentToTreatment_10.13.22.pdf`}
-										target="_blank"
-									>
-										Consent to Treatment
-									</a>
-									.
-								</FormCheckBox>
-								<FormCheckBox
-									name="termsOfUse"
-									register={register}
-									value={'termsOfUse'}
-									className="my-2"
-								>
-									I agree with the{' '}
-									<a
-										className="link-secondary"
-										href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_TermsAndConditions_10.13.22.pdf`}
-										target="_blank"
-									>
-										Terms and Conditions
-									</a>
-									.
-								</FormCheckBox>
-							</FormField>
-						</div>
+										{ServicesRadioOptions.map(
+											(option, index) => (
+												<FormRadioGroup
+													name={
+														'howDidYouHearAboutThisService'
+													}
+													register={register}
+													value={option.label}
+													key={index}
+													labelClassname="d-flex mb-2"
+													className="radio-default me-3 ms-2"
+												>
+													{option.label}
+												</FormRadioGroup>
+											)
+										)}
+									</FormField>
+									{watch('howDidYouHearAboutThisService') ===
+										'Other' && (
+										<FormField
+											name="others"
+											className="col-lg-5 ms-4 ps-3"
+										>
+											<FormTextInput
+												placeholder="Other"
+												name="others"
+												register={register}
+											/>
+										</FormField>
+									)}
+								</div>
+								<div className="mt-5 d-flex justify-content-center">
+									<FormField name="terms">
+										<FormCheckBox
+											name="consentToTreatment"
+											register={register}
+											value={'consentToTreatment'}
+										>
+											I agree with{' '}
+											<a
+												className="link-secondary"
+												href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_ConsentToTreatment_10.13.22.pdf`}
+												target="_blank"
+											>
+												Consent to Treatment
+											</a>
+											.
+										</FormCheckBox>
+										<FormCheckBox
+											name="termsOfUse"
+											register={register}
+											value={'termsOfUse'}
+											className="my-2"
+										>
+											I agree with the{' '}
+											<a
+												className="link-secondary"
+												href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_TermsAndConditions_10.13.22.pdf`}
+												target="_blank"
+											>
+												Terms and Conditions
+											</a>
+											.
+										</FormCheckBox>
+									</FormField>
+									<div className="footer">
+										<SubmitButton
+											pending={isSubmitting}
+											pendingText="Submitting"
+											className="text-center"
+											disabled={
+												allTermsHasFalse || isSubmitting
+											}
+										>
+											Submit
+										</SubmitButton>
+									</div>
+								</div>
+							</>
+						)}
 					</Col>
 				</Row>
-				<div className="footer w-75">
-					<SubmitButton
-						pending={false}
-						pendingText="Saving"
-						className="col-lg-auto pull-right"
-						disabled={allTermsHasFalse}
-					>
-						Next
-					</SubmitButton>
-				</div>
 			</Form>
+			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
 	)
 }

@@ -7,9 +7,14 @@ type FormCheckBoxProps = {
 	register: UseFormRegister<any>
 	className?: string
 	disabled?: boolean
-	value: any
+	value?: any
 	control?: any
 	children?: ReactNode
+	checkClassName?: string
+	labelClassname?: string
+	components?: any
+	onClick?: any
+	setCounter?: any
 }
 
 export const FormCheckBox = ({
@@ -18,15 +23,33 @@ export const FormCheckBox = ({
 	className,
 	value,
 	children,
+	checkClassName,
+	labelClassname,
+	disabled,
+	components,
+	onClick,
+	setCounter,
 }: FormCheckBoxProps) => {
 	return (
 		<div className={classNames('form-check', className)}>
-			<label className="form-check-label">
+			<label
+				className={classNames('form-check-label', labelClassname, {
+					disabled: disabled,
+				})}
+			>
 				<input
-					className="form-check-input"
+					className={classNames('form-check-input', checkClassName)}
 					type="checkbox"
 					{...register(name)}
+					value={value}
+					onClick={(e) => {
+						if (setCounter !== undefined) {
+							console.log('ssss', e)
+							console.log('target', e.target)
+						}
+					}}
 				/>
+				{components && components}
 				{children}
 			</label>
 		</div>

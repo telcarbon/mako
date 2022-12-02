@@ -6,7 +6,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
-import { Badge } from 'react-bootstrap'
 
 interface AppointmentDetailsCardProps {
 	service: string
@@ -37,23 +36,40 @@ export const AppointmentDetailsCard = ({
 		<>
 			{title && <h5>{title}</h5>}
 			<div className="custom-card my-3">
-				<div className="d-flex justify-content-between">
-					<h6 className="fw-bold">{service}</h6>
+				<div
+					className={classNames('d-flex justify-content-between', {
+						'mb-3': !reference,
+					})}
+				>
+					<div className="d-flex flex-column">
+						<h6 className="fw-bold mb-0">{service}</h6>
+						{service.includes('Modern') && (
+							<p className="small fst-italic mb-0 fw-bold">
+								Book a time slot for each spot you need checked.
+								For example, if you have a spot on your arm and
+								your leg you want checked, you will need to book
+								two separate time slots for each spot.
+							</p>
+						)}
+					</div>
 					{!isConfirmed ? (
 						<p className="small mb-0">${price}</p>
 					) : (
-						<span className="badge bg-primary text-secondary pt-2">
+						<span className="badge bg-primary text-secondary py-2 align-self-baseline">
 							Confirmed
 						</span>
 					)}
 				</div>
-				<p
-					className={classNames(`small`, {
-						'fw-bold': reference,
-					})}
-				>
-					{description || reference}
-				</p>
+				{reference && (
+					<p
+						className={classNames(`small`, {
+							'fw-bold': reference,
+						})}
+					>
+						{description || reference}
+					</p>
+				)}
+
 				<div className="d-lg-flex">
 					<div className="equal-width">
 						<FontAwesomeIcon

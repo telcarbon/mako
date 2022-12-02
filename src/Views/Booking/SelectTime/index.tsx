@@ -1,6 +1,15 @@
 import Slider from 'react-slick'
-import { ContentHeader, SubmitButton } from 'components'
-import { Col, Container, Row, Card, Button, Accordion } from 'react-bootstrap'
+import { ContentHeader, LoadingMaskWrap, SubmitButton } from 'components'
+import {
+	Col,
+	Container,
+	Row,
+	Card,
+	Button,
+	Accordion,
+	Badge,
+	Spinner,
+} from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCalendar } from '@fortawesome/free-solid-svg-icons'
@@ -33,10 +42,11 @@ export const SelectTime = () => {
 		bookingTime,
 		setBookingTime,
 		serviceDetail,
+		partnerDetail,
 	} = useContext(BookingContext)
 
 	const navigate = useNavigate()
-	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [isLoading, setIsLoading] = useState(false)
 	const [availableTime, setAvailableTime] = useState<any>()
 	const [minBookingTime, setMinBookingTime] = useState<string>()
 
@@ -64,9 +74,15 @@ export const SelectTime = () => {
 			var startingDate = todayMoment === currDateMoment
 			var selectedDate = bookingDate === currDateMoment
 			lastLoopDate = currDate
+			const blockDates =
+				partnerDetail?.partner_configuration[0]?.configuration_block_dates?.map(
+					(item: any) => item.block_date
+				)
 
 			const checkIfWeekend =
 				currDate.getDay() === 6 || currDate.getDay() === 0
+
+			const isBlockedDate = blockDates.includes(currDateMoment)
 
 			return (
 				<div
@@ -74,7 +90,7 @@ export const SelectTime = () => {
 					className={classNames('date-card', {
 						'date-selected': selectedDate,
 						'date-current': startingDate,
-						'date-disabled': checkIfWeekend,
+						'date-disabled': checkIfWeekend || isBlockedDate,
 					})}
 					onClick={() => setBookingDate(currDateMoment)}
 				>
@@ -86,7 +102,7 @@ export const SelectTime = () => {
 	}
 
 	const handleSubmit = async () => {
-		navigate('/booking/confirm-appointment')
+		navigate('../confirm-appointment')
 	}
 
 	const getMinBookingTime = () => {
@@ -102,6 +118,7 @@ export const SelectTime = () => {
 		setMinBookingTime(getMinBookingTime())
 		const partner = partnerInfo.partner
 		const service = appointmentInfo.service
+		setIsLoading(true)
 		axios
 			.get(
 				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${bookingDate}`,
@@ -113,6 +130,9 @@ export const SelectTime = () => {
 				if (!isEmpty(response.data)) {
 					setAvailableTime(response.data)
 				}
+				setTimeout(() => {
+					setIsLoading(false)
+				}, 250)
 			})
 	}
 
@@ -149,7 +169,7 @@ export const SelectTime = () => {
 					: false
 				: false
 
-		const hasAvailSlot = itm.available_slots === 0
+		const hasAvailSlot = itm.available_slots <= 0
 		return hasAvailSlot || pastTime
 	}
 
@@ -206,7 +226,11 @@ export const SelectTime = () => {
 										/>
 									</div>
 								</div>
-
+								<h5 className="text-end me-3 mb-1 mb-lg-0">
+									<Badge bg="secondary">
+										WEEKENDS timeslots COMING SOON!
+									</Badge>
+								</h5>
 								<Slider
 									swipeToSlide
 									dots={false}
@@ -218,7 +242,81 @@ export const SelectTime = () => {
 								</Slider>
 
 								<div className="time-available-display">
-									{getTimeAndSlot()?.length > 0 ? (
+									{/* {getTimeAndSlot()?.length > 0 ? (
+										<>
+											<h6>
+												Showing available time slots for
+												{` ${transformDateToStringMonth(
+													bookingDate
+												)}`}
+											</h6>
+
+											<ul className="time-slot row mt-4">
+												{getTimeAndSlot()?.map(
+													(
+														item: any,
+														index: number
+													) => (
+														<li
+															className="col-lg-3"
+															key={index}
+														>
+															<div
+																className={classNames(
+																	{
+																		'time-selected':
+																			bookingTime ===
+																			item.time,
+																		'time-disabled':
+																			checkTimeIfDisable(
+																				item
+																			),
+																	}
+																)}
+																onClick={() => {
+																	if (
+																		!checkTimeIfDisable(
+																			item,
+																			true
+																		)
+																	) {
+																		setBookingTime(
+																			item.time
+																		)
+																	}
+																}}
+															>
+																{getStartAndEndTime(
+																	item.time,
+																	serviceDetail?.duration
+																)}
+															</div>
+														</li>
+													)
+												)}
+											</ul>
+										</>
+									) : (
+										<h6>
+											{bookingDate &&
+												`There's no available time slots for ${transformDateToStringMonth(
+													bookingDate
+												)}`}
+										</h6>
+									)} */}
+									{isLoading ? (
+										<div className="text-center my-5 py-5">
+											<Spinner
+												animation="border"
+												role="status"
+												variant="secondary"
+											>
+												<span className="visually-hidden">
+													Loading...
+												</span>
+											</Spinner>
+										</div>
+									) : getTimeAndSlot()?.length > 0 ? (
 										<>
 											<h6>
 												Showing available time slots for

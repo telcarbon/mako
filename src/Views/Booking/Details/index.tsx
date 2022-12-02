@@ -62,7 +62,7 @@ export const BookingDetails = () => {
 		setServiceDetail({})
 		setPartnerDetail({})
 		setBookingId({})
-		navigate('/booking')
+		navigate('../')
 		window.location.reload()
 	}
 
@@ -84,12 +84,7 @@ export const BookingDetails = () => {
 						price={serviceDetail?.price}
 						reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
 						partner={partnerDetail?.name}
-						location={[
-							partnerDetail?.unit_floor_building,
-							partnerDetail?.street,
-							partnerDetail?.city,
-							partnerDetail?.state,
-						].join(', ')}
+						location={`${partnerDetail.street} ${partnerDetail.unit_floor_building}, ${partnerDetail.city}, NC, ${partnerDetail.zip_code}`}
 						time={getStartAndEndTime(
 							bookingTime,
 							serviceDetail?.duration

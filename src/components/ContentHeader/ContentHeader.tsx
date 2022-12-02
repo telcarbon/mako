@@ -1,14 +1,14 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { faArrowLeft, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import classnames from 'classnames'
-import { AnyMessageParams } from 'yup/lib/types'
+import { ReactNode } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
 
 export interface ContentHeaderProps {
 	title: string
 	backText?: string
 	backLink?: any
-	subtitle?: string
+	subtitle?: string | ReactNode 
 	useReactRouterLink?: boolean
 	pageStep?: Number
 	setCurrentStep?: any

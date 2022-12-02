@@ -41,9 +41,9 @@ export const BusinessRepInfo = ({
 }: IBusinessRepInfoProps) => {
 	const navigate = useNavigate()
 
-	useEffect(() => {
-		disableUrlType(1, navigate, currentStep, setCurrentStep)
-	}, [])
+	// useEffect(() => {
+	// 	disableUrlType(1, navigate, currentStep, setCurrentStep)
+	// }, [])
 
 	const headers = {
 		'Content-Type': 'application/json',

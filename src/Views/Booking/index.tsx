@@ -1,10 +1,13 @@
 import axios from 'axios'
 import { convertFieldsToSnakeCase } from 'common/Util'
 import { SideNav } from 'components'
-import { createContext, useState } from 'react'
+import moment from 'moment'
+import { createContext, useEffect, useState } from 'react'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
 import { Appointment } from './Appointment'
+import { CancelAppointment } from './CancelAppointment'
+import { CancelAppointmentSuccess } from './CancelAppointmentSuccess'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
 import { SelectBranch } from './SelectBranch'
@@ -63,6 +66,7 @@ export const Booking = () => {
 		state: 'North Carolina',
 		city: '',
 		service: 0,
+		multiServices: [],
 	})
 
 	const [partnerInfo, setPartnerInfo] = useState<IPartner>({
@@ -80,10 +84,8 @@ export const Booking = () => {
 
 	const headers = {
 		'Content-Type': 'application/json',
-		Authorization: `Bearer ${accessToken}`,
+		Authorization: `Token ${TOKEN}`,
 	}
-
-	console.log(serviceDetail, 'detail')
 
 	const handleSubmitAll = (patientInfo: IPatient) => {
 		// if (appointmentInfo && partnerInfo && patientInfo) {
@@ -92,21 +94,23 @@ export const Booking = () => {
 			middleName: patientInfo?.middleName || null,
 			lastName: patientInfo?.lastName,
 			gender: patientInfo?.gender,
-			birthdate: patientInfo?.birthdate,
+			birthdate: moment(patientInfo?.birthdate).format('YYYY-MM-DD'),
 			guardianFirstName: patientInfo?.guardiansFirstName || null,
 			guardianLastName: patientInfo?.guardiansLastName || null,
 			email: patientInfo?.email,
 			phoneNumber: patientInfo?.phoneNumber,
 			couponCode: patientInfo?.couponCode || null,
 			howDidYouHearAboutThisService:
-				patientInfo?.howDidYouHearAboutThisService,
+				patientInfo?.howDidYouHearAboutThisService.includes('Other')
+					? patientInfo?.others
+					: patientInfo?.howDidYouHearAboutThisService,
 		}
 
 		const appointmentDetails = {
 			partner: partnerInfo?.partner,
 			service: appointmentInfo?.service,
 			practitioner: null,
-			scheduledTime: bookingTime || '09:30:00',
+			scheduledTime: bookingTime,
 			scheduledDate: bookingDate,
 			notes: 'test',
 		}
@@ -120,8 +124,6 @@ export const Booking = () => {
 
 		formData.append('data', JSON.stringify(params))
 		formData.append('patient_photo', patientInfo.patientPhoto[0])
-
-		console.log(formData, 'all params')
 
 		const headers = {
 			'Content-Type': 'multipart/data',
@@ -146,22 +148,10 @@ export const Booking = () => {
 
 	return (
 		<>
-			{/* <button
-				onClick={() => {
-					console.log(
-						appointmentInfo,
-						partnerInfo,
-						patientInfo,
-						bookingDate,
-						bookingTime
-					)
-				}}
-			>
-				test
-			</button> */}
 			<SideNav
 				className={
-					!location.pathname.includes('details')
+					!location.pathname.includes('details') &&
+					!location.pathname.includes('cancel-appointment')
 						? 'bg-primary fixed-left'
 						: 'fixed-top bg-white'
 				}
@@ -188,14 +178,22 @@ export const Booking = () => {
 				}}
 			>
 				<Routes>
-					<Route path="/" element={<Appointment />} />
-					<Route path="/select-branch" element={<SelectBranch />} />
-					<Route path="/select-time" element={<SelectTime />} />
+					<Route index element={<Appointment />} />
+					<Route path="select-branch" element={<SelectBranch />} />
+					<Route path="select-time" element={<SelectTime />} />
 					<Route
-						path="/confirm-appointment"
+						path="confirm-appointment"
 						element={<ConfirmAppointment />}
 					/>
-					<Route path="/details" element={<BookingDetails />} />
+					<Route path="details" element={<BookingDetails />} />
+					<Route
+						path="cancel-appointment/:id"
+						element={<CancelAppointment />}
+					/>
+					<Route
+						path="cancel-appointment-success"
+						element={<CancelAppointmentSuccess />}
+					/>
 				</Routes>
 			</BookingContext.Provider>
 		</>

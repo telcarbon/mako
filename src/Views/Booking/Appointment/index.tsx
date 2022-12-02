@@ -2,17 +2,19 @@ import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
-import { ifNullOrEmpty, isEmpty, restructureCities } from 'common/Util'
+import { isEmpty } from 'common/Util'
 import {
 	ContentHeader,
 	Form,
+	FormCheckBox,
 	FormField,
 	FormRadioGroup,
 	FormSearchSelect,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Alert, Col, Container, Row, Spinner } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
@@ -32,12 +34,15 @@ export const Appointment = () => {
 	} = useContext(BookingContext)
 	const [services, setServices] = useState<IServicesPricing[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
+	const [isLoading, setIsLoading] = useState(false)
+	const [counter, setCounter] = useState<any[]>()
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
 		service: Yup.number()
 			.required('Please select an appointment')
 			.nullable(),
+		// multiServices: Yup.array().required('Please select 1 or more appointments').nullable(),
 	})
 
 	const useFormInstance = useForm({
@@ -48,7 +53,7 @@ export const Appointment = () => {
 	const {
 		getValues,
 		register,
-		formState: { isDirty, isSubmitting, isValid },
+		formState: { isDirty, isSubmitting },
 		watch,
 		control,
 		setValue,
@@ -65,13 +70,16 @@ export const Appointment = () => {
 			)
 			setServiceDetail(selectedService[0])
 		}
-		navigate('select-branch')
+		// navigate('select-branch')
 	}
 	const cityWatch: string = watch('city')
 	const service: number = watch('service')
 
 	const stateWatch: string = watch('state')
-	const ifEmptyState = ifNullOrEmpty(stateWatch)
+
+	const watchMultiServices = watch('multiservices')
+
+	console.log(watchMultiServices, 'watchMultiServices')
 
 	const appointmentOptionComponent = (
 		name: string,
@@ -84,6 +92,26 @@ export const Appointment = () => {
 				<p>${price}</p>
 			</div>
 			{/* {description && <p className="small">{description}</p>} */}
+		</div>
+	)
+
+	const appointmentOptionComponents = (
+		name: string,
+		price: string,
+		id: number
+	) => (
+		<div className="checkbox-card">
+			<div className="checkbox-card-wrap">
+				<div className="d-flex justify-content-between">
+					<strong>{name}</strong>
+					<p>${price}</p>
+				</div>
+				<div className="d-flex justify-content-end">
+					<button type="button">+</button>
+					<span className="border"></span>
+					<button type="button">-</button>
+				</div>
+			</div>
 		</div>
 	)
 
@@ -109,11 +137,10 @@ export const Appointment = () => {
 	}
 
 	const getServicesRequest = () => {
+		setIsLoading(true)
 		axios
 			.get(
-				// `${API_URL}/partners/?city=${cityWatch}&expand=services.service`,
-				// `${API_URL}/partners/?city=${cityWatch}&expand=services.service&expand=type&is_approved=true&is_verified=true`,
-				`${API_URL}/service-pricings/?state=${stateWatch}&expand=service`,
+				`${API_URL}/service-pricings/?state=${stateWatch}&expand=service&city=${cityWatch}`,
 				{
 					headers,
 				}
@@ -129,7 +156,12 @@ export const Appointment = () => {
 						})
 					)
 					setServices(serviceType)
+				} else {
+					setServices([])
 				}
+				setTimeout(() => {
+					setIsLoading(false)
+				}, 250)
 			})
 	}
 
@@ -156,6 +188,12 @@ export const Appointment = () => {
 				<Row className="justify-content-center">
 					<Col lg={10}>
 						<div className="bg-primary p-4 pb-2">
+							<p className="fw-bold mb-5 small text-center">
+								Your local pharmacy + MakoRx Care Connect work
+								together to provide you special services and
+								testing. <br /> Get started by selecting your
+								state/city below.
+							</p>
 							<h5>Select location</h5>
 							<p className="mb-3">
 								<FontAwesomeIcon
@@ -200,41 +238,129 @@ export const Appointment = () => {
 								</Col>
 							</Row>
 						</div>
+
 						{cityWatch && (
 							<div className="my-4">
-								<h5>Select an appointment</h5>
-								<Row>
-									<Col lg={12}>
-										<FormField
-											name="service"
-											useWrapper={false}
+								{isLoading ? (
+									<div className="text-center my-5 py-5">
+										<Spinner
+											animation="border"
+											role="status"
+											variant="secondary"
 										>
-											<Row className="pe-2">
-												{services?.map((item) => (
-													<Col lg={6}>
-														<FormRadioGroup
-															name={'service'}
-															register={register}
-															value={item.id}
-															key={item?.id}
-															radioClassName="radio-card"
-															components={appointmentOptionComponent(
-																item.name,
-																item.price
-															)}
-															labelClassname="d-block mt-2 mb-3"
-														/>
-													</Col>
-												))}
-											</Row>
-										</FormField>
-									</Col>
-								</Row>
+											<span className="visually-hidden">
+												Loading...
+											</span>
+										</Spinner>
+									</div>
+								) : // <LoadingMaskWrap />
+								services?.length !== 0 ? (
+									<>
+										<h5>Select an appointment</h5>
+										<Row>
+											<Col lg={12}>
+												<FormField
+													name="service"
+													useWrapper={false}
+												>
+													<Row className="pe-2">
+														{services?.map(
+															(item) => (
+																<Col lg={6}>
+																	<FormRadioGroup
+																		name={
+																			'service'
+																		}
+																		register={
+																			register
+																		}
+																		value={
+																			item.id
+																		}
+																		key={
+																			item?.id
+																		}
+																		radioClassName="radio-card"
+																		components={appointmentOptionComponent(
+																			item.name,
+																			item.price
+																		)}
+																		labelClassname="d-block mt-2 mb-3"
+																	/>
+																</Col>
+															)
+														)}
+													</Row>
+												</FormField>
+
+												{/* testtttttt */}
+												<FormField
+													name="multiServices"
+													useWrapper={false}
+												>
+													<Row className="pe-2">
+														{services?.map(
+															(item) => (
+																<Col lg={6}>
+																	<FormCheckBox
+																		name="multiServices"
+																		register={
+																			register
+																		}
+																		value={
+																			item?.id
+																		}
+																		key={
+																			item?.id
+																		}
+																		className="ps-0"
+																		checkClassName="checkbox-custom"
+																		labelClassname="d-block mt-2 mb-3"
+																		components={appointmentOptionComponents(
+																			item.name,
+																			item.price,
+																			item.id
+																		)}
+																		setCounter={
+																			setCounter
+																		}
+																	/>
+																</Col>
+															)
+														)}
+													</Row>
+												</FormField>
+											</Col>
+										</Row>
+									</>
+								) : (
+									<p className="fw-bold text-center mt-5 pt-4">
+										Sorry, it looks like there are no
+										available services in your area. <br />
+										Please select another location.
+									</p>
+								)}
 							</div>
 						)}
+						{/* <FormField name="multiServices" useWrapper={false}>
+							<Row className="pe-2">
+								{services?.map((item) => (
+									<Col lg={6}>
+										<FormCheckBox
+											name="multiServices"
+											register={register}
+											value={item?.id}
+											key={item?.id}
+										>
+											{item?.name}
+										</FormCheckBox>
+									</Col>
+								))}
+							</Row>
+						</FormField> */}
 					</Col>
 				</Row>
-				{cityWatch && (
+				{cityWatch && services?.length !== 0 && !isLoading && (
 					<div className="footer w-75">
 						<SubmitButton
 							pending={isSubmitting}

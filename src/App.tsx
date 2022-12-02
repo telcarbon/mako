@@ -1,3 +1,4 @@
+import ScrollToTop from 'common/ScrollToTop'
 import {
 	BrowserRouter as Router,
 	Navigate,
@@ -23,6 +24,7 @@ function AppRoutes() {
 function App() {
 	return (
 		<Router>
+			<ScrollToTop />
 			<AppRoutes />
 		</Router>
 	)

@@ -10,7 +10,7 @@ const navList = [
 	{
 		id: 2,
 		label: 'Business Representative Information',
-		url: 'busines-rep-info',
+		url: 'business-rep-info',
 	},
 	{
 		id: 3,
@@ -29,13 +29,7 @@ const navList = [
 	},
 ]
 
-export const RegistrationNav = ({
-	currentStep,
-	setCurrentStep,
-}: {
-	currentStep: Number
-	setCurrentStep: (value: any) => void
-}) => {
+export const RegistrationNav = ({ currentStep }: { currentStep: Number }) => {
 	return (
 		<Nav className="mt-4 flex-column">
 			<h5>Register your account</h5>
@@ -50,9 +44,6 @@ export const RegistrationNav = ({
 								? 'is-active'
 								: ''
 						}
-						onClick={() => {
-							setCurrentStep(list.id - 1)
-						}}
 					>
 						{list.label}
 					</Nav.Link>

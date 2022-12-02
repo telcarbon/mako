@@ -40,6 +40,8 @@ interface IBankingInfoProps {
 	currentStep: Number
 }
 
+type LocationProps = { state: { test: boolean } }
+
 export const BankingInfo = ({
 	bankingInfo,
 	setBankingInfo,
@@ -55,6 +57,7 @@ export const BankingInfo = ({
 	const [isStripeSubmitting, setIsStripeSubmitting] = useState<boolean>(false)
 	const [isDataSubmitting, setIsDataSubmitting] = useState<boolean>(false)
 	const [isBankSubmitting, setIsBankSubmitting] = useState<boolean>(false)
+	const location = useLocation() as unknown as LocationProps
 
 	const validationSchema = Yup.object().shape({
 		bankName: Yup.string().required('Bank Name is required'),
@@ -89,9 +92,12 @@ export const BankingInfo = ({
 
 	// NOTE: REFACTOR \/
 
-	useEffect(() => {
-		disableUrlType(2, navigate, currentStep, setCurrentStep)
-	}, [currentStep])
+	// useEffect(() => {
+	// 	console.log(currentStep, 'current')
+	// 	disableUrlType(2, navigate, currentStep, setCurrentStep)
+	// })
+
+	// disableUrlType(2, navigate, currentStep, setCurrentStep)
 
 	const [stripeErrors, setStripeErrors] = useState({
 		cardNumber: undefined,

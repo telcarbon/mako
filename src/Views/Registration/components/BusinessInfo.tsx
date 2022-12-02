@@ -204,7 +204,7 @@ export const BusinessInfo = ({
 		setCurrentStep(1)
 		return new Promise(() => {
 			setTimeout(() => {
-				navigate(`/busines-rep-info`)
+				navigate(`/business-rep-info`)
 			}, 1000)
 		})
 	}

@@ -11,9 +11,9 @@ import {
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
-import { Badge, Col, Container, Row } from 'react-bootstrap'
+import { Alert, Badge, Col, Container, Row } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { IPartners } from '../types'
@@ -48,7 +48,6 @@ export const SelectBranch = () => {
 	const partner: number = watch('partner')
 
 	const handleSubmit = async (values: any) => {
-		console.log(getValues())
 		const formValues = getValues()
 		setPartnerInfo(formValues)
 		const partner = formValues['partner']
@@ -58,14 +57,14 @@ export const SelectBranch = () => {
 			)
 			setPartnerDetail(selectedPartner[0])
 		}
-		navigate('/booking/select-time')
+		navigate('../select-time')
 	}
 
 	const getPartnersRequest = () => {
 		axios
 			.get(
 				// `${API_URL}/partners/?city=${appointmentInfo.city}&is_approved=true&is_verified=true&expand=type`,
-				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=services.service&state=${appointmentInfo.state}&expand=type&is_approved=true&is_verified=true&service=${serviceDetail?.id}`,
+				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=partner_configuration.configuration_block_dates&expand=services.service&state=${appointmentInfo.state}&expand=type&is_approved=true&is_verified=true&is_bookable=true&service=${serviceDetail?.id}`,
 				{
 					headers,
 				}
@@ -125,43 +124,60 @@ export const SelectBranch = () => {
 					<Col lg={10}>
 						<div className="my-4">
 							<h5>Available Clinics</h5>
-							<Row>
-								<Col lg={12}>
-									<FormField
-										name="partner"
-										useWrapper={false}
-										className="d-block"
-									>
-										<Row className="pe-2">
-											{partnerArray?.map((item, index) =>
-												item?.partner_configuration
-													?.length === 0 ? null : (
-													<Col lg={6}>
-														<FormRadioGroup
-															name={'partner'}
-															register={register}
-															value={item?.id}
-															key={index}
-															radioClassName="radio-card"
-															components={clinicOptionComponent(
-																item.name,
-																[
-																	item.unit_floor_building,
-																	item.street,
-																	item.city,
-																	item.state,
-																].join(', '),
-																item.type.name
-															)}
-															labelClassname="d-block mt-2 mb-3"
-														/>
-													</Col>
-												)
-											)}
-										</Row>
-									</FormField>
-								</Col>
-							</Row>
+							{partnerArray?.length === 0 ? (
+								<Alert className="mt-3">
+									Sorry! There are no available pharmacies
+									offering that service/test. Please go{' '}
+									<Link className="link-secondary" to={'../'}>
+										back
+									</Link>{' '}
+									and choose another city.
+								</Alert>
+							) : (
+								<Row>
+									<Col lg={12}>
+										<FormField
+											name="partner"
+											useWrapper={false}
+											className="d-block"
+										>
+											<Row className="pe-2">
+												{partnerArray?.map(
+													(item, index) =>
+														item
+															?.partner_configuration
+															?.length ===
+														0 ? null : (
+															<Col lg={6}>
+																<FormRadioGroup
+																	name={
+																		'partner'
+																	}
+																	register={
+																		register
+																	}
+																	value={
+																		item?.id
+																	}
+																	key={index}
+																	radioClassName="radio-card"
+																	components={clinicOptionComponent(
+																		item.name,
+																		`${item.street} ${item.unit_floor_building}, ${item.city}, NC, ${item.zip_code}`,
+																		item
+																			.type
+																			.name
+																	)}
+																	labelClassname="d-block mt-2 mb-3"
+																/>
+															</Col>
+														)
+												)}
+											</Row>
+										</FormField>
+									</Col>
+								</Row>
+							)}
 						</div>
 					</Col>
 				</Row>

@@ -63,9 +63,9 @@ export const TermsAndAgreement = ({
 		'pharmacyPrivacy',
 	]).includes(false)
 
-	useEffect(() => {
-		disableUrlType(4, navigate, currentStep, setCurrentStep)
-	}, [])
+	// useEffect(() => {
+	// 	disableUrlType(4, navigate, currentStep, setCurrentStep)
+	// }, [])
 
 	return (
 		<>

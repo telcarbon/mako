@@ -1,7 +1,6 @@
-import { faDownload, faEye, faHome } from '@fortawesome/free-solid-svg-icons'
+import { faEye, faHome } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import setBodyClass from 'common/Util'
-import { ButtonVariety } from 'components'
 import { useEffect, useState } from 'react'
 import { Col, Container, Row, Button } from 'react-bootstrap'
 import { Link, useNavigate } from 'react-router-dom'
@@ -89,7 +88,11 @@ export const RegistrationResult = ({
 									console.log('test')
 									// e.preventDefault()
 									setCurrentStep(2, () => {
-										navigate('/banking-info')
+										navigate('/banking-info', {
+											state: {
+												test: true
+											},
+										})
 									})
 								}}
 							>

@@ -26,7 +26,14 @@ export const SideNav = ({
 				className
 			)}
 		>
-			<a className="navbar-brand text-secondary" href="/">
+			<a
+				className="navbar-brand text-secondary"
+				href={
+					careConnectLogo
+						? 'http://www.makorxcareconnect.com/'
+						: '/'
+				}
+			>
 				<img
 					src={careConnectLogo ? logoCareConnect : logoCareCheckIn}
 					alt="logo"

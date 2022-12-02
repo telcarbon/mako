@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import axios from 'axios'
 import {
 	Navigate,
@@ -81,6 +81,19 @@ export const Registration = () => {
 		}
 	}
 
+	useEffect(() => {
+		console.log('test reg')
+	}, [])
+
+	// if (currentStep === 8) {
+	// 	console.log('test nav')
+
+	// 	navigate('/banking-info')
+	// }
+
+	// console.log();
+	
+
 	const stripePromise = loadStripe(`${STRIPE_PK}`)
 
 	const handleSubmit = () => {
@@ -157,10 +170,7 @@ export const Registration = () => {
 				>
 					{!location.pathname.includes('success') &&
 						!location.pathname.includes('error') && (
-							<RegistrationNav
-								currentStep={currentStep}
-								setCurrentStep={setCurrentStep}
-							/>
+							<RegistrationNav currentStep={currentStep} />
 						)}
 				</SideNav>
 				<Routes>
@@ -175,7 +185,7 @@ export const Registration = () => {
 						}
 					/>
 					<Route
-						path="/busines-rep-info"
+						path="/business-rep-info"
 						element={
 							<BusinessRepInfo
 								businessRepInfo={businessRepInfo}
