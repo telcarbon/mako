@@ -210,6 +210,7 @@ export const getStartAndEndTime = (time: string, duration: number) => {
 	return `${startTime} - ${endTime}`
 }
 
+// NOT WORKING
 export const disableUrlType = (
 	pageStep: Number,
 	navigate: any,

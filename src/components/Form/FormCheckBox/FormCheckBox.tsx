@@ -13,8 +13,8 @@ type FormCheckBoxProps = {
 	checkClassName?: string
 	labelClassname?: string
 	components?: any
-	onClick?: any
-	setCounter?: any
+	onChange?: any
+	manageCounter?: any
 }
 
 export const FormCheckBox = ({
@@ -27,8 +27,8 @@ export const FormCheckBox = ({
 	labelClassname,
 	disabled,
 	components,
-	onClick,
-	setCounter,
+	onChange,
+	manageCounter,
 }: FormCheckBoxProps) => {
 	return (
 		<div className={classNames('form-check', className)}>
@@ -42,11 +42,9 @@ export const FormCheckBox = ({
 					type="checkbox"
 					{...register(name)}
 					value={value}
-					onClick={(e) => {
-						if (setCounter !== undefined) {
-							console.log('ssss', e)
-							console.log('target', e.target)
-						}
+					onChange={(e) => {
+						register(name).onChange(e)
+						manageCounter(e, value)
 					}}
 				/>
 				{components && components}

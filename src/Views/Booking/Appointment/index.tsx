@@ -21,6 +21,12 @@ import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
 import { AppointmentOptions, IAppointment, IServicesPricing } from '../types'
+import {
+	addMinusCounter,
+	filterCounterEqualToId,
+	filterCounterNotEqualToId,
+	findCounterById,
+} from './counters'
 
 export const Appointment = () => {
 	const navigate = useNavigate()
@@ -32,10 +38,11 @@ export const Appointment = () => {
 		serviceDetail,
 		setServiceDetail,
 	} = useContext(BookingContext)
-	const [services, setServices] = useState<IServicesPricing[]>()
+
+	const [services, setServices] = useState<any[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 	const [isLoading, setIsLoading] = useState(false)
-	const [counter, setCounter] = useState<any[]>()
+	const [counters, setCounters] = useState<any[]>([])
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
@@ -46,7 +53,7 @@ export const Appointment = () => {
 	})
 
 	const useFormInstance = useForm({
-		resolver: yupResolver(validationSchema),
+		// resolver: yupResolver(validationSchema),
 		defaultValues: appointmentInfo,
 	})
 
@@ -59,7 +66,6 @@ export const Appointment = () => {
 		setValue,
 	} = useFormInstance
 	const handleSubmit = async () => {
-		console.log(getValues())
 		const formValues = getValues()
 		setAppointmentInfo(formValues)
 
@@ -77,43 +83,7 @@ export const Appointment = () => {
 
 	const stateWatch: string = watch('state')
 
-	const watchMultiServices = watch('multiservices')
-
-	console.log(watchMultiServices, 'watchMultiServices')
-
-	const appointmentOptionComponent = (
-		name: string,
-		price: string
-		// description: string
-	) => (
-		<div className="radio-card-wrap">
-			<div className="d-flex justify-content-between">
-				<strong>{name}</strong>
-				<p>${price}</p>
-			</div>
-			{/* {description && <p className="small">{description}</p>} */}
-		</div>
-	)
-
-	const appointmentOptionComponents = (
-		name: string,
-		price: string,
-		id: number
-	) => (
-		<div className="checkbox-card">
-			<div className="checkbox-card-wrap">
-				<div className="d-flex justify-content-between">
-					<strong>{name}</strong>
-					<p>${price}</p>
-				</div>
-				<div className="d-flex justify-content-end">
-					<button type="button">+</button>
-					<span className="border"></span>
-					<button type="button">-</button>
-				</div>
-			</div>
-		</div>
-	)
+	const watchMultiServices = watch('multiServices')
 
 	const getCitiesRequest = () => {
 		axios
@@ -180,6 +150,89 @@ export const Appointment = () => {
 			setValue('service', null)
 		}
 	}, [cityWatch])
+
+	const manageCounter = (e: any, id: any) => {
+		let ctr = []
+		if (e.target['checked']) {
+			ctr.push(...counters, {
+				id,
+				counter: 1,
+			})
+		} else {
+			ctr =
+				counters.length !== 0
+					? filterCounterNotEqualToId(id, counters)
+					: []
+		}
+		setCounters(ctr)
+	}
+
+	const appointmentOptionComponent = (
+		name: string,
+		price: string
+		// description: string
+	) => (
+		<div className="radio-card-wrap">
+			<div className="d-flex justify-content-between">
+				<strong>{name}</strong>
+				<p>${price}</p>
+			</div>
+			{/* {description && <p className="small">{description}</p>} */}
+		</div>
+	)
+
+	const appointmentOptionComponents = (
+		name: string,
+		price: string,
+		id: number
+	) => {
+		const notSelected = filterCounterEqualToId(id, counters).length === 0
+
+		return (
+			<div className="checkbox-card">
+				<div className="checkbox-card-wrap">
+					<div className="d-flex justify-content-between">
+						<strong>{name}</strong>
+						<p>${price}</p>
+					</div>
+					<div
+						className={`d-flex justify-content-end ${
+							notSelected && 'd-none'
+						}`}
+					>
+						<button
+							type="button"
+							onClick={() =>
+								addMinusCounter(id, counters, setCounters, true)
+							}
+						>
+							+
+						</button>
+						<span className="border">
+							{notSelected
+								? ''
+								: findCounterById(id, counters).counter}
+						</span>
+						<button
+							type="button"
+							onClick={() => {
+								addMinusCounter(
+									id,
+									counters,
+									setCounters,
+									false,
+									watchMultiServices,
+									setValue
+								)
+							}}
+						>
+							-
+						</button>
+					</div>
+				</div>
+			</div>
+		)
+	}
 
 	return (
 		<Container fluid>
@@ -293,7 +346,6 @@ export const Appointment = () => {
 													</Row>
 												</FormField>
 
-												{/* testtttttt */}
 												<FormField
 													name="multiServices"
 													useWrapper={false}
@@ -321,8 +373,8 @@ export const Appointment = () => {
 																			item.price,
 																			item.id
 																		)}
-																		setCounter={
-																			setCounter
+																		manageCounter={
+																			manageCounter
 																		}
 																	/>
 																</Col>
