@@ -46,7 +46,7 @@ export interface IPartners {
 	state: string
 	city: string
 	zip_code: string
-	partner_configuration: []
+	partner_configuration: any[]
 	type: TypeOfLocation
 }
 
