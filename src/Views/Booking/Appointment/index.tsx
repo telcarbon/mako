@@ -98,11 +98,12 @@ export const Appointment = () => {
 	console.log(watchMultiServices, 'watchMultiServices')
 
 	const appointmentOptionComponent = (
+		id: number,
 		name: string,
 		price: string
 		// description: string
 	) => (
-		<div className="radio-card-wrap">
+		<div key={id} className="radio-card-wrap">
 			<div className="d-flex justify-content-between">
 				<strong>{name}</strong>
 				<p>${price}</p>
@@ -120,7 +121,7 @@ export const Appointment = () => {
 			filterCounterEqualToId(id, serviceCounters).length === 0
 
 		return (
-			<div className="checkbox-card">
+			<div key={id} className="checkbox-card">
 				<div className="checkbox-card-wrap">
 					<div className="d-flex justify-content-between">
 						<strong>{name}</strong>
@@ -351,7 +352,12 @@ export const Appointment = () => {
 													<Row className="pe-2">
 														{services?.map(
 															(item) => (
-																<Col lg={6}>
+																<Col
+																	key={
+																		item.id
+																	}
+																	lg={6}
+																>
 																	<FormRadioGroup
 																		name={
 																			'service'
@@ -367,6 +373,7 @@ export const Appointment = () => {
 																		}
 																		radioClassName="radio-card"
 																		components={appointmentOptionComponent(
+																			item.id,
 																			item.name,
 																			item.price
 																		)}
@@ -385,7 +392,12 @@ export const Appointment = () => {
 													<Row className="pe-2">
 														{services?.map(
 															(item) => (
-																<Col lg={6}>
+																<Col
+																	key={
+																		item.id
+																	}
+																	lg={6}
+																>
 																	<FormCheckBox
 																		name="multiServices"
 																		register={
