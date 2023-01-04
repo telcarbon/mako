@@ -70,55 +70,50 @@ export const AppointmentOptions = [
 		id: 1,
 		value: 1,
 		name: 'Flu Testsasasa',
-		description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 2,
 		value: 2,
 		name: 'Strep Test',
-		description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 3,
 		value: 3,
 		name: 'HIV Test',
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 4,
 		value: 4,
 		name: 'Urinalysis for UTI',
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 5,
 		value: 5,
 		name: 'A1C Test',
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 7,
 		value: 7,
 		name: 'Annual Physical Medical Visit',
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
 		price: '39.99',
+		duration: 4,
 	},
 	{
 		id: 8,
 		value: 8,
 		name: 'Blood Test',
-		description:
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor sit amet..',
 		price: '39.99',
+		duration: 4,
 	},
 ]
 
