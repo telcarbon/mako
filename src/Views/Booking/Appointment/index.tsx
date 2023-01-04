@@ -25,7 +25,8 @@ import { useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
-import { AppointmentOptions, IAppointment, IServicesPricing } from '../types'
+import { AppointmentOptions } from '../mockData'
+import { IAppointment, IServicesPricing } from '../types'
 import {
 	addMinusCounter,
 	filterCounterEqualToId,
@@ -43,7 +44,7 @@ export const Appointment = () => {
 		serviceDetail,
 		setServiceDetail,
 	} = useContext(BookingContext)
-	const [services, setServices] = useState<IServicesPricing[]>()
+	const [services, setServices] = useState<any[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 	const [isLoading, setIsLoading] = useState(false)
 	const [counters, setCounters] = useState<any[]>([])
@@ -188,9 +189,10 @@ export const Appointment = () => {
 	}
 
 	const getServicesRequest = () => {
-		setIsLoading(true)
 		// FOR MOCK DATA
-		// setServices(AppointmentOptions)
+		//setServices(AppointmentOptions)
+
+		setIsLoading(true)
 		axios
 			.get(
 				`${API_URL}/service-pricings/?state=${stateWatch}&expand=service&city=${cityWatch}`,
