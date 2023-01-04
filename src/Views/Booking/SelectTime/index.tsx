@@ -16,6 +16,7 @@ import { faCalendar } from '@fortawesome/free-solid-svg-icons'
 import classNames from 'classnames'
 import {
 	formatDate,
+	getMinBookingTime,
 	getStartAndEndTime,
 	isEmpty,
 	transformDateToStringMonth,
@@ -78,11 +79,22 @@ export const SelectTime = () => {
 				partnerDetail?.partner_configuration[0]?.configuration_block_dates?.map(
 					(item: any) => item.block_date
 				)
+			const getConfigDays = () => {
+				const daysConfig =
+					partnerDetail?.partner_configuration[0]?.configuration?.map(
+						(item: any) => item.days
+					)
+
+				return daysConfig?.map((data: any) => data?.day)
+			}
 
 			const checkIfWeekend =
 				currDate.getDay() === 6 || currDate.getDay() === 0
 
 			const isBlockedDate = blockDates.includes(currDateMoment)
+			const isDayActive = getConfigDays().includes(
+				moment(currDate).format('dddd')
+			)
 
 			return (
 				<div
@@ -90,7 +102,8 @@ export const SelectTime = () => {
 					className={classNames('date-card', {
 						'date-selected': selectedDate,
 						'date-current': startingDate,
-						'date-disabled': checkIfWeekend || isBlockedDate,
+						'date-disabled':
+							checkIfWeekend || isBlockedDate || !isDayActive,
 					})}
 					onClick={() => setBookingDate(currDateMoment)}
 				>
@@ -105,16 +118,10 @@ export const SelectTime = () => {
 		navigate('../confirm-appointment')
 	}
 
-	const getMinBookingTime = () => {
-		const dt = new Date()
-		const newDt = moment(dt).add(59, 'm').toDate()
-		return `${newDt.getHours().toString().padStart(2, '0')}:${newDt
-			.getMinutes()
-			.toString()
-			.padStart(2, '0')}:00`
-	}
-
 	const getAvailableTimeRequest = () => {
+		// FOR MOCK DATA
+		// setAvailableTime(slotMockdata)
+
 		setMinBookingTime(getMinBookingTime())
 		const partner = partnerInfo.partner
 		const service = appointmentInfo.service
@@ -133,6 +140,10 @@ export const SelectTime = () => {
 				setTimeout(() => {
 					setIsLoading(false)
 				}, 250)
+			})
+			.catch((err) => {
+				console.log(err)
+				setIsLoading(false)
 			})
 	}
 
@@ -242,68 +253,6 @@ export const SelectTime = () => {
 								</Slider>
 
 								<div className="time-available-display">
-									{/* {getTimeAndSlot()?.length > 0 ? (
-										<>
-											<h6>
-												Showing available time slots for
-												{` ${transformDateToStringMonth(
-													bookingDate
-												)}`}
-											</h6>
-
-											<ul className="time-slot row mt-4">
-												{getTimeAndSlot()?.map(
-													(
-														item: any,
-														index: number
-													) => (
-														<li
-															className="col-lg-3"
-															key={index}
-														>
-															<div
-																className={classNames(
-																	{
-																		'time-selected':
-																			bookingTime ===
-																			item.time,
-																		'time-disabled':
-																			checkTimeIfDisable(
-																				item
-																			),
-																	}
-																)}
-																onClick={() => {
-																	if (
-																		!checkTimeIfDisable(
-																			item,
-																			true
-																		)
-																	) {
-																		setBookingTime(
-																			item.time
-																		)
-																	}
-																}}
-															>
-																{getStartAndEndTime(
-																	item.time,
-																	serviceDetail?.duration
-																)}
-															</div>
-														</li>
-													)
-												)}
-											</ul>
-										</>
-									) : (
-										<h6>
-											{bookingDate &&
-												`There's no available time slots for ${transformDateToStringMonth(
-													bookingDate
-												)}`}
-										</h6>
-									)} */}
 									{isLoading ? (
 										<div className="text-center my-5 py-5">
 											<Spinner

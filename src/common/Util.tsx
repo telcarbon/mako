@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { AnyNsRecord } from 'dns'
 import moment from 'moment'
 import { useEffect } from 'react'
 import { Questions } from 'Views/Registration/types'
@@ -210,7 +209,15 @@ export const getStartAndEndTime = (time: string, duration: number) => {
 	return `${startTime} - ${endTime}`
 }
 
-// NOT WORKING
+export const getMinBookingTime = () => {
+	const dt = new Date()
+	const newDt = moment(dt).toDate()
+	return `${newDt.getHours().toString().padStart(2, '0')}:${newDt
+		.getMinutes()
+		.toString()
+		.padStart(2, '0')}:00`
+}
+
 export const disableUrlType = (
 	pageStep: Number,
 	navigate: any,

@@ -1,7 +1,13 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
-import { checkIfLegalAge, getStartAndEndTime, isEmpty } from 'common/Util'
+import {
+	checkIfLegalAge,
+	formatDate,
+	getMinBookingTime,
+	getStartAndEndTime,
+	isEmpty,
+} from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -15,12 +21,18 @@ import {
 	SubmitButton,
 } from 'components'
 import moment from 'moment'
-import { useContext } from 'react'
-import { Col, Container, Form as BootstrapForm, Row } from 'react-bootstrap'
+import { useContext, useState } from 'react'
+import {
+	Alert,
+	Col,
+	Container,
+	Form as BootstrapForm,
+	Row,
+} from 'react-bootstrap'
 import ReactDatePicker from 'react-datepicker'
 import { Controller, useForm } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
@@ -30,6 +42,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import 'react-phone-number-input/style.css'
 
 export const ConfirmAppointment = () => {
+	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
 	const {
 		handleSubmitAll,
 		serviceDetail,
@@ -92,6 +105,8 @@ export const ConfirmAppointment = () => {
 			couponCode: '',
 			howDidYouHearAboutThisService: '',
 			others: '',
+			bookingTime: bookingTime,
+			bookingDate: bookingDate,
 		},
 	})
 
@@ -103,16 +118,33 @@ export const ConfirmAppointment = () => {
 		control,
 	} = useFormInstance
 
+
 	const birthdayWatch = moment(watch('birthdate')).format('YYYY-MM-DD')
+
+	const checkIfPastTime = () => {
+		const today = new Date()
+		var todayMoment = formatDate(today)
+		const currentTime = getMinBookingTime()
+
+		let hasPassed = false
+		if (bookingDate === todayMoment) {
+			hasPassed = bookingTime <= currentTime
+		}
+		setShowBookingTimeError(hasPassed)
+		return hasPassed
+	}
 
 	const handleSubmit = async () => {
 		const formValues = getValues()
-		handleSubmitAll(formValues)
-		return new Promise(() => {
-			setTimeout(() => {
-				navigate('../details')
-			}, 2000)
-		})
+		const pastTime = checkIfPastTime()
+		if (!pastTime) {
+			handleSubmitAll(formValues)
+			return new Promise(() => {
+				setTimeout(() => {
+					navigate('../details')
+				}, 2000)
+			})
+		}
 	}
 
 	const allTermsHasFalse = watch([
@@ -153,7 +185,13 @@ export const ConfirmAppointment = () => {
 							// description={'This is a sample description'}
 							partner={partnerDetail?.name}
 							// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
-							location={`${partnerDetail.street} ${partnerDetail.unit_floor_building}, ${partnerDetail.city}, NC, ${partnerDetail.zip_code}`}
+							location={`${partnerDetail.street}${
+								partnerDetail.unit_floor_building === null
+									? ''
+									: ` ${partnerDetail.unit_floor_building}`
+							}, ${partnerDetail.city}, NC, ${
+								partnerDetail.zip_code
+							}`}
 							time={getStartAndEndTime(
 								bookingTime,
 								serviceDetail?.duration
@@ -456,6 +494,18 @@ export const ConfirmAppointment = () => {
 									</div>
 								</div>
 							</>
+						)}
+						{showBookingTimeError && (
+							<Alert variant="danger" className="mt-4">
+								The appointment time you selected has already passed. Please go{' '}
+								<Link
+									className="link-danger"
+									to={'../select-time'}
+								>
+									back
+								</Link>{' '}
+								and choose another timeslot for your appointment.
+							</Alert>
 						)}
 					</Col>
 				</Row>

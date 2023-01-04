@@ -1,4 +1,4 @@
-export const findCounterById = (id: any, counters: any) => {
+export const findCounterById: any = (id: any, counters: any) => {
 	return counters.find((f: any) => f.id === id)
 }
 

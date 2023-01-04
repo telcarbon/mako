@@ -102,8 +102,6 @@ export const CancelAppointment = () => {
 		getAppointmentDetails()
 	}, [id])
 
-	console.log(appointmentDetails, 'appointment')
-
 	const isCancelled = appointmentDetails?.status === AppointmentStatus.CANCEL
 
 	const hasPassed = () => {

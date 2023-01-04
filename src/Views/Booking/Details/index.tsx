@@ -84,7 +84,13 @@ export const BookingDetails = () => {
 						price={serviceDetail?.price}
 						reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
 						partner={partnerDetail?.name}
-						location={`${partnerDetail.street} ${partnerDetail.unit_floor_building}, ${partnerDetail.city}, NC, ${partnerDetail.zip_code}`}
+						location={`${partnerDetail.street}${
+							partnerDetail.unit_floor_building === null
+								? ''
+								: ` ${partnerDetail.unit_floor_building}`
+						}, ${partnerDetail.city}, NC, ${
+							partnerDetail.zip_code
+						}`}
 						time={getStartAndEndTime(
 							bookingTime,
 							serviceDetail?.duration

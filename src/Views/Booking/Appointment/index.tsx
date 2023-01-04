@@ -1,4 +1,8 @@
-import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
+import {
+	faCircleExclamation,
+	faMinus,
+	faPlus,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
@@ -13,6 +17,7 @@ import {
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import { any } from 'prop-types'
 import { useContext, useEffect, useState } from 'react'
 import { Alert, Col, Container, Row, Spinner } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
@@ -38,8 +43,7 @@ export const Appointment = () => {
 		serviceDetail,
 		setServiceDetail,
 	} = useContext(BookingContext)
-
-	const [services, setServices] = useState<any[]>()
+	const [services, setServices] = useState<IServicesPricing[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 	const [isLoading, setIsLoading] = useState(false)
 	const [counters, setCounters] = useState<any[]>([])
@@ -53,7 +57,7 @@ export const Appointment = () => {
 	})
 
 	const useFormInstance = useForm({
-		// resolver: yupResolver(validationSchema),
+		resolver: yupResolver(validationSchema),
 		defaultValues: appointmentInfo,
 	})
 
@@ -66,6 +70,7 @@ export const Appointment = () => {
 		setValue,
 	} = useFormInstance
 	const handleSubmit = async () => {
+		console.log(getValues())
 		const formValues = getValues()
 		setAppointmentInfo(formValues)
 
@@ -76,7 +81,7 @@ export const Appointment = () => {
 			)
 			setServiceDetail(selectedService[0])
 		}
-		// navigate('select-branch')
+		navigate('select-branch')
 	}
 	const cityWatch: string = watch('city')
 	const service: number = watch('service')
@@ -85,7 +90,83 @@ export const Appointment = () => {
 
 	const watchMultiServices = watch('multiServices')
 
+	console.log(watchMultiServices, 'watchMultiServices')
+
+	const appointmentOptionComponent = (
+		name: string,
+		price: string
+		// description: string
+	) => (
+		<div className="radio-card-wrap">
+			<div className="d-flex justify-content-between">
+				<strong>{name}</strong>
+				<p>${price}</p>
+			</div>
+			{/* {description && <p className="small">{description}</p>} */}
+		</div>
+	)
+
+	const appointmentOptionComponents = (
+		name: string,
+		price: string,
+		id: number
+	) => {
+		const notSelected = filterCounterEqualToId(id, counters).length === 0
+
+		return (
+			<div className="checkbox-card">
+				<div className="checkbox-card-wrap">
+					<div className="d-flex justify-content-between">
+						<strong>{name}</strong>
+						<p>${price}</p>
+					</div>
+					<div
+						className={`d-flex justify-content-end ${
+							notSelected && 'd-none'
+						}`}
+					>
+						<button
+							type="button"
+							onClick={() => {
+								addMinusCounter(
+									id,
+									counters,
+									setCounters,
+									false,
+									watchMultiServices,
+									setValue
+								)
+							}}
+						>
+							<FontAwesomeIcon icon={faMinus} size="1x" />
+						</button>
+						<span className="counter-display">
+							{notSelected
+								? ''
+								: findCounterById(id, counters).counter}
+						</span>
+						<button
+							type="button"
+							onClick={() =>
+								addMinusCounter(id, counters, setCounters, true)
+							}
+						>
+							<FontAwesomeIcon icon={faPlus} size="1x" />
+						</button>
+					</div>
+				</div>
+			</div>
+		)
+	}
+
 	const getCitiesRequest = () => {
+		// FOR MOCK DATA
+		// setAvailableCity([
+		// 	{
+		// 		label: 'North Carolina',
+		// 		value: 'North Carolina',
+		// 	},
+		// ])
 		axios
 			.get(
 				`${API_URL}/partners/get_all_partner_cities/?state=${stateWatch}`,
@@ -108,6 +189,8 @@ export const Appointment = () => {
 
 	const getServicesRequest = () => {
 		setIsLoading(true)
+		// FOR MOCK DATA
+		// setServices(AppointmentOptions)
 		axios
 			.get(
 				`${API_URL}/service-pricings/?state=${stateWatch}&expand=service&city=${cityWatch}`,
@@ -149,6 +232,8 @@ export const Appointment = () => {
 		if (isDirty) {
 			setValue('service', null)
 		}
+		setValue('multiServices', [])
+		setCounters([])
 	}, [cityWatch])
 
 	const manageCounter = (e: any, id: any) => {
@@ -165,73 +250,6 @@ export const Appointment = () => {
 					: []
 		}
 		setCounters(ctr)
-	}
-
-	const appointmentOptionComponent = (
-		name: string,
-		price: string
-		// description: string
-	) => (
-		<div className="radio-card-wrap">
-			<div className="d-flex justify-content-between">
-				<strong>{name}</strong>
-				<p>${price}</p>
-			</div>
-			{/* {description && <p className="small">{description}</p>} */}
-		</div>
-	)
-
-	const appointmentOptionComponents = (
-		name: string,
-		price: string,
-		id: number
-	) => {
-		const notSelected = filterCounterEqualToId(id, counters).length === 0
-
-		return (
-			<div className="checkbox-card">
-				<div className="checkbox-card-wrap">
-					<div className="d-flex justify-content-between">
-						<strong>{name}</strong>
-						<p>${price}</p>
-					</div>
-					<div
-						className={`d-flex justify-content-end ${
-							notSelected && 'd-none'
-						}`}
-					>
-						<button
-							type="button"
-							onClick={() =>
-								addMinusCounter(id, counters, setCounters, true)
-							}
-						>
-							+
-						</button>
-						<span className="border">
-							{notSelected
-								? ''
-								: findCounterById(id, counters).counter}
-						</span>
-						<button
-							type="button"
-							onClick={() => {
-								addMinusCounter(
-									id,
-									counters,
-									setCounters,
-									false,
-									watchMultiServices,
-									setValue
-								)
-							}}
-						>
-							-
-						</button>
-					</div>
-				</div>
-			</div>
-		)
 	}
 
 	return (
@@ -346,6 +364,7 @@ export const Appointment = () => {
 													</Row>
 												</FormField>
 
+												{/* testtttttt */}
 												<FormField
 													name="multiServices"
 													useWrapper={false}

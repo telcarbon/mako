@@ -212,6 +212,25 @@ input[type='checkbox'] {
 				color: $nero;
 				position: relative;
 			}
+			button {
+				background-color: $navy-blue;
+				border: 0;
+				color: $white;
+				// font-size: 2em;
+				width: 35px;
+				height: 28px;
+				border-radius: 0.25rem;
+			}
+			.counter-display {
+				border: 2px solid $nero;
+				border-radius: 0.25rem;
+				width: 35px;
+				height: 28px;
+				text-align: center;
+				background-color: $white;
+				margin: 0 7px 0;
+				font-weight: 500;
+			}
 		}
 	}
 	&:focus {
