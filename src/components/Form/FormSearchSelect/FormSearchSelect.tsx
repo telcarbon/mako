@@ -10,6 +10,8 @@ interface FormSearchSelectProps {
 	disabled?: boolean
 	placeholder?: string
 	isClearable?: boolean
+	setServiceCounters?: any
+	setValue?: any
 }
 
 export const FormSearchSelect = ({
@@ -20,6 +22,8 @@ export const FormSearchSelect = ({
 	defaultValue = null,
 	disabled = false,
 	isClearable = true,
+	setServiceCounters = null,
+	setValue = null,
 }: FormSearchSelectProps) => {
 	return (
 		<Controller
@@ -44,6 +48,10 @@ export const FormSearchSelect = ({
 						isDisabled={disabled}
 						onChange={(e: any) => {
 							field.onChange((e && e.value) || defaultValue)
+							if (setServiceCounters) {
+								setServiceCounters([])
+								setValue('multiServices', [])
+							}
 						}}
 					/>
 				)

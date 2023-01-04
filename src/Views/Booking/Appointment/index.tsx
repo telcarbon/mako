@@ -43,11 +43,13 @@ export const Appointment = () => {
 		headers,
 		serviceDetail,
 		setServiceDetail,
+		serviceCounters,
+		setServiceCounters,
 	} = useContext(BookingContext)
-	const [services, setServices] = useState<any[]>()
+
+	const [services, setServices] = useState<IServicesPricing[]>()
 	const [availableCity, setAvailableCity] = useState<any[]>()
 	const [isLoading, setIsLoading] = useState(false)
-	const [counters, setCounters] = useState<any[]>([])
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
@@ -70,6 +72,7 @@ export const Appointment = () => {
 		control,
 		setValue,
 	} = useFormInstance
+
 	const handleSubmit = async () => {
 		console.log(getValues())
 		const formValues = getValues()
@@ -84,6 +87,7 @@ export const Appointment = () => {
 		}
 		navigate('select-branch')
 	}
+
 	const cityWatch: string = watch('city')
 	const service: number = watch('service')
 
@@ -112,7 +116,8 @@ export const Appointment = () => {
 		price: string,
 		id: number
 	) => {
-		const notSelected = filterCounterEqualToId(id, counters).length === 0
+		const notSelected =
+			filterCounterEqualToId(id, serviceCounters).length === 0
 
 		return (
 			<div className="checkbox-card">
@@ -131,8 +136,8 @@ export const Appointment = () => {
 							onClick={() => {
 								addMinusCounter(
 									id,
-									counters,
-									setCounters,
+									serviceCounters,
+									setServiceCounters,
 									false,
 									watchMultiServices,
 									setValue
@@ -144,12 +149,17 @@ export const Appointment = () => {
 						<span className="counter-display">
 							{notSelected
 								? ''
-								: findCounterById(id, counters).counter}
+								: findCounterById(id, serviceCounters).counter}
 						</span>
 						<button
 							type="button"
 							onClick={() =>
-								addMinusCounter(id, counters, setCounters, true)
+								addMinusCounter(
+									id,
+									serviceCounters,
+									setServiceCounters,
+									true
+								)
 							}
 						>
 							<FontAwesomeIcon icon={faPlus} size="1x" />
@@ -234,24 +244,22 @@ export const Appointment = () => {
 		if (isDirty) {
 			setValue('service', null)
 		}
-		setValue('multiServices', [])
-		setCounters([])
 	}, [cityWatch])
 
 	const manageCounter = (e: any, id: any) => {
 		let ctr = []
 		if (e.target['checked']) {
-			ctr.push(...counters, {
+			ctr.push(...serviceCounters, {
 				id,
 				counter: 1,
 			})
 		} else {
 			ctr =
-				counters.length !== 0
-					? filterCounterNotEqualToId(id, counters)
+				serviceCounters.length !== 0
+					? filterCounterNotEqualToId(id, serviceCounters)
 					: []
 		}
-		setCounters(ctr)
+		setServiceCounters(ctr)
 	}
 
 	return (
@@ -306,6 +314,10 @@ export const Appointment = () => {
 											placeholder="City"
 											options={availableCity ?? []}
 											control={control}
+											setValue={setValue}
+											setServiceCounters={
+												setServiceCounters
+											}
 										/>
 									</FormField>
 								</Col>
@@ -366,7 +378,6 @@ export const Appointment = () => {
 													</Row>
 												</FormField>
 
-												{/* testtttttt */}
 												<FormField
 													name="multiServices"
 													useWrapper={false}

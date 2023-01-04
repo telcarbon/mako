@@ -31,6 +31,8 @@ interface BookingContextProps {
 	handleSubmitAll: any
 	bookingId: any
 	setBookingId: any
+	serviceCounters: any
+	setServiceCounters: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -50,6 +52,8 @@ export const BookingContext = createContext<BookingContextProps>({
 	handleSubmitAll: () => {},
 	bookingId: null,
 	setBookingId: () => {},
+	serviceCounters: null,
+	setServiceCounters: () => {},
 })
 
 export const Booking = () => {
@@ -62,6 +66,7 @@ export const Booking = () => {
 	// 	navigate('/error-404')
 	// }
 
+	const [serviceCounters, setServiceCounters] = useState<any[]>([])
 	const [appointmentInfo, setAppointmentInfo] = useState<IAppointment>({
 		state: 'North Carolina',
 		city: '',
@@ -175,6 +180,8 @@ export const Booking = () => {
 					handleSubmitAll,
 					bookingId,
 					setBookingId,
+					serviceCounters,
+					setServiceCounters,
 				}}
 			>
 				<Routes>
