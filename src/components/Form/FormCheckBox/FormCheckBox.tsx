@@ -1,5 +1,5 @@
 import classNames from 'classnames'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { UseFormRegister } from 'react-hook-form'
 
 type FormCheckBoxProps = {
@@ -13,8 +13,8 @@ type FormCheckBoxProps = {
 	checkClassName?: string
 	labelClassname?: string
 	components?: any
-	onChange?: any
 	manageCounter?: any
+	data?: any
 }
 
 export const FormCheckBox = ({
@@ -27,7 +27,6 @@ export const FormCheckBox = ({
 	labelClassname,
 	disabled,
 	components,
-	onChange,
 	manageCounter,
 }: FormCheckBoxProps) => {
 	return (
@@ -41,10 +40,11 @@ export const FormCheckBox = ({
 					className={classNames('form-check-input', checkClassName)}
 					type="checkbox"
 					{...register(name)}
-					value={value}
+					value={value.id || value}
 					onChange={(e) => {
 						register(name).onChange(e)
-						manageCounter(e, value)
+						manageCounter(e, value.id, value.name, value.price)
+						
 					}}
 				/>
 				{components && components}

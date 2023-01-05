@@ -11,7 +11,7 @@ import {
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
-import { Alert, Badge, Col, Container, Row } from 'react-bootstrap'
+import { Alert, Badge, Card, Col, Container, Row, Table } from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
@@ -29,6 +29,7 @@ export const SelectBranch = () => {
 		setPartnerDetail,
 		partnerDetail,
 		serviceDetail,
+		serviceCounters,
 	} = useContext(BookingContext)
 
 	const [partnerArray, setPartnerArray] = useState<IPartners[]>()
@@ -36,6 +37,8 @@ export const SelectBranch = () => {
 	const useFormInstance = useForm({
 		defaultValues: partnerInfo,
 	})
+
+	console.log(serviceCounters, 'counter details')
 
 	const {
 		getValues,
@@ -61,12 +64,15 @@ export const SelectBranch = () => {
 	}
 
 	const getPartnersRequest = () => {
+		const servicesSelected = serviceCounters
+			.map((m: { id: any }) => m?.id)
+			.join(',')
 		// FOR MOCK DATA
 		// setPartnerArray(mockPartner)
 		axios
 			.get(
 				// `${API_URL}/partners/?city=${appointmentInfo.city}&is_approved=true&is_verified=true&expand=type`,
-				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=partner_configuration.configuration_block_dates&expand=services.service&state=${appointmentInfo.state}&expand=type&is_approved=true&is_verified=true&is_bookable=true&service=${serviceDetail?.id}&expand=partner_configuration.configuration.days`,
+				`${API_URL}/partners/?city=${appointmentInfo.city}&expand=partner_configuration.configuration_block_dates&expand=services.service&state=${appointmentInfo.state}&expand=type&is_approved=true&is_verified=true&is_bookable=true&service=${servicesSelected}&expand=partner_configuration.configuration.days`,
 				{
 					headers,
 				}
@@ -192,6 +198,39 @@ export const SelectBranch = () => {
 								</Row>
 							)}
 						</div>
+						<Row className="mb-5">
+							<Col>
+								<h5>Selected Tests and Services</h5>
+								<Card className="border border-2 border-dark py-1 px-4 mt-3">
+									<Table responsive className="test-table">
+										<tbody>
+											{serviceCounters?.map(
+												(service: any) => (
+													<tr>
+														<td className="text-start">
+															{service?.name}
+														</td>
+														<td className="text-end">
+															${service?.price}
+														</td>
+													</tr>
+												)
+											)}
+										</tbody>
+										<tfoot className="fw-bold">
+											<tr>
+												<td className="border-0 text-start">
+													Total
+												</td>
+												<td className="border-0 text-end">
+													$180
+												</td>
+											</tr>
+										</tfoot>
+									</Table>
+								</Card>
+							</Col>
+						</Row>
 					</Col>
 				</Row>
 

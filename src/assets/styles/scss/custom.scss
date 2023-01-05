@@ -699,3 +699,13 @@ input[type='file'] {
 .pharmacy {
 	background-color: $pharmacy !important;
 }
+
+// table
+
+.test-table {
+	margin-bottom: 0;
+
+	td {
+		padding: 1rem;
+	}
+}

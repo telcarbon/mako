@@ -103,7 +103,7 @@ export const Appointment = () => {
 		price: string
 		// description: string
 	) => (
-		<div key={id} className="radio-card-wrap">
+		<div className="radio-card-wrap" key={id}>
 			<div className="d-flex justify-content-between">
 				<strong>{name}</strong>
 				<p>${price}</p>
@@ -121,8 +121,8 @@ export const Appointment = () => {
 			filterCounterEqualToId(id, serviceCounters).length === 0
 
 		return (
-			<div key={id} className="checkbox-card">
-				<div className="checkbox-card-wrap">
+			<div className="checkbox-card">
+				<div className="checkbox-card-wrap" key={id}>
 					<div className="d-flex justify-content-between">
 						<strong>{name}</strong>
 						<p>${price}</p>
@@ -247,12 +247,14 @@ export const Appointment = () => {
 		}
 	}, [cityWatch])
 
-	const manageCounter = (e: any, id: any) => {
+	const manageCounter = (e: any, id: any, name: string, price: string) => {
 		let ctr = []
 		if (e.target['checked']) {
 			ctr.push(...serviceCounters, {
 				id,
 				counter: 1,
+				name,
+				price,
 			})
 		} else {
 			ctr =
@@ -353,10 +355,10 @@ export const Appointment = () => {
 														{services?.map(
 															(item) => (
 																<Col
+																	lg={6}
 																	key={
 																		item.id
 																	}
-																	lg={6}
 																>
 																	<FormRadioGroup
 																		name={
@@ -393,10 +395,10 @@ export const Appointment = () => {
 														{services?.map(
 															(item) => (
 																<Col
+																	lg={6}
 																	key={
 																		item.id
 																	}
-																	lg={6}
 																>
 																	<FormCheckBox
 																		name="multiServices"
@@ -404,7 +406,7 @@ export const Appointment = () => {
 																			register
 																		}
 																		value={
-																			item?.id
+																			item
 																		}
 																		key={
 																			item?.id
@@ -437,23 +439,7 @@ export const Appointment = () => {
 									</p>
 								)}
 							</div>
-						)}
-						{/* <FormField name="multiServices" useWrapper={false}>
-							<Row className="pe-2">
-								{services?.map((item) => (
-									<Col lg={6}>
-										<FormCheckBox
-											name="multiServices"
-											register={register}
-											value={item?.id}
-											key={item?.id}
-										>
-											{item?.name}
-										</FormCheckBox>
-									</Col>
-								))}
-							</Row>
-						</FormField> */}
+						)}					
 					</Col>
 				</Row>
 				{cityWatch && services?.length !== 0 && !isLoading && (
