@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
+import { mockPartner } from '../mockData'
 import { IPartners } from '../types'
 
 export const SelectBranch = () => {
@@ -37,8 +38,6 @@ export const SelectBranch = () => {
 	const useFormInstance = useForm({
 		defaultValues: partnerInfo,
 	})
-
-	console.log(serviceCounters, 'counter details')
 
 	const {
 		getValues,

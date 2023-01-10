@@ -33,6 +33,8 @@ interface BookingContextProps {
 	setBookingId: any
 	serviceCounters: any
 	setServiceCounters: any
+	bookingInfo: any
+	setBookingInfo: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -54,18 +56,18 @@ export const BookingContext = createContext<BookingContextProps>({
 	setBookingId: () => {},
 	serviceCounters: null,
 	setServiceCounters: () => {},
+	bookingInfo: null,
+	setBookingInfo: () => {},
 })
 
 export const Booking = () => {
 	const navigate = useNavigate()
 	const accessToken = localStorage.getItem('accessToken')
-
 	// if (accessToken === '') {
 	// 	console.log('sample')
 	// 	return <NotFound />
 	// 	navigate('/error-404')
 	// }
-
 	const [serviceCounters, setServiceCounters] = useState<any[]>([])
 	const [appointmentInfo, setAppointmentInfo] = useState<IAppointment>({
 		state: 'North Carolina',
@@ -73,18 +75,14 @@ export const Booking = () => {
 		service: 0,
 		multiServices: [],
 	})
-
 	const [partnerInfo, setPartnerInfo] = useState<IPartner>({
 		partner: 0,
 	})
-
 	const [bookingDate, setBookingDate] = useState()
 	const [bookingTime, setBookingTime] = useState()
-
+	const [bookingInfo, setBookingInfo] = useState<any[]>()
 	const [bookingId, setBookingId] = useState<string>('')
-
 	const [serviceDetail, setServiceDetail] = useState<any>()
-
 	const [partnerDetail, setPartnerDetail] = useState<any>()
 
 	const headers = {
@@ -182,6 +180,8 @@ export const Booking = () => {
 					setBookingId,
 					serviceCounters,
 					setServiceCounters,
+					bookingInfo,
+					setBookingInfo,
 				}}
 			>
 				<Routes>

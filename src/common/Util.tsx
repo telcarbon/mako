@@ -233,3 +233,15 @@ export const disableUrlType = (
 		})
 	}
 }
+
+export const findDataById = (id: any, counters: any) => {
+	return counters.find((f: any) => f.id === id)
+}
+
+export const filterDataEqualToId = (id: any, counters: any) => {
+	return counters.filter((f: any) => f.id === id)
+}
+
+export const filterDataNotEqualToId = (id: any, counters: any) => {
+	return counters.filter((f: any) => f.id !== id)
+}

@@ -1,14 +1,4 @@
-export const findCounterById: any = (id: any, counters: any) => {
-	return counters.find((f: any) => f.id === id)
-}
-
-export const filterCounterEqualToId = (id: any, counters: any) => {
-	return counters.filter((f: any) => f.id === id)
-}
-
-export const filterCounterNotEqualToId = (id: any, counters: any) => {
-	return counters.filter((f: any) => f.id !== id)
-}
+import { findDataById, filterDataNotEqualToId } from 'common/Util'
 
 export const addMinusCounter = (
 	id: any,
@@ -18,8 +8,8 @@ export const addMinusCounter = (
 	multiServices: any = undefined,
 	setValue: any = undefined
 ) => {
-	var ctr = findCounterById(id, counters)
-	var filteredCtr = filterCounterNotEqualToId(id, counters)
+	var ctr = findDataById(id, counters)
+	var filteredCtr = filterDataNotEqualToId(id, counters)
 	let combined: any = [...filteredCtr, ctr]
 	if (add) {
 		ctr.counter = ctr.counter + 1
@@ -29,7 +19,6 @@ export const addMinusCounter = (
 			const newServices = multiServices.filter(
 				(f: any) => f != String(id)
 			)
-			console.log('test', newServices)
 			setValue('multiServices', newServices)
 		} else {
 			ctr.counter = ctr.counter - 1

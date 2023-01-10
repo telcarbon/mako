@@ -6,7 +6,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
 import axios from 'axios'
-import { isEmpty } from 'common/Util'
+import {
+	filterDataEqualToId,
+	filterDataNotEqualToId,
+	findDataById,
+	isEmpty,
+} from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -27,12 +32,7 @@ import * as Yup from 'yup'
 import { BookingContext } from '..'
 import { AppointmentOptions } from '../mockData'
 import { IAppointment, IServicesPricing } from '../types'
-import {
-	addMinusCounter,
-	filterCounterEqualToId,
-	filterCounterNotEqualToId,
-	findCounterById,
-} from './counters'
+import { addMinusCounter } from './counters'
 
 export const Appointment = () => {
 	const navigate = useNavigate()
@@ -40,11 +40,12 @@ export const Appointment = () => {
 	const {
 		appointmentInfo,
 		setAppointmentInfo,
-		headers,
-		serviceDetail,
+		// headers,
+		// serviceDetail,
 		setServiceDetail,
 		serviceCounters,
 		setServiceCounters,
+		setBookingInfo,
 	} = useContext(BookingContext)
 
 	const [services, setServices] = useState<IServicesPricing[]>()
@@ -74,7 +75,6 @@ export const Appointment = () => {
 	} = useFormInstance
 
 	const handleSubmit = async () => {
-		console.log(getValues())
 		const formValues = getValues()
 		setAppointmentInfo(formValues)
 
@@ -85,17 +85,30 @@ export const Appointment = () => {
 			)
 			setServiceDetail(selectedService[0])
 		}
+
+		let info: any = []
+		let apptId: number = 1
+		serviceCounters.map((m: any) => {
+			for (let i = 1; i <= m.counter; i++) {
+				info.push({
+					id: apptId,
+					serviceId: m.id,
+					bookingDate: null,
+					bookingTime: null,
+					name: m.name,
+					price: m.price,
+				})
+				apptId++
+			}
+		})
+		setBookingInfo(info)
 		navigate('select-branch')
 	}
 
 	const cityWatch: string = watch('city')
 	const service: number = watch('service')
-
 	const stateWatch: string = watch('state')
-
 	const watchMultiServices = watch('multiServices')
-
-	console.log(watchMultiServices, 'watchMultiServices')
 
 	const appointmentOptionComponent = (
 		id: number,
@@ -118,7 +131,7 @@ export const Appointment = () => {
 		id: number
 	) => {
 		const notSelected =
-			filterCounterEqualToId(id, serviceCounters).length === 0
+			filterDataEqualToId(id, serviceCounters).length === 0
 
 		return (
 			<div className="checkbox-card">
@@ -150,7 +163,7 @@ export const Appointment = () => {
 						<span className="counter-display">
 							{notSelected
 								? ''
-								: findCounterById(id, serviceCounters).counter}
+								: findDataById(id, serviceCounters).counter}
 						</span>
 						<button
 							type="button"
@@ -182,7 +195,7 @@ export const Appointment = () => {
 		axios
 			.get(
 				`${API_URL}/partners/get_all_partner_cities/?state=${stateWatch}`,
-				{
+			{
 					headers,
 				}
 			)
@@ -259,7 +272,7 @@ export const Appointment = () => {
 		} else {
 			ctr =
 				serviceCounters.length !== 0
-					? filterCounterNotEqualToId(id, serviceCounters)
+					? filterDataNotEqualToId(id, serviceCounters)
 					: []
 		}
 		setServiceCounters(ctr)
@@ -439,7 +452,7 @@ export const Appointment = () => {
 									</p>
 								)}
 							</div>
-						)}					
+						)}
 					</Col>
 				</Row>
 				{cityWatch && services?.length !== 0 && !isLoading && (
