@@ -87,12 +87,18 @@ export const SelectBranch = () => {
 		}
 	}, [appointmentInfo.city])
 
+	const totalPrice = () =>
+		serviceCounters.reduce((acc: any, obj: any) => {
+			return acc + obj.price * obj.counter
+		}, 0)
+
 	const clinicOptionComponent = (
+		index: number,
 		name: string,
 		description: string,
 		type: string
 	) => (
-		<div className="radio-card-wrap location">
+		<div key={index} className="radio-card-wrap location">
 			<div className="d-flex justify-content-between">
 				<div>
 					<FontAwesomeIcon
@@ -155,7 +161,10 @@ export const SelectBranch = () => {
 															?.partner_configuration
 															?.length ===
 														0 ? null : (
-															<Col lg={6}>
+															<Col
+																key={index}
+																lg={6}
+															>
 																<FormRadioGroup
 																	name={
 																		'partner'
@@ -169,6 +178,7 @@ export const SelectBranch = () => {
 																	key={index}
 																	radioClassName="radio-card"
 																	components={clinicOptionComponent(
+																		index,
 																		item.name,
 																		`${
 																			item.street
@@ -204,8 +214,11 @@ export const SelectBranch = () => {
 									<Table responsive className="test-table">
 										<tbody>
 											{serviceCounters?.map(
-												(service: any) => (
-													<tr>
+												(
+													service: any,
+													index: number
+												) => (
+													<tr key={index}>
 														<td className="text-start">
 															{service?.name}
 														</td>
@@ -222,7 +235,7 @@ export const SelectBranch = () => {
 													Total
 												</td>
 												<td className="border-0 text-end">
-													$180
+													${parseFloat(totalPrice())}
 												</td>
 											</tr>
 										</tfoot>
