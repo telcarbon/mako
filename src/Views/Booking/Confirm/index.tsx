@@ -51,7 +51,6 @@ export const ConfirmAppointment = () => {
 		bookingDate,
 	} = useContext(BookingContext)
 	const navigate = useNavigate()
-
 	const validationSchema = Yup.object().shape({
 		firstName: Yup.string().required('First Name is required').nullable(),
 		lastName: Yup.string().required('Last Name is required').nullable(),
@@ -118,7 +117,6 @@ export const ConfirmAppointment = () => {
 		control,
 	} = useFormInstance
 
-
 	const birthdayWatch = moment(watch('birthdate')).format('YYYY-MM-DD')
 
 	const checkIfPastTime = () => {
@@ -178,7 +176,7 @@ export const ConfirmAppointment = () => {
 				</Row>
 				<Row className="my-5 justify-content-center">
 					<Col lg={8}>
-						<AppointmentDetailsCard
+						{/* <AppointmentDetailsCard
 							title="Appointment Details"
 							service={serviceDetail?.name}
 							price={serviceDetail?.price}
@@ -199,7 +197,7 @@ export const ConfirmAppointment = () => {
 							date={moment(bookingDate).format(
 								'dddd, MMMM DD, YYYY'
 							)}
-						/>
+						/> */}
 						<div className="mt-5">
 							<h5 className="mb-4">Patient Details</h5>
 							<Row>
@@ -497,14 +495,16 @@ export const ConfirmAppointment = () => {
 						)}
 						{showBookingTimeError && (
 							<Alert variant="danger" className="mt-4">
-								The appointment time you selected has already passed. Please go{' '}
+								The appointment time you selected has already
+								passed. Please go{' '}
 								<Link
 									className="link-danger"
 									to={'../select-time'}
 								>
 									back
 								</Link>{' '}
-								and choose another timeslot for your appointment.
+								and choose another timeslot for your
+								appointment.
 							</Alert>
 						)}
 					</Col>
