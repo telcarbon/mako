@@ -234,14 +234,14 @@ export const disableUrlType = (
 	}
 }
 
-export const findDataById = (id: any, counters: any) => {
-	return counters.find((f: any) => f.id === id)
+export const findDataById = (id: any, list: any) => {
+	return list.find((f: any) => f.id === id)
 }
 
-export const filterDataEqualToId = (id: any, counters: any) => {
-	return counters.filter((f: any) => f.id === id)
+export const filterDataEqualToId = (id: any, list: any) => {
+	return list.filter((f: any) => f.id === id)
 }
 
-export const filterDataNotEqualToId = (id: any, counters: any) => {
-	return counters.filter((f: any) => f.id !== id)
+export const filterDataNotEqualToId = (id: any, list: any) => {
+	return list.filter((f: any) => f.id !== id)
 }
