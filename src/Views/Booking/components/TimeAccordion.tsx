@@ -7,6 +7,7 @@ import {
 	useMediaQuery,
 } from 'common/MediaQuery'
 import {
+	findDataById,
 	formatDate,
 	getMinBookingTime,
 	getStartAndEndTime,
@@ -132,12 +133,11 @@ export const TimeAccordion = ({
 	}
 
 	const getTimeAndSlot = () => {
-		if (
-			availableTime &&
-			data.bookingDate &&
-			availableTime[data.bookingDate]?.length > 0
-		) {
-			return Object.values(availableTime[data.bookingDate])
+		if (availableTime && data.bookingDate) {
+			const list = findDataById(data.id, availableTime)
+			if (list && list[data.bookingDate]?.length > 0) {
+				return Object.values(list[data.bookingDate])
+			}
 		}
 		return []
 	}

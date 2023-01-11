@@ -25,7 +25,11 @@ export const SelectTime = () => {
 
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState(false)
-	const [availableTime, setAvailableTime] = useState<any>()
+	const [availableTime, setAvailableTime] = useState<any[]>()
+	const [currentAccordion, setCurrentAccordion] = useState<any>({
+		id: null,
+		bookingDate: null,
+	})
 	const [minBookingTime, setMinBookingTime] = useState<string>()
 
 	const handleSubmit = async () => {
@@ -42,7 +46,7 @@ export const SelectTime = () => {
 		setIsLoading(true)
 		axios
 			.get(
-				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${bookingInfo?.bookingDate}`,
+				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${currentAccordion?.bookingDate}`,
 				//,
 				{
 					headers,
@@ -50,7 +54,17 @@ export const SelectTime = () => {
 			)
 			.then((response) => {
 				if (!isEmpty(response.data)) {
-					setAvailableTime(response.data)
+					response.data['id'] = currentAccordion.id
+
+					setAvailableTime(
+						availableTime
+							? availableTime.map((m: any) =>
+									m.id === currentAccordion.id
+										? response.data
+										: m
+							  )
+							: [response.data]
+					)
 				}
 				setTimeout(() => {
 					setIsLoading(false)
@@ -63,9 +77,10 @@ export const SelectTime = () => {
 
 	useEffect(() => {
 		getAvailableTimeRequest()
-	}, [bookingInfo.bookingDate])
+	}, [currentAccordion])
 
 	const setDate = (id: number, bookingDate: any): void => {
+		setCurrentAccordion({ id, bookingDate })
 		setBookingInfo(
 			bookingInfo.map((m: any) =>
 				m.id === id ? { ...m, bookingDate } : m
@@ -80,7 +95,7 @@ export const SelectTime = () => {
 			)
 		)
 	}
-	const delService = (data: any, serviceId: number): any => {
+	const deleteService = (data: any, serviceId: number): any => {
 		const newService = filterDataNotEqualToId(serviceId, serviceCounters)
 		const newMulti = appointmentInfo.multiServices.filter(
 			(f: any) => f != String(serviceId)
@@ -96,7 +111,7 @@ export const SelectTime = () => {
 			serviceCounters.map((m: any) =>
 				m.id === serviceId
 					? m.counter === 1
-						? { ...delService(m, serviceId) }
+						? { ...deleteService(m, serviceId) }
 						: { ...m, counter: m.counter - 1 }
 					: m
 			)
@@ -104,8 +119,11 @@ export const SelectTime = () => {
 	}
 
 	const checkAllBooking = (): boolean => {
-		return bookingInfo.some(
-			(s: any) => s.bookingDate === null || s.bookingTime === null
+		return (
+			bookingInfo &&
+			bookingInfo.some(
+				(s: any) => s.bookingDate === null || s.bookingTime === null
+			)
 		)
 	}
 
@@ -131,6 +149,7 @@ export const SelectTime = () => {
 						minBookingTime={minBookingTime}
 						setMinBookingTime={setMinBookingTime}
 						deleteAppt={deleteAppt}
+						setCurrentAccordion={setCurrentAccordion}
 					/>
 				))}
 
