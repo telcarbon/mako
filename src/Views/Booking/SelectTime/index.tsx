@@ -6,8 +6,8 @@ import { useContext, useEffect, useState } from 'react'
 import { BookingContext } from '..'
 import axios from 'axios'
 import { API_URL } from 'shared/config'
-import { TimeAccordion } from './TimeAccordion'
 import { slotMockdata } from '../mockData'
+import { TimeAccordion } from '../components/TimeAccordion'
 
 export const SelectTime = () => {
 	const {
@@ -42,8 +42,8 @@ export const SelectTime = () => {
 		setIsLoading(true)
 		axios
 			.get(
-				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}`,
-				//&date=${bookingDate},
+				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${bookingInfo?.bookingDate}`,
+				//,
 				{
 					headers,
 				}
@@ -63,7 +63,7 @@ export const SelectTime = () => {
 
 	useEffect(() => {
 		getAvailableTimeRequest()
-	})
+	}, [bookingInfo.bookingDate])
 
 	const setDate = (id: number, bookingDate: any): void => {
 		setBookingInfo(

@@ -90,6 +90,7 @@ export const AppointmentOptions = [
 		name: 'Flu Testsasasa',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 2,
@@ -97,6 +98,7 @@ export const AppointmentOptions = [
 		name: 'Strep Test',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 3,
@@ -104,6 +106,7 @@ export const AppointmentOptions = [
 		name: 'HIV Test',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 4,
@@ -111,6 +114,7 @@ export const AppointmentOptions = [
 		name: 'Urinalysis for UTI',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 5,
@@ -118,6 +122,7 @@ export const AppointmentOptions = [
 		name: 'A1C Test',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 7,
@@ -125,6 +130,7 @@ export const AppointmentOptions = [
 		name: 'Annual Physical Medical Visit',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 	{
 		id: 8,
@@ -132,6 +138,7 @@ export const AppointmentOptions = [
 		name: 'Blood Test',
 		price: '39.99',
 		duration: 4,
+		description: 'This is a sample description.',
 	},
 ]
 

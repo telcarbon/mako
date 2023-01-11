@@ -31,6 +31,7 @@ export interface IServicesPricing {
 	price: string
 	name: string
 	duration: number
+	description: string
 }
 
 export interface TypeOfLocation {

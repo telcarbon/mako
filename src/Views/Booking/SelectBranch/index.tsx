@@ -11,7 +11,16 @@ import {
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
-import { Alert, Badge, Card, Col, Container, Row, Table } from 'react-bootstrap'
+import {
+	Alert,
+	Badge,
+	Card,
+	Col,
+	Container,
+	Row,
+	Spinner,
+	Table,
+} from 'react-bootstrap'
 import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
@@ -34,10 +43,31 @@ export const SelectBranch = () => {
 	} = useContext(BookingContext)
 
 	const [partnerArray, setPartnerArray] = useState<IPartners[]>()
+	const [isLoading, setIsLoading] = useState(false)
 
 	const useFormInstance = useForm({
 		defaultValues: partnerInfo,
 	})
+
+	let totalAmount = 0
+
+	const servicesSummaryArray = serviceCounters?.map(
+		(service: any, index: number) => {
+			const servicesSelected = Array(service.counter).fill(
+				<tr key={index === index ? index + 1 : index}>
+					<td className="text-start">{service?.name}</td>
+					<td className="text-end">${service?.price}</td>
+				</tr>
+			)
+			totalAmount += parseFloat(service?.price) * service.counter
+			return servicesSelected
+		}
+	)
+
+	const totalPrice = () =>
+		serviceCounters.reduce((acc: any, obj: any) => {
+			return acc + obj.price * obj.counter
+		}, 0)
 
 	const {
 		getValues,
@@ -66,6 +96,7 @@ export const SelectBranch = () => {
 		const servicesSelected = serviceCounters
 			.map((m: { id: any }) => m?.id)
 			.join(',')
+		setIsLoading(true)
 		// FOR MOCK DATA
 		// setPartnerArray(mockPartner)
 		axios
@@ -78,6 +109,7 @@ export const SelectBranch = () => {
 			)
 			.then((response) => {
 				setPartnerArray(response.data.results)
+				setIsLoading(false)
 			})
 	}
 
@@ -87,18 +119,12 @@ export const SelectBranch = () => {
 		}
 	}, [appointmentInfo.city])
 
-	const totalPrice = () =>
-		serviceCounters.reduce((acc: any, obj: any) => {
-			return acc + obj.price * obj.counter
-		}, 0)
-
 	const clinicOptionComponent = (
-		index: number,
 		name: string,
 		description: string,
 		type: string
 	) => (
-		<div key={index} className="radio-card-wrap location">
+		<div className="radio-card-wrap location">
 			<div className="d-flex justify-content-between">
 				<div>
 					<FontAwesomeIcon
@@ -146,103 +172,111 @@ export const SelectBranch = () => {
 									</Link>{' '}
 									and choose another city.
 								</Alert>
+							) : isLoading ? (
+								<div className="text-center my-5 py-5">
+									<Spinner
+										animation="border"
+										role="status"
+										variant="secondary"
+									>
+										<span className="visually-hidden">
+											Loading...
+										</span>
+									</Spinner>
+								</div>
 							) : (
-								<Row>
-									<Col lg={12}>
-										<FormField
-											name="partner"
-											useWrapper={false}
-											className="d-block"
-										>
-											<Row className="pe-2">
-												{partnerArray?.map(
-													(item, index) =>
-														item
-															?.partner_configuration
-															?.length ===
-														0 ? null : (
-															<Col
-																key={index}
-																lg={6}
-															>
-																<FormRadioGroup
-																	name={
-																		'partner'
-																	}
-																	register={
-																		register
-																	}
-																	value={
-																		item?.id
-																	}
+								<>
+									<Row>
+										<Col lg={12}>
+											<FormField
+												name="partner"
+												useWrapper={false}
+												className="d-block"
+											>
+												<Row className="pe-2">
+													{partnerArray?.map(
+														(item, index) =>
+															item
+																?.partner_configuration
+																?.length ===
+															0 ? null : (
+																<Col
+																	lg={6}
 																	key={index}
-																	radioClassName="radio-card"
-																	components={clinicOptionComponent(
-																		index,
-																		item.name,
-																		`${
-																			item.street
-																		}${
-																			item.unit_floor_building ===
-																			null
-																				? ''
-																				: ` ${item.unit_floor_building}`
-																		}, ${
-																			item.city
-																		}, NC, ${
-																			item.zip_code
-																		}`,
-																		item
-																			.type
-																			.name
-																	)}
-																	labelClassname="d-block mt-2 mb-3"
-																/>
-															</Col>
-														)
-												)}
-											</Row>
-										</FormField>
-									</Col>
-								</Row>
+																>
+																	<FormRadioGroup
+																		name={
+																			'partner'
+																		}
+																		register={
+																			register
+																		}
+																		value={
+																			item?.id
+																		}
+																		key={
+																			index
+																		}
+																		radioClassName="radio-card"
+																		components={clinicOptionComponent(
+																			item.name,
+																			`${
+																				item.street
+																			}${
+																				item.unit_floor_building ===
+																				null
+																					? ''
+																					: ` ${item.unit_floor_building}`
+																			}, ${
+																				item.city
+																			}, NC, ${
+																				item.zip_code
+																			}`,
+																			item
+																				.type
+																				.name
+																		)}
+																		labelClassname="d-block mt-2 mb-3"
+																	/>
+																</Col>
+															)
+													)}
+												</Row>
+											</FormField>
+										</Col>
+									</Row>
+									<Row className="mt-4 mb-5">
+										<Col>
+											<h5>Selected Tests and Services</h5>
+											<Card className="border border-2 border-dark py-1 px-4 mt-3">
+												<Table
+													responsive
+													className="test-table"
+												>
+													<tbody>
+														{servicesSummaryArray}
+													</tbody>
+
+													<tfoot className="fw-bold">
+														<tr>
+															<td className="border-0 text-start">
+																Total
+															</td>
+															<td className="border-0 text-end">
+																$
+																{totalAmount.toFixed(
+																	2
+																)}
+															</td>
+														</tr>
+													</tfoot>
+												</Table>
+											</Card>
+										</Col>
+									</Row>
+								</>
 							)}
 						</div>
-						<Row className="mb-5">
-							<Col>
-								<h5>Selected Tests and Services</h5>
-								<Card className="border border-2 border-dark py-1 px-4 mt-3">
-									<Table responsive className="test-table">
-										<tbody>
-											{serviceCounters?.map(
-												(
-													service: any,
-													index: number
-												) => (
-													<tr key={index}>
-														<td className="text-start">
-															{service?.name}
-														</td>
-														<td className="text-end">
-															${service?.price}
-														</td>
-													</tr>
-												)
-											)}
-										</tbody>
-										<tfoot className="fw-bold">
-											<tr>
-												<td className="border-0 text-start">
-													Total
-												</td>
-												<td className="border-0 text-end">
-													${parseFloat(totalPrice())}
-												</td>
-											</tr>
-										</tfoot>
-									</Table>
-								</Card>
-							</Col>
-						</Row>
 					</Col>
 				</Row>
 

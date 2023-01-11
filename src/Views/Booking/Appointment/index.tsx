@@ -40,8 +40,8 @@ export const Appointment = () => {
 	const {
 		appointmentInfo,
 		setAppointmentInfo,
-		// headers,
-		// serviceDetail,
+		headers,
+		serviceDetail,
 		setServiceDetail,
 		serviceCounters,
 		setServiceCounters,
@@ -54,9 +54,9 @@ export const Appointment = () => {
 
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
-		service: Yup.number()
-			.required('Please select an appointment')
-			.nullable(),
+		// service: Yup.number()
+		// 	.required('Please select an appointment')
+		// 	.nullable(),
 		// multiServices: Yup.array().required('Please select 1 or more appointments').nullable(),
 	})
 
@@ -128,7 +128,8 @@ export const Appointment = () => {
 	const appointmentOptionComponents = (
 		name: string,
 		price: string,
-		id: number
+		id: number,
+		description: string
 	) => {
 		const notSelected =
 			filterDataEqualToId(id, serviceCounters).length === 0
@@ -140,44 +141,47 @@ export const Appointment = () => {
 						<strong>{name}</strong>
 						<p>${price}</p>
 					</div>
-					<div
-						className={`d-flex justify-content-end ${
-							notSelected && 'd-none'
-						}`}
-					>
-						<button
-							type="button"
-							onClick={() => {
-								addMinusCounter(
-									id,
-									serviceCounters,
-									setServiceCounters,
-									false,
-									watchMultiServices,
-									setValue
-								)
-							}}
+					<div className="d-flex justify-content-between">
+						{description && <p className="small">{description}</p>}
+						<div
+							className={`d-flex justify-content-end ${
+								notSelected && 'd-none'
+							}`}
 						>
-							<FontAwesomeIcon icon={faMinus} size="1x" />
-						</button>
-						<span className="counter-display">
-							{notSelected
-								? ''
-								: findDataById(id, serviceCounters).counter}
-						</span>
-						<button
-							type="button"
-							onClick={() =>
-								addMinusCounter(
-									id,
-									serviceCounters,
-									setServiceCounters,
-									true
-								)
-							}
-						>
-							<FontAwesomeIcon icon={faPlus} size="1x" />
-						</button>
+							<button
+								type="button"
+								onClick={() => {
+									addMinusCounter(
+										id,
+										serviceCounters,
+										setServiceCounters,
+										false,
+										watchMultiServices,
+										setValue
+									)
+								}}
+							>
+								<FontAwesomeIcon icon={faMinus} size="1x" />
+							</button>
+							<span className="counter-display">
+								{notSelected
+									? ''
+									: findDataById(id, serviceCounters).counter}
+							</span>
+							<button
+								type="button"
+								onClick={() =>
+									addMinusCounter(
+										id,
+										serviceCounters,
+										setServiceCounters,
+										true
+									)
+								}
+							>
+								<FontAwesomeIcon icon={faPlus} size="1x" />
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -195,7 +199,7 @@ export const Appointment = () => {
 		axios
 			.get(
 				`${API_URL}/partners/get_all_partner_cities/?state=${stateWatch}`,
-			{
+				{
 					headers,
 				}
 			)
@@ -232,6 +236,7 @@ export const Appointment = () => {
 							name: item.service.name,
 							price: item.price,
 							duration: item.service.duration,
+							description: item.service.description,
 						})
 					)
 					setServices(serviceType)
@@ -360,7 +365,7 @@ export const Appointment = () => {
 										<h5>Select an appointment</h5>
 										<Row>
 											<Col lg={12}>
-												<FormField
+												{/* <FormField
 													name="service"
 													useWrapper={false}
 												>
@@ -398,7 +403,7 @@ export const Appointment = () => {
 															)
 														)}
 													</Row>
-												</FormField>
+												</FormField> */}
 
 												<FormField
 													name="multiServices"
@@ -430,7 +435,8 @@ export const Appointment = () => {
 																		components={appointmentOptionComponents(
 																			item.name,
 																			item.price,
-																			item.id
+																			item.id,
+																			item.description
 																		)}
 																		manageCounter={
 																			manageCounter
@@ -461,7 +467,7 @@ export const Appointment = () => {
 							pending={isSubmitting}
 							pendingText="Saving"
 							className="col-lg-auto pull-right"
-							disabled={service === 0 || service === null}
+							disabled={watchMultiServices?.length === 0}
 						>
 							Next
 						</SubmitButton>
