@@ -32,6 +32,7 @@ interface ITimeAccordionProps {
 	minBookingTime: any
 	setMinBookingTime: any
 	deleteAppt: any
+	setCurrentAccordion: any
 }
 
 export const TimeAccordion = ({
@@ -45,6 +46,7 @@ export const TimeAccordion = ({
 	minBookingTime,
 	setMinBookingTime,
 	deleteAppt,
+	setCurrentAccordion,
 }: ITimeAccordionProps) => {
 	const [showRemoveServiceModal, setShowRemoveServiceModal] =
 		useState<boolean>(false)
