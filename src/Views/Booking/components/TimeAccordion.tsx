@@ -32,7 +32,6 @@ interface ITimeAccordionProps {
 	minBookingTime: any
 	setMinBookingTime: any
 	deleteAppt: any
-	setCurrentAccordion: any
 }
 
 export const TimeAccordion = ({
@@ -46,7 +45,6 @@ export const TimeAccordion = ({
 	minBookingTime,
 	setMinBookingTime,
 	deleteAppt,
-	setCurrentAccordion,
 }: ITimeAccordionProps) => {
 	const [showRemoveServiceModal, setShowRemoveServiceModal] =
 		useState<boolean>(false)
@@ -111,8 +109,8 @@ export const TimeAccordion = ({
 			const checkIfWeekend =
 				currDate.getDay() === 6 || currDate.getDay() === 0
 
-			const isBlockedDate = blockDates.includes(currDateMoment)
-			const isDayActive = getConfigDays().includes(
+			const isBlockedDate = blockDates?.includes(currDateMoment)
+			const isDayActive = getConfigDays()?.includes(
 				moment(currDate).format('dddd')
 			)
 
@@ -125,7 +123,9 @@ export const TimeAccordion = ({
 						'date-disabled':
 							checkIfWeekend || isBlockedDate || !isDayActive,
 					})}
-					onClick={() => setDate(data.id, currDateMoment)}
+					onClick={() =>
+						setDate(data.id, data.serviceId, currDateMoment)
+					}
 				>
 					<small>{dayOfTheWeek}</small>
 					<h3>{currDate.getDate()}</h3>
@@ -164,7 +164,7 @@ export const TimeAccordion = ({
 						</button>
 						<Accordion.Item eventKey="0">
 							<Accordion.Header>
-								<Col lg={8} className="ms-4 ps-2">
+								<Col md={8} className="ms-4 ps-2">
 									<h6 className="fw-bold mt-2 mb-0">
 										{data?.name}
 									</h6>
@@ -176,7 +176,7 @@ export const TimeAccordion = ({
 											? [
 													getStartAndEndTime(
 														data.bookingTime,
-														serviceDetail?.duration
+														data?.duration
 													),
 													moment(
 														data.bookingDate

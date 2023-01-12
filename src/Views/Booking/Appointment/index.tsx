@@ -78,12 +78,13 @@ export const Appointment = () => {
 		const formValues = getValues()
 		setAppointmentInfo(formValues)
 
-		const serv = formValues['service']
-		if (!isEmpty(serv)) {
-			const selectedService: any = services?.filter(
-				(item) => item?.id === serv
+		const multiService = formValues['multiServices']
+		if (multiService.length > 0)
+		{
+			const selectedServices: any = services?.filter((item: any) =>
+				multiService.includes(String(item.id))
 			)
-			setServiceDetail(selectedService[0])
+			setServiceDetail(selectedServices)
 		}
 
 		let info: any = []
@@ -130,6 +131,7 @@ export const Appointment = () => {
 		price: string,
 		id: number,
 		description: string
+		
 	) => {
 		const notSelected =
 			filterDataEqualToId(id, serviceCounters).length === 0
@@ -265,19 +267,18 @@ export const Appointment = () => {
 		}
 	}, [cityWatch])
 
-	const manageCounter = (e: any, id: any, name: string, price: string) => {
+	const manageCounter = (e: any, data:any) => {
 		let ctr = []
 		if (e.target['checked']) {
 			ctr.push(...serviceCounters, {
-				id,
+				
 				counter: 1,
-				name,
-				price,
+				...data
 			})
 		} else {
 			ctr =
 				serviceCounters.length !== 0
-					? filterDataNotEqualToId(id, serviceCounters)
+					? filterDataNotEqualToId(data.id, serviceCounters)
 					: []
 		}
 		setServiceCounters(ctr)

@@ -1,7 +1,7 @@
 export interface IAppointment {
 	city: string
 	state: string
-	service: number
+	// service: number
 	multiServices?: []
 }
 

@@ -10,6 +10,7 @@ import { CancelAppointment } from './CancelAppointment'
 import { CancelAppointmentSuccess } from './CancelAppointmentSuccess'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
+import { PatientInfo } from './PatientInfo'
 import { SelectBranch } from './SelectBranch'
 import { SelectTime } from './SelectTime'
 import { IAppointment, IPartner, IPatient } from './types'
@@ -72,7 +73,7 @@ export const Booking = () => {
 	const [appointmentInfo, setAppointmentInfo] = useState<IAppointment>({
 		state: 'North Carolina',
 		city: '',
-		service: 0,
+		// service: 0,
 		multiServices: [],
 	})
 	const [partnerInfo, setPartnerInfo] = useState<IPartner>({
@@ -111,7 +112,7 @@ export const Booking = () => {
 
 		const appointmentDetails = {
 			partner: partnerInfo?.partner,
-			service: appointmentInfo?.service,
+			// service: appointmentInfo?.service,
 			practitioner: null,
 			scheduledTime: bookingTime,
 			scheduledDate: bookingDate,
@@ -188,6 +189,7 @@ export const Booking = () => {
 					<Route index element={<Appointment />} />
 					<Route path="select-branch" element={<SelectBranch />} />
 					<Route path="select-time" element={<SelectTime />} />
+					<Route path="patient-info" element={<PatientInfo />} />
 					<Route
 						path="confirm-appointment"
 						element={<ConfirmAppointment />}

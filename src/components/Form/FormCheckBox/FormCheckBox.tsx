@@ -43,8 +43,9 @@ export const FormCheckBox = ({
 					value={value.id || value}
 					onChange={(e) => {
 						register(name).onChange(e)
-						manageCounter(e, value.id, value.name, value.price)
-						
+						{
+							manageCounter && manageCounter(e, value)
+						}
 					}}
 				/>
 				{components && components}

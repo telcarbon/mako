@@ -225,9 +225,7 @@ export const disableUrlType = (
 	setCurrentStep: any,
 	location: string = ''
 ) => {
-	console.log('test labas')
 	if (currentStep !== pageStep) {
-		console.log('test loob')
 		setCurrentStep(pageStep, () => {
 			navigate(`/${location}`)
 		})
