@@ -9,11 +9,10 @@ export interface IPartner {
 	partner: number
 }
 
-export interface IPatient {
+export interface IPersonalInfo {
 	firstName: string
 	lastName: string
 	middleName: string
-	services: string
 	gender: string
 	birthdate: string
 	email: string
@@ -21,7 +20,11 @@ export interface IPatient {
 	guardiansFirstName: string
 	guardiansLastName: string
 	patientPhoto: any
-	terms: boolean
+	couponCode: string
+}
+
+export interface IPatient {
+	patient: IPersonalInfo[]
 	couponCode: string
 	howDidYouHearAboutThisService: string
 	others: string

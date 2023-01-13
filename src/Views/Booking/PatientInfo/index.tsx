@@ -45,7 +45,8 @@ export const PatientInfo = () => {
 	const { bookingTime, bookingDate } = useContext(BookingContext)
 	const navigate = useNavigate()
 
-	const { serviceCounters, bookingInfo } = useContext(BookingContext)
+	const { patientDetail, setPatientDetail, bookingInfo } =
+		useContext(BookingContext)
 
 	const validationSchema = Yup.object().shape({
 		others: Yup.string().when('howDidYouHearAboutThisService', {
@@ -95,28 +96,7 @@ export const PatientInfo = () => {
 
 	const useFormInstance = useForm({
 		resolver: yupResolver(validationSchema),
-		defaultValues: {
-			patient: [
-				{
-					firstName: '',
-					lastName: '',
-					middleName: '',
-					gender: '',
-					birthdate: '',
-					email: '',
-					phoneNumber: '',
-					guardiansFirstName: '',
-					guardiansLastName: '',
-					patientPhoto: '',
-					couponCode: '',
-				},
-			],
-			termsOfUse: false,
-			consentToTreatment: false,
-			couponCode: '',
-			howDidYouHearAboutThisService: '',
-			others: '',
-		},
+		defaultValues: patientDetail,
 	})
 
 	const {
@@ -162,7 +142,14 @@ export const PatientInfo = () => {
 
 	const handleSubmit = async () => {
 		const formValues = getValues()
-		const pastTime = checkIfPastTime()
+
+		setPatientDetail(formValues)
+
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('../confirm-appointment')
+			}, 2000)
+		})
 
 		console.log(formValues, 'values')
 	}

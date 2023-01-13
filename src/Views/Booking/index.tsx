@@ -36,6 +36,8 @@ interface BookingContextProps {
 	setServiceCounters: any
 	bookingInfo: any
 	setBookingInfo: any
+	patientDetail: any
+	setPatientDetail: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -59,6 +61,8 @@ export const BookingContext = createContext<BookingContextProps>({
 	setServiceCounters: () => {},
 	bookingInfo: null,
 	setBookingInfo: () => {},
+	patientDetail: null,
+	setPatientDetail: () => {},
 })
 
 export const Booking = () => {
@@ -85,30 +89,48 @@ export const Booking = () => {
 	const [bookingId, setBookingId] = useState<string>('')
 	const [serviceDetail, setServiceDetail] = useState<any>()
 	const [partnerDetail, setPartnerDetail] = useState<any>()
+	const [patientDetail, setPatientDetail] = useState<IPatient>({
+		patient: [{
+			firstName: '',
+			lastName: '',
+			middleName: '',
+			gender: '',
+			birthdate: '',
+			email: '',
+			phoneNumber: '',
+			guardiansFirstName: '',
+			guardiansLastName: '',
+			patientPhoto: '',
+			couponCode: '',
+		}],
+		couponCode: '',
+		howDidYouHearAboutThisService: '',
+		others: '',
+	})
 
 	const headers = {
 		'Content-Type': 'application/json',
 		Authorization: `Token ${TOKEN}`,
 	}
 
-	const handleSubmitAll = (patientInfo: IPatient) => {
+	const handleSubmitAll = () => {
 		// if (appointmentInfo && partnerInfo && patientInfo) {
-		const patientDetails = {
-			firstName: patientInfo?.firstName,
-			middleName: patientInfo?.middleName || null,
-			lastName: patientInfo?.lastName,
-			gender: patientInfo?.gender,
-			birthdate: moment(patientInfo?.birthdate).format('YYYY-MM-DD'),
-			guardianFirstName: patientInfo?.guardiansFirstName || null,
-			guardianLastName: patientInfo?.guardiansLastName || null,
-			email: patientInfo?.email,
-			phoneNumber: patientInfo?.phoneNumber,
-			couponCode: patientInfo?.couponCode || null,
-			howDidYouHearAboutThisService:
-				patientInfo?.howDidYouHearAboutThisService.includes('Other')
-					? patientInfo?.others
-					: patientInfo?.howDidYouHearAboutThisService,
-		}
+		// const patientDetails = {
+		// 	firstName: patientInfo?.firstName,
+		// 	middleName: patientInfo?.middleName || null,
+		// 	lastName: patientInfo?.lastName,
+		// 	gender: patientInfo?.gender,
+		// 	birthdate: moment(patientInfo?.birthdate).format('YYYY-MM-DD'),
+		// 	guardianFirstName: patientInfo?.guardiansFirstName || null,
+		// 	guardianLastName: patientInfo?.guardiansLastName || null,
+		// 	email: patientInfo?.email,
+		// 	phoneNumber: patientInfo?.phoneNumber,
+		// 	couponCode: patientInfo?.couponCode || null,
+		// 	howDidYouHearAboutThisService:
+		// 		patientInfo?.howDidYouHearAboutThisService.includes('Other')
+		// 			? patientInfo?.others
+		// 			: patientInfo?.howDidYouHearAboutThisService,
+		// }
 
 		const appointmentDetails = {
 			partner: partnerInfo?.partner,
@@ -120,14 +142,14 @@ export const Booking = () => {
 		}
 
 		const params = {
-			patient: convertFieldsToSnakeCase(patientDetails),
+			patient: convertFieldsToSnakeCase(patientDetail),
 			appointments: [convertFieldsToSnakeCase(appointmentDetails)],
 		}
 
 		const formData = new FormData()
 
 		formData.append('data', JSON.stringify(params))
-		formData.append('patient_photo', patientInfo.patientPhoto[0])
+		// formData.append('patient_photo', patientInfo.patientPhoto[0])
 
 		const headers = {
 			'Content-Type': 'multipart/data',
@@ -148,7 +170,7 @@ export const Booking = () => {
 				console.log(err, 'error')
 			})
 		// }
-	}
+	}	
 
 	return (
 		<>
@@ -183,6 +205,8 @@ export const Booking = () => {
 					setServiceCounters,
 					bookingInfo,
 					setBookingInfo,
+					patientDetail,
+					setPatientDetail,
 				}}
 			>
 				<Routes>

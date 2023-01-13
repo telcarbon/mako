@@ -79,8 +79,7 @@ export const Appointment = () => {
 		setAppointmentInfo(formValues)
 
 		const multiService = formValues['multiServices']
-		if (multiService.length > 0)
-		{
+		if (multiService.length > 0) {
 			const selectedServices: any = services?.filter((item: any) =>
 				multiService.includes(String(item.id))
 			)
@@ -103,7 +102,11 @@ export const Appointment = () => {
 			}
 		})
 		setBookingInfo(info)
-		navigate('select-branch')
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('select-branch')
+			}, 500)
+		})
 	}
 
 	const cityWatch: string = watch('city')
@@ -131,7 +134,6 @@ export const Appointment = () => {
 		price: string,
 		id: number,
 		description: string
-		
 	) => {
 		const notSelected =
 			filterDataEqualToId(id, serviceCounters).length === 0
@@ -267,13 +269,12 @@ export const Appointment = () => {
 		}
 	}, [cityWatch])
 
-	const manageCounter = (e: any, data:any) => {
+	const manageCounter = (e: any, data: any) => {
 		let ctr = []
 		if (e.target['checked']) {
 			ctr.push(...serviceCounters, {
-				
 				counter: 1,
-				...data
+				...data,
 			})
 		} else {
 			ctr =
@@ -475,6 +476,7 @@ export const Appointment = () => {
 					</div>
 				)}
 			</Form>
+			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
 	)
 }

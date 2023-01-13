@@ -6,6 +6,7 @@ import {
 	Form,
 	FormCheckBox,
 	FormField,
+	FormSearchSelect,
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
@@ -19,6 +20,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
+import { genderOptions } from '../types'
 
 export const ConfirmAppointment = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
@@ -29,6 +31,8 @@ export const ConfirmAppointment = () => {
 		bookingTime,
 		bookingDate,
 		serviceCounters,
+		bookingInfo,
+		patientDetail,
 	} = useContext(BookingContext)
 	const navigate = useNavigate()
 
@@ -44,38 +48,39 @@ export const ConfirmAppointment = () => {
 		register,
 		formState: { isSubmitting },
 		watch,
+		control,
 	} = useFormInstance
 
-	const checkIfPastTime = () => {
-		const today = new Date()
-		var todayMoment = formatDate(today)
-		const currentTime = getMinBookingTime()
+	// const checkIfPastTime = () => {
+	// 	const today = new Date()
+	// 	var todayMoment = formatDate(today)
+	// 	const currentTime = getMinBookingTime()
 
-		let hasPassed = false
-		if (bookingDate === todayMoment) {
-			hasPassed = bookingTime <= currentTime
-		}
-		setShowBookingTimeError(hasPassed)
-		return hasPassed
-	}
+	// 	let hasPassed = false
+	// 	if (bookingDate === todayMoment) {
+	// 		hasPassed = bookingTime <= currentTime
+	// 	}
+	// 	setShowBookingTimeError(hasPassed)
+	// 	return hasPassed
+	// }
 
 	const handleSubmit = async () => {
 		const formValues = getValues()
-		const pastTime = checkIfPastTime()
-		if (!pastTime) {
-			handleSubmitAll(formValues)
-			return new Promise(() => {
-				setTimeout(() => {
-					navigate('../details')
-				}, 2000)
-			})
-		}
+		// const pastTime = checkIfPastTime()
+		// if (!pastTime) {
+		// 	handleSubmitAll(formValues)
+		// 	return new Promise(() => {
+		// 		setTimeout(() => {
+		// 			navigate('../details')
+		// 		}, 2000)
+		// 	})
+		// }
 	}
 
-	const allTermsHasFalse = watch([
-		'termsOfUse',
-		'consentToTreatment',
-	]).includes(false)
+	// const allTermsHasFalse = watch([
+	// 	'termsOfUse',
+	// 	'consentToTreatment',
+	// ]).includes(false)
 
 	return (
 		<Container fluid>
@@ -103,28 +108,70 @@ export const ConfirmAppointment = () => {
 				</Row>
 				<Row className="my-5 justify-content-center">
 					<Col lg={8}>
-						<AppointmentDetailsCard
-							title="Appointment Details"
-							service={serviceCounters?.name}
-							price={serviceDetail?.price}
-							// description={'This is a sample description'}
-							partner={partnerDetail?.name}
-							// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
-							location={`${partnerDetail.street}${
-								partnerDetail.unit_floor_building === null
-									? ''
-									: ` ${partnerDetail.unit_floor_building}`
-							}, ${partnerDetail.city}, NC, ${
-								partnerDetail.zip_code
-							}`}
-							time={getStartAndEndTime(
-								bookingTime,
-								serviceDetail?.duration
-							)}
-							date={moment(bookingDate).format(
-								'dddd, MMMM DD, YYYY'
-							)}
-						/>
+						<h5>Who are these appointments for?</h5>
+						{bookingInfo &&
+							bookingInfo.map((info: any, i: number) => (
+								// <AppointmentDetailsCard
+								// 	key={i}
+								// 	title="Appointment Details"
+								// 	service={serviceCounters?.name}
+								// 	price={serviceCounters?.price}
+								// 	// description={'This is a sample description'}
+								// 	partner={partnerDetail?.name}
+								// 	// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
+								// 	location={`${partnerDetail.street}${
+								// 		partnerDetail.unit_floor_building ===
+								// 		null
+								// 			? ''
+								// 			: ` ${partnerDetail.unit_floor_building}`
+								// 	}, ${partnerDetail.city}, NC, ${
+								// 		partnerDetail.zip_code
+								// 	}`}
+								// 	// time={getStartAndEndTime(
+								// 	// 	bookingTime,
+								// 	// 	serviceDetail?.duration
+								// 	// )}
+								// 	// date={moment(bookingDate).format(
+								// 	// 	'dddd, MMMM DD, YYYY'
+								// 	// )}
+								// />
+								<AppointmentDetailsCard
+									key={i}
+									service={'Flu Test'}
+									price={'5.99'}
+									description={'This is a sample description'}
+									partner={`Clinic A`}
+									location={`3429, Beacon St., NC`}
+									time={'9:30 AM - 10:00 AM '}
+									date={'Wednesday, June 23, 2022'}
+								>
+									<FormField name="patientName">
+										<FormSearchSelect
+											name="patientName"
+											register={register}
+											placeholder="Patient Name"
+											control={control}
+											options={patientDetail.patient.map(
+												(patient: any, i: number) => {
+													return {
+														label: [
+															patient.firstName,
+															patient.lastName,
+														].join(' '),
+														value: i,
+													}
+												}
+											)}
+											// {...(patientDetail.length === 1 && {
+											// 	defaultValue: {
+											// 		label: patientDetail.patient[0].firstName,
+											// 		value: patientDetail.patient[0].firstName
+											// 	},
+											// })}
+										/>
+									</FormField>
+								</AppointmentDetailsCard>
+							))}
 
 						<>
 							<div className="mt-5 d-flex justify-content-center">
@@ -166,9 +213,7 @@ export const ConfirmAppointment = () => {
 										pending={isSubmitting}
 										pendingText="Submitting"
 										className="text-center"
-										disabled={
-											allTermsHasFalse || isSubmitting
-										}
+										disabled={isSubmitting}
 									>
 										Submit
 									</SubmitButton>
