@@ -42,7 +42,7 @@ export const mockData = [
 	},
 ]
 
-export const slotMockdata = {
+export const slotMockdata: any = {
 	service: 6,
 	partner: 4,
 	'2023-01-11': [
