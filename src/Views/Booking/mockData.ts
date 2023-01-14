@@ -42,46 +42,49 @@ export const mockData = [
 	},
 ]
 
-export const slotMockdata: any = {
-	service: 6,
-	partner: 4,
-	'2023-01-11': [
-		{
-			time: '09:00:00',
-			availableSlots: 2,
-		},
-		{
-			time: '22:57:00',
-			availableSlots: 2,
-		},
-		{
-			time: '23:00:00',
-			availableSlots: 2,
-		},
-		{
-			time: '23:05:00',
-			availableSlots: 2,
-		},
-	],
-	'2023-01-12': [
-		{
-			time: '09:00:00',
-			availableSlots: 2,
-		},
-		{
-			time: '22:57:00',
-			availableSlots: 2,
-		},
-		{
-			time: '23:00:00',
-			availableSlots: 2,
-		},
-		{
-			time: '23:05:00',
-			availableSlots: 2,
-		},
-	],
-}
+export const slotMockdata: any = [
+	{
+		id: 1,
+		service: 6,
+		partner: 4,
+		'2023-01-11': [
+			{
+				time: '09:00:00',
+				availableSlots: 2,
+			},
+			{
+				time: '22:57:00',
+				availableSlots: 2,
+			},
+			{
+				time: '23:00:00',
+				availableSlots: 2,
+			},
+			{
+				time: '23:05:00',
+				availableSlots: 2,
+			},
+		],
+		'2023-01-18': [
+			{
+				time: '09:00:00',
+				availableSlots: 2,
+			},
+			{
+				time: '22:57:00',
+				availableSlots: 2,
+			},
+			{
+				time: '23:00:00',
+				availableSlots: 2,
+			},
+			{
+				time: '23:05:00',
+				availableSlots: 2,
+			},
+		],
+	},
+]
 
 export const AppointmentOptions = [
 	{

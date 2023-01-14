@@ -92,16 +92,14 @@ export const SelectBranch = () => {
 		navigate('../select-time')
 	}
 
-	console.log(serviceCounters,"service");
-	
-
 	const getPartnersRequest = () => {
+		// FOR MOCK DATA
+		// setPartnerArray(mockPartner)
+
 		const servicesSelected = serviceCounters
 			.map((m: { id: any }) => m?.id)
 			.join(',')
 		setIsLoading(true)
-		// FOR MOCK DATA
-		// setPartnerArray(mockPartner)
 		axios
 			.get(
 				// `${API_URL}/partners/?city=${appointmentInfo.city}&is_approved=true&is_verified=true&expand=type`,
