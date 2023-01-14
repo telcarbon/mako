@@ -1,7 +1,12 @@
 import { ContentHeader, SubmitButton } from 'components'
 import { Container } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
-import { filterDataNotEqualToId, getMinBookingTime, isEmpty } from 'common/Util'
+import {
+	filterDataNotEqualToId,
+	findDataById,
+	getMinBookingTime,
+	isEmpty,
+} from 'common/Util'
 import { useContext, useEffect, useState } from 'react'
 import { BookingContext } from '..'
 import axios from 'axios'
@@ -29,11 +34,12 @@ export const SelectTime = () => {
 	const [currentAccordion, setCurrentAccordion] = useState<any>({
 		id: null,
 		bookingDate: null,
+		serviceId: null,
 	})
 	const [minBookingTime, setMinBookingTime] = useState<string>()
 
 	const handleSubmit = async () => {
-		navigate('../confirm-appointment')
+		navigate('../patient-info')
 	}
 
 	const getAvailableTimeRequest = () => {
@@ -46,8 +52,7 @@ export const SelectTime = () => {
 		setIsLoading(true)
 		axios
 			.get(
-				`${API_URL}/appointment/get_date/?partner=${partner}&service=${service}&date=${currentAccordion?.bookingDate}`,
-				//,
+				`${API_URL}/appointment/get_date/?partner=${partner}&service=${currentAccordion?.serviceId}&date=${currentAccordion?.bookingDate}`,
 				{
 					headers,
 				}
@@ -55,16 +60,22 @@ export const SelectTime = () => {
 			.then((response) => {
 				if (!isEmpty(response.data)) {
 					response.data['id'] = currentAccordion.id
+					let saveList: any = [response.data]
+					if (availableTime) {
+						const list = findDataById(
+							currentAccordion.id,
+							availableTime
+						)
+						if (!list) {
+							saveList = [...availableTime, response.data]
+						} else {
+							saveList = availableTime.map((m: any) =>
+								m.id === currentAccordion.id ? response.data : m
+							)
+						}
+					}
 
-					setAvailableTime(
-						availableTime
-							? availableTime.map((m: any) =>
-									m.id === currentAccordion.id
-										? response.data
-										: m
-							  )
-							: [response.data]
-					)
+					setAvailableTime(saveList)
 				}
 				setTimeout(() => {
 					setIsLoading(false)
@@ -79,8 +90,8 @@ export const SelectTime = () => {
 		getAvailableTimeRequest()
 	}, [currentAccordion])
 
-	const setDate = (id: number, bookingDate: any): void => {
-		setCurrentAccordion({ id, bookingDate })
+	const setDate = (id: number, serviceId: number, bookingDate: any): void => {
+		setCurrentAccordion({ id, bookingDate, serviceId })
 		setBookingInfo(
 			bookingInfo.map((m: any) =>
 				m.id === id ? { ...m, bookingDate } : m
@@ -149,7 +160,6 @@ export const SelectTime = () => {
 						minBookingTime={minBookingTime}
 						setMinBookingTime={setMinBookingTime}
 						deleteAppt={deleteAppt}
-						setCurrentAccordion={setCurrentAccordion}
 					/>
 				))}
 

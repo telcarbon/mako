@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import {
 	faLocationDot,
 	faClock,
@@ -6,18 +7,21 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
+import { Row } from 'react-bootstrap'
 
 interface AppointmentDetailsCardProps {
-	service: string
+	service?: any
 	price: string
 	description?: string
 	reference?: string
-	location: string
+	location?: string
 	partner?: string
-	time: any
-	date: any
+	time?: any
+	date?: any
 	title?: string
 	isConfirmed?: boolean
+	hasPatient?: boolean
+	children?: ReactNode
 }
 
 export const AppointmentDetailsCard = ({
@@ -31,19 +35,28 @@ export const AppointmentDetailsCard = ({
 	date,
 	title,
 	isConfirmed,
+	hasPatient,
+	children,
 }: AppointmentDetailsCardProps) => {
 	return (
 		<>
 			{title && <h5>{title}</h5>}
-			<div className="custom-card my-3">
+			<div className="custom-card mt-3 mb-4">
 				<div
-					className={classNames('d-flex justify-content-between', {
+					className={classNames('d-md-flex justify-content-between', {
 						'mb-3': !reference,
 					})}
 				>
-					<div className="d-flex flex-column">
+					<div className="d-flex flex-column col-lg-8">
 						<h6 className="fw-bold mb-0">{service}</h6>
-						{service.includes('Modern') && (
+						{!isConfirmed ? (
+							<p className="small my-1">${price}</p>
+						) : (
+							<span className="badge bg-primary text-secondary py-2 align-self-baseline">
+								Confirmed
+							</span>
+						)}
+						{service?.includes('Modern') && (
 							<p className="small fst-italic mb-0 fw-bold">
 								Book a time slot for each spot you need checked.
 								For example, if you have a spot on your arm and
@@ -52,13 +65,7 @@ export const AppointmentDetailsCard = ({
 							</p>
 						)}
 					</div>
-					{!isConfirmed ? (
-						<p className="small mb-0">${price}</p>
-					) : (
-						<span className="badge bg-primary text-secondary py-2 align-self-baseline">
-							Confirmed
-						</span>
-					)}
+					<div className='col-lg-4'>{children}</div>
 				</div>
 				{reference && (
 					<p

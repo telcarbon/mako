@@ -92,6 +92,9 @@ export const SelectBranch = () => {
 		navigate('../select-time')
 	}
 
+	console.log(serviceCounters,"service");
+	
+
 	const getPartnersRequest = () => {
 		const servicesSelected = serviceCounters
 			.map((m: { id: any }) => m?.id)
@@ -285,7 +288,7 @@ export const SelectBranch = () => {
 						pending={isSubmitting}
 						pendingText="Saving"
 						className="col-lg-auto pull-right"
-						disabled={partner === 0}
+						disabled={partner === 0 || isLoading}
 					>
 						Next
 					</SubmitButton>
