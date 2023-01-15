@@ -150,8 +150,6 @@ export const PatientInfo = () => {
 				navigate('../confirm-appointment')
 			}, 2000)
 		})
-
-		console.log(formValues, 'values')
 	}
 
 	const watchBirthday = (watchBirthdate: any) =>

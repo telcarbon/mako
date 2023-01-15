@@ -97,6 +97,7 @@ export const Appointment = () => {
 					bookingTime: null,
 					name: m.name,
 					price: m.price,
+					duration: m.duration,
 				})
 				apptId++
 			}
@@ -110,7 +111,6 @@ export const Appointment = () => {
 	}
 
 	const cityWatch: string = watch('city')
-	const service: number = watch('service')
 	const stateWatch: string = watch('state')
 	const watchMultiServices = watch('multiServices')
 

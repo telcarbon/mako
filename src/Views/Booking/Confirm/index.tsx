@@ -24,12 +24,11 @@ import { genderOptions } from '../types'
 
 export const ConfirmAppointment = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
+	const [unselectedPatient, setUnselectedPatient] = useState<any[]>([])
 	const {
 		handleSubmitAll,
 		serviceDetail,
 		partnerDetail,
-		bookingTime,
-		bookingDate,
 		serviceCounters,
 		bookingInfo,
 		patientDetail,
@@ -42,7 +41,6 @@ export const ConfirmAppointment = () => {
 			consentToTreatment: false,
 		},
 	})
-
 	const {
 		getValues,
 		register,
@@ -65,7 +63,21 @@ export const ConfirmAppointment = () => {
 	// }
 
 	const handleSubmit = async () => {
-		const formValues = getValues()
+		const formValues: any = getValues()
+
+		let unselected: any = []
+
+		const appts: number[] = bookingInfo
+			.map((m: any) => formValues[`appointment_${m.id}`])
+			.filter((f: any) => f !== undefined)
+
+		patientDetail.patient.map((m: any, i: number) => {
+			if (!appts.includes(i + 1)) {
+				unselected.push(`${m.firstName} ${m.lastName}`)
+			}
+		})
+		setUnselectedPatient(unselected)
+
 		// const pastTime = checkIfPastTime()
 		// if (!pastTime) {
 		// 	handleSubmitAll(formValues)
@@ -89,6 +101,9 @@ export const ConfirmAppointment = () => {
 				backText="Back"
 				backLink={-1}
 			/>
+			{unselectedPatient.length > 0 && (
+				<div>{`error no : ${unselectedPatient} `}</div>
+			)}
 			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 				<Row className="justify-content-center">
 					<Col lg={10}>
@@ -137,9 +152,9 @@ export const ConfirmAppointment = () => {
 								// />
 								<AppointmentDetailsCard
 									key={i}
-									service={'Flu Test'}
-									price={'5.99'}
-									description={'This is a sample description'}
+									service={info.name}
+									price={info.price}
+									//description={'This is a sample description'}
 									partner={`Clinic A`}
 									location={`3429, Beacon St., NC`}
 									time={'9:30 AM - 10:00 AM '}
@@ -147,10 +162,9 @@ export const ConfirmAppointment = () => {
 								>
 									<FormField name="patientName">
 										<FormSearchSelect
-											name="patientName"
+											name={`appointment_${info.id}`}
 											register={register}
 											placeholder="Patient Name"
-											control={control}
 											options={patientDetail.patient.map(
 												(patient: any, i: number) => {
 													return {
@@ -158,7 +172,7 @@ export const ConfirmAppointment = () => {
 															patient.firstName,
 															patient.lastName,
 														].join(' '),
-														value: i,
+														value: i + 1,
 													}
 												}
 											)}

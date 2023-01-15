@@ -77,7 +77,6 @@ export const Booking = () => {
 	const [appointmentInfo, setAppointmentInfo] = useState<IAppointment>({
 		state: 'North Carolina',
 		city: '',
-		// service: 0,
 		multiServices: [],
 	})
 	const [partnerInfo, setPartnerInfo] = useState<IPartner>({

@@ -51,18 +51,24 @@ export const SelectBranch = () => {
 
 	let totalAmount = 0
 
-	const servicesSummaryArray = serviceCounters?.map(
-		(service: any, index: number) => {
-			const servicesSelected = Array(service.counter).fill(
-				<tr key={index === index ? index + 1 : index}>
+	const servicesSummaryArray = () => {
+		let id: number = 1
+		return serviceCounters?.map((service: any, index: number) => {
+			let content = []
+
+			for (let i = 0; i < service.counter; i++) {
+				content.push(
+					<tr key={id}>
 					<td className="text-start">{service?.name}</td>
 					<td className="text-end">${service?.price}</td>
 				</tr>
 			)
+				id++
+			}
 			totalAmount += parseFloat(service?.price) * service.counter
-			return servicesSelected
+			return content
+		})
 		}
-	)
 
 	const totalPrice = () =>
 		serviceCounters.reduce((acc: any, obj: any) => {
@@ -121,11 +127,12 @@ export const SelectBranch = () => {
 	}, [appointmentInfo.city])
 
 	const clinicOptionComponent = (
+		index: any,
 		name: string,
 		description: string,
 		type: string
 	) => (
-		<div className="radio-card-wrap location">
+		<div key={index} className="radio-card-wrap location">
 			<div className="d-flex justify-content-between">
 				<div>
 					<FontAwesomeIcon
@@ -220,6 +227,7 @@ export const SelectBranch = () => {
 																		}
 																		radioClassName="radio-card"
 																		components={clinicOptionComponent(
+																			index,
 																			item.name,
 																			`${
 																				item.street
@@ -255,7 +263,7 @@ export const SelectBranch = () => {
 													className="test-table"
 												>
 													<tbody>
-														{servicesSummaryArray}
+														{servicesSummaryArray()}
 													</tbody>
 
 													<tfoot className="fw-bold">
