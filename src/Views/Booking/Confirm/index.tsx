@@ -11,7 +11,7 @@ import {
 	SubmitButton,
 } from 'components'
 import moment from 'moment'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Alert, Col, Container, Row } from 'react-bootstrap'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useForm } from 'react-hook-form'
@@ -20,11 +20,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BASE_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
+import { UnselectedPatientModal } from '../components/UnselectedPatientModal'
 import { genderOptions } from '../types'
 
 export const ConfirmAppointment = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
 	const [unselectedPatient, setUnselectedPatient] = useState<any[]>([])
+	const [showUnselectedPatientModal, setShowUnselectedPatientModal] =
+		useState<boolean>(false)
 	const {
 		handleSubmitAll,
 		serviceDetail,
@@ -61,6 +64,12 @@ export const ConfirmAppointment = () => {
 	// 	setShowBookingTimeError(hasPassed)
 	// 	return hasPassed
 	// }
+
+	useEffect(() => {
+		if (unselectedPatient.length > 0) {
+			setShowUnselectedPatientModal(true)
+		}
+	}, [unselectedPatient])
 
 	const handleSubmit = async () => {
 		const formValues: any = getValues()
@@ -108,6 +117,8 @@ export const ConfirmAppointment = () => {
 	// 	'consentToTreatment',
 	// ]).includes(false)
 
+	console.log(patientDetail.patient, 'info')
+
 	return (
 		<Container fluid>
 			<ContentHeader
@@ -115,11 +126,6 @@ export const ConfirmAppointment = () => {
 				backText="Back"
 				backLink={-1}
 			/>
-			{unselectedPatient.length > 0 && (
-				<div>{`error no : ${unselectedPatient
-					.map((m: { name: any }) => m?.name)
-					.join(',')} `}</div>
-			)}
 			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 				<Row className="justify-content-center">
 					<Col lg={10}>
@@ -188,16 +194,29 @@ export const ConfirmAppointment = () => {
 															patient.firstName,
 															patient.lastName,
 														].join(' '),
+														// value: patient.id,
 														value: i + 1,
 													}
 												}
 											)}
-											// {...(patientDetail.length === 1 && {
-											// 	defaultValue: {
-											// 		label: patientDetail.patient[0].firstName,
-											// 		value: patientDetail.patient[0].firstName
-											// 	},
-											// })}
+											{...(patientDetail.patient
+												.length === 1 && {
+												defaultValue: {
+													label: [
+														patientDetail.patient[0]
+															.firstName,
+														patientDetail.patient[0]
+															.lastName,
+													].join(' '),
+													// value: patientDetail
+													// 	.patient[0].id,
+													value: i + 1,
+												},
+											})}
+											disabled={
+												patientDetail.patient.length ===
+												1
+											}
 										/>
 									</FormField>
 								</AppointmentDetailsCard>
@@ -269,6 +288,12 @@ export const ConfirmAppointment = () => {
 				</Row>
 			</Form>
 			{isSubmitting && <LoadingMaskWrap />}
+			<UnselectedPatientModal
+				show={showUnselectedPatientModal}
+				setShow={setShowUnselectedPatientModal}
+				name={unselectedPatient}
+				// onClick
+			/>
 		</Container>
 	)
 }

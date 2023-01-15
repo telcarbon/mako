@@ -113,6 +113,7 @@ export const PatientInfo = () => {
 	})
 
 	const handleAppend = (value: {
+		// id: number
 		firstName: string
 		lastName: string
 		middleName: string
@@ -148,7 +149,7 @@ export const PatientInfo = () => {
 		return new Promise(() => {
 			setTimeout(() => {
 				navigate('../confirm-appointment')
-			}, 2000)
+			}, 500)
 		})
 	}
 
@@ -204,6 +205,19 @@ export const PatientInfo = () => {
 											<Col lg={10}>
 												<Row>
 													<Col lg>
+														{/* <FormField
+															name={`patient[${i}].id`}
+															className="mb-0"
+														>
+															<FormTextInput
+																name={`patient[${i}].id`}
+																register={
+																	register
+																}
+																value={i + 2}
+																type="hidden"
+															/>
+														</FormField> */}
 														<FormField
 															name={`patient[${i}].firstName`}
 														>
@@ -466,6 +480,7 @@ export const PatientInfo = () => {
 								onClick={() =>
 									handleAppend({
 										// patientPhoto: '',
+										// id: 1,
 										firstName: '',
 										lastName: '',
 										middleName: '',

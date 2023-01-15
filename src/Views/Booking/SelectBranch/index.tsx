@@ -59,16 +59,16 @@ export const SelectBranch = () => {
 			for (let i = 0; i < service.counter; i++) {
 				content.push(
 					<tr key={id}>
-					<td className="text-start">{service?.name}</td>
-					<td className="text-end">${service?.price}</td>
-				</tr>
-			)
+						<td className="text-start">{service?.name}</td>
+						<td className="text-end">${service?.price}</td>
+					</tr>
+				)
 				id++
 			}
 			totalAmount += parseFloat(service?.price) * service.counter
 			return content
 		})
-		}
+	}
 
 	const totalPrice = () =>
 		serviceCounters.reduce((acc: any, obj: any) => {

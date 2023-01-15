@@ -13,9 +13,10 @@ type InputProps = {
 	onClickAppend?: React.MouseEventHandler<HTMLButtonElement>
 	fieldCount?: any
 	onClickRemove?: React.MouseEventHandler<HTMLButtonElement>
-	type?: 'text' | 'number' | 'date' | 'time' | 'password'
+	type?: 'text' | 'number' | 'date' | 'time' | 'password' | 'hidden'
 	onChange?: (event: React.ChangeEvent<HTMLInputElement>) => void
 	onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void
+	value?: any
 }
 
 export const FormTextInput = ({
@@ -27,8 +28,9 @@ export const FormTextInput = ({
 	fieldCount,
 	onClickRemove,
 	type = 'text',
-	// onChange,
-}: InputProps) => {
+	value,
+}: // onChange,
+InputProps) => {
 	return (
 		<>
 			<div className="input-group rounded-left">
@@ -38,6 +40,9 @@ export const FormTextInput = ({
 					{...register(name)}
 					placeholder={placeholder}
 					// onChange={() => onChange}
+					{...(value && {
+						value: value,
+					})}
 				/>
 				{fieldCount > 1 && (
 					<button

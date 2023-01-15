@@ -119,13 +119,15 @@ export const Booking = () => {
 
 		Object.keys(formValues).forEach((key) => {
 			if (key.match(/appointment/g) && formValues[key] !== undefined) {
+				// debugger
 				const servCounterId = key.split('_')[1]
 				const booking = findDataById(
 					parseFloat(servCounterId),
 					bookingInfo
 				)
+
 				// const patient = findDataById(formValues[key], patientDetail.patient)
-				const patient = patientDetail.patient[formValues[key]]
+				const patient = patientDetail.patient[formValues[key] - 1]
 
 				const patientDetails = {
 					firstName: patient?.firstName,
@@ -156,37 +158,38 @@ export const Booking = () => {
 				}
 
 				const params = {
-					patient: convertFieldsToSnakeCase(patientDetail),
+					patient: convertFieldsToSnakeCase(patient),
 					...convertFieldsToSnakeCase(appointment),
 				}
+				console.log('params', params)
 				payload.push(params)
 			}
 		})
 
-		// const formData = new FormData()
+		const formData = new FormData()
 
-		// formData.append('data', JSON.stringify(payload))
-		// // formData.append('patient_photo', patientInfo.patientPhoto[0])
+		formData.append('data', JSON.stringify({appointments:[...payload] }))
+		// formData.append('patient_photo', patientInfo.patientPhoto[0])
 
-		// const headers = {
-		// 	'Content-Type': 'multipart/data',
-		// 	Authorization: `Token ${TOKEN}`,
+		const headers = {
+			'Content-Type': 'multipart/data',
+			Authorization: `Token ${TOKEN}`,
+		}
+
+		axios
+			.post(`${API_URL}/booking/`, formData, {
+				headers,
+			})
+			.then((response) => {
+				if (response.data.data) {
+					console.log(response.data.data.id)
+					setBookingId(response.data.data.id)
+				}
+			})
+			.catch((err) => {
+				console.log(err, 'error')
+			})
 		// }
-
-		// axios
-		// 	.post(`${API_URL}/booking/`, formData, {
-		// 		headers,
-		// 	})
-		// 	.then((response) => {
-		// 		if (response.data.data) {
-		// 			console.log(response.data.data.id)
-		// 			setBookingId(response.data.data.id)
-		// 		}
-		// 	})
-		// 	.catch((err) => {
-		// 		console.log(err, 'error')
-		// 	})
-		// // }
 	}
 
 	return (

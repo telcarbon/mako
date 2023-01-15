@@ -88,7 +88,7 @@ export const SelectTime = () => {
 
 	useEffect(() => {
 		if (currentAccordion.id !== null) {
-		getAvailableTimeRequest()
+			getAvailableTimeRequest()
 		}
 	}, [currentAccordion])
 
