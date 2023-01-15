@@ -73,7 +73,10 @@ export const ConfirmAppointment = () => {
 
 		patientDetail.patient.map((m: any, i: number) => {
 			if (!appts.includes(i + 1)) {
-				unselected.push(`${m.firstName} ${m.lastName}`)
+				unselected.push({
+					id: i + 1,
+					name: `${m.firstName} ${m.lastName}`,
+				})
 			}
 		})
 		setUnselectedPatient(unselected)
@@ -102,7 +105,9 @@ export const ConfirmAppointment = () => {
 				backLink={-1}
 			/>
 			{unselectedPatient.length > 0 && (
-				<div>{`error no : ${unselectedPatient} `}</div>
+				<div>{`error no : ${unselectedPatient
+					.map((m: { name: any }) => m?.name)
+					.join(',')} `}</div>
 			)}
 			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 				<Row className="justify-content-center">
