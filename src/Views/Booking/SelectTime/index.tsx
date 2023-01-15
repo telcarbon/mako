@@ -87,7 +87,9 @@ export const SelectTime = () => {
 	}
 
 	useEffect(() => {
+		if (currentAccordion.id !== null) {
 		getAvailableTimeRequest()
+		}
 	}, [currentAccordion])
 
 	const setDate = (id: number, serviceId: number, bookingDate: any): void => {
