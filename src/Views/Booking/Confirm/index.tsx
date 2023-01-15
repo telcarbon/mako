@@ -64,22 +64,23 @@ export const ConfirmAppointment = () => {
 
 	const handleSubmit = async () => {
 		const formValues: any = getValues()
-
 		let unselected: any = []
 
 		const appts: number[] = bookingInfo
 			.map((m: any) => formValues[`appointment_${m.id}`])
 			.filter((f: any) => f !== undefined)
 
-		patientDetail.patient.map((m: any, i: number) => {
-			if (!appts.includes(i + 1)) {
+		patientDetail.patient.map((m: any) => {
+			if (!appts.includes(m.id)) {
 				unselected.push({
-					id: i + 1,
+					id: m.id,
 					name: `${m.firstName} ${m.lastName}`,
 				})
 			}
 		})
 		setUnselectedPatient(unselected)
+
+		handleSubmitAll(formValues)
 
 		// const pastTime = checkIfPastTime()
 		// if (!pastTime) {

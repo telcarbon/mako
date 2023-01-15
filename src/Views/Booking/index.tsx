@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { convertFieldsToSnakeCase } from 'common/Util'
+import { convertFieldsToSnakeCase, findDataById } from 'common/Util'
 import { SideNav } from 'components'
 import moment from 'moment'
 import { createContext, useEffect, useState } from 'react'
@@ -89,19 +89,21 @@ export const Booking = () => {
 	const [serviceDetail, setServiceDetail] = useState<any>()
 	const [partnerDetail, setPartnerDetail] = useState<any>()
 	const [patientDetail, setPatientDetail] = useState<IPatient>({
-		patient: [{
-			firstName: '',
-			lastName: '',
-			middleName: '',
-			gender: '',
-			birthdate: '',
-			email: '',
-			phoneNumber: '',
-			guardiansFirstName: '',
-			guardiansLastName: '',
-			patientPhoto: '',
-			couponCode: '',
-		}],
+		patient: [
+			{
+				firstName: '',
+				lastName: '',
+				middleName: '',
+				gender: '',
+				birthdate: '',
+				email: '',
+				phoneNumber: '',
+				guardiansFirstName: '',
+				guardiansLastName: '',
+				patientPhoto: '',
+				couponCode: '',
+			},
+		],
 		couponCode: '',
 		howDidYouHearAboutThisService: '',
 		others: '',
@@ -112,64 +114,82 @@ export const Booking = () => {
 		Authorization: `Token ${TOKEN}`,
 	}
 
-	const handleSubmitAll = () => {
-		// if (appointmentInfo && partnerInfo && patientInfo) {
-		// const patientDetails = {
-		// 	firstName: patientInfo?.firstName,
-		// 	middleName: patientInfo?.middleName || null,
-		// 	lastName: patientInfo?.lastName,
-		// 	gender: patientInfo?.gender,
-		// 	birthdate: moment(patientInfo?.birthdate).format('YYYY-MM-DD'),
-		// 	guardianFirstName: patientInfo?.guardiansFirstName || null,
-		// 	guardianLastName: patientInfo?.guardiansLastName || null,
-		// 	email: patientInfo?.email,
-		// 	phoneNumber: patientInfo?.phoneNumber,
-		// 	couponCode: patientInfo?.couponCode || null,
-		// 	howDidYouHearAboutThisService:
-		// 		patientInfo?.howDidYouHearAboutThisService.includes('Other')
-		// 			? patientInfo?.others
-		// 			: patientInfo?.howDidYouHearAboutThisService,
-		// }
+	const handleSubmitAll = (formValues: any) => {
+		let payload: any[] = []
 
-		const appointmentDetails = {
-			partner: partnerInfo?.partner,
-			// service: appointmentInfo?.service,
-			practitioner: null,
-			scheduledTime: bookingTime,
-			scheduledDate: bookingDate,
-			notes: 'test',
-		}
+		Object.keys(formValues).forEach((key) => {
+			if (key.match(/appointment/g) && formValues[key] !== undefined) {
+				const servCounterId = key.split('_')[1]
+				const booking = findDataById(
+					parseFloat(servCounterId),
+					bookingInfo
+				)
+				const patient = findDataById(
+					formValues[key],
+					patientDetail.patient
+				)
 
-		const params = {
-			patient: convertFieldsToSnakeCase(patientDetail),
-			appointments: [convertFieldsToSnakeCase(appointmentDetails)],
-		}
-
-		const formData = new FormData()
-
-		formData.append('data', JSON.stringify(params))
-		// formData.append('patient_photo', patientInfo.patientPhoto[0])
-
-		const headers = {
-			'Content-Type': 'multipart/data',
-			Authorization: `Token ${TOKEN}`,
-		}
-
-		axios
-			.post(`${API_URL}/booking/`, formData, {
-				headers,
-			})
-			.then((response) => {
-				if (response.data.data) {
-					console.log(response.data.data.id)
-					setBookingId(response.data.data.id)
+				const patientDetails = {
+					firstName: patient?.firstName,
+					middleName: patient?.middleName || null,
+					lastName: patient?.lastName,
+					gender: patient?.gender,
+					birthdate: moment(patient?.birthdate).format('YYYY-MM-DD'),
+					guardianFirstName: patient?.guardiansFirstName || null,
+					guardianLastName: patient?.guardiansLastName || null,
+					email: patient?.email,
+					phoneNumber: patient?.phoneNumber,
+					couponCode: patient?.couponCode || null,
+					howDidYouHearAboutThisService:
+						patientDetail?.howDidYouHearAboutThisService.includes(
+							'Other'
+						)
+							? patientDetail?.others
+							: patientDetail?.howDidYouHearAboutThisService,
 				}
-			})
-			.catch((err) => {
-				console.log(err, 'error')
-			})
+
+				const appointment = {
+					partner: partnerDetail.id,
+					service: booking.serviceId,
+					practitioner: null,
+					scheduledTime: booking.bookingTime,
+					scheduledDate: booking.bookingDate,
+					notes: 'test',
+				}
+
+				const params = {
+					patient: convertFieldsToSnakeCase(patientDetail),
+					...convertFieldsToSnakeCase(appointment),
+				}
+				payload.push(params)
+			}
+		})
+
+		// const formData = new FormData()
+
+		// formData.append('data', JSON.stringify(payload))
+		// // formData.append('patient_photo', patientInfo.patientPhoto[0])
+
+		// const headers = {
+		// 	'Content-Type': 'multipart/data',
+		// 	Authorization: `Token ${TOKEN}`,
 		// }
-	}	
+
+		// axios
+		// 	.post(`${API_URL}/booking/`, formData, {
+		// 		headers,
+		// 	})
+		// 	.then((response) => {
+		// 		if (response.data.data) {
+		// 			console.log(response.data.data.id)
+		// 			setBookingId(response.data.data.id)
+		// 		}
+		// 	})
+		// 	.catch((err) => {
+		// 		console.log(err, 'error')
+		// 	})
+		// // }
+	}
 
 	return (
 		<>
