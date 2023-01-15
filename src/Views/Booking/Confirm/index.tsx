@@ -70,14 +70,24 @@ export const ConfirmAppointment = () => {
 			.map((m: any) => formValues[`appointment_${m.id}`])
 			.filter((f: any) => f !== undefined)
 
-		patientDetail.patient.map((m: any) => {
-			if (!appts.includes(m.id)) {
+		// patientDetail.patient.map((m: any, i: number) => {
+		// 	if (!appts.includes(m.id)) {
+		// 		unselected.push({
+		// 			id: m.id,
+		// 			name: `${m.firstName} ${m.lastName}`,
+		// 		})
+		// 	}
+		// })
+
+		patientDetail.patient.map((m: any, i: number) => {
+			if (!appts.includes(i + 1)) {
 				unselected.push({
-					id: m.id,
+					id: i + 1,
 					name: `${m.firstName} ${m.lastName}`,
 				})
 			}
 		})
+
 		setUnselectedPatient(unselected)
 
 		handleSubmitAll(formValues)

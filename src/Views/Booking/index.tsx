@@ -124,10 +124,8 @@ export const Booking = () => {
 					parseFloat(servCounterId),
 					bookingInfo
 				)
-				const patient = findDataById(
-					formValues[key],
-					patientDetail.patient
-				)
+				// const patient = findDataById(formValues[key], patientDetail.patient)
+				const patient = patientDetail.patient[formValues[key]]
 
 				const patientDetails = {
 					firstName: patient?.firstName,
