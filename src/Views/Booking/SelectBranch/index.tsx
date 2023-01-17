@@ -8,6 +8,7 @@ import {
 	Form,
 	FormField,
 	FormRadioGroup,
+	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
 import { useContext, useEffect, useState } from 'react'
@@ -95,7 +96,12 @@ export const SelectBranch = () => {
 			)
 			setPartnerDetail(selectedPartner[0])
 		}
-		navigate('../select-time')
+
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('../select-time')
+			}, 500)
+		})
 	}
 
 	const getPartnersRequest = () => {
@@ -288,7 +294,6 @@ export const SelectBranch = () => {
 						</div>
 					</Col>
 				</Row>
-
 				<div className="footer w-75">
 					<SubmitButton
 						pending={isSubmitting}
@@ -300,6 +305,7 @@ export const SelectBranch = () => {
 					</SubmitButton>
 				</div>
 			</Form>
+			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
 	)
 }

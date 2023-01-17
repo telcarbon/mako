@@ -17,15 +17,16 @@ export interface IPersonalInfo {
 	birthdate: string
 	email: string
 	phoneNumber: string
-	guardiansFirstName: string
-	guardiansLastName: string
-	patientPhoto: any
+	guardianFirstName: string
+	guardianLastName: string
+	// patientPhoto: any
 	couponCode: string
+	// howDidYouHearAboutThisService: string
+	// others: string
 }
 
 export interface IPatient {
-	patient: IPersonalInfo[]
-	couponCode: string
+	personalInfo: IPersonalInfo[]
 	howDidYouHearAboutThisService: string
 	others: string
 }

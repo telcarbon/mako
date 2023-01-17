@@ -10,14 +10,14 @@ import classNames from 'classnames'
 import { Row } from 'react-bootstrap'
 
 interface AppointmentDetailsCardProps {
-	service?: any
+	service: any
 	price: string
 	description?: string
 	reference?: string
-	location?: string
-	partner?: string
-	time?: any
-	date?: any
+	location: string
+	partner: string
+	time: any
+	date: any
 	title?: string
 	isConfirmed?: boolean
 	hasPatient?: boolean
@@ -49,13 +49,7 @@ export const AppointmentDetailsCard = ({
 				>
 					<div className="d-flex flex-column col-lg-8">
 						<h6 className="fw-bold mb-0">{service}</h6>
-						{!isConfirmed ? (
-							<p className="small my-1">${price}</p>
-						) : (
-							<span className="badge bg-primary text-secondary py-2 align-self-baseline">
-								Confirmed
-							</span>
-						)}
+						{!isConfirmed && <p className="small my-1">${price}</p>}
 						{service?.includes('Modern') && (
 							<p className="small fst-italic mb-0 fw-bold">
 								Book a time slot for each spot you need checked.
@@ -65,7 +59,18 @@ export const AppointmentDetailsCard = ({
 							</p>
 						)}
 					</div>
-					<div className='col-lg-4'>{children}</div>
+					<div
+						className={classNames('col-lg-4', {
+							'd-flex justify-content-end': isConfirmed,
+						})}
+					>
+						{children}
+						{isConfirmed && (
+							<span className="badge bg-primary text-secondary py-2 align-self-baseline">
+								Confirmed
+							</span>
+						)}
+					</div>
 				</div>
 				{reference && (
 					<p

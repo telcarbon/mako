@@ -27,14 +27,17 @@ export const UnselectedPatientModal = ({
 					<Col>
 						<h5 className="text-center fw-light">
 							You have not added{' '}
-							<strong className="fw-bold">
+							<strong className="fw-bold text-capitalize">
 								{name
 									.map((m: { name: any }) => m?.name)
-									.join(',')}{' '}
+									.join(', ')}{' '}
 							</strong>
 							to any of the appointments you are booking.
 						</h5>
-						<div className="mt-5 d-flex justify-content-center">
+						<p className='mt-4 pb-3 text-center'>
+							Do you still want to proceed with this booking?
+						</p>
+						<div className="mt-4 d-flex justify-content-center">
 							<Button className="mx-3" onClick={onClick}>
 								Yes, proceed
 							</Button>

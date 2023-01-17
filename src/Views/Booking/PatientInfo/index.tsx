@@ -20,6 +20,7 @@ import {
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import { AnyAaaaRecord } from 'dns'
 import moment from 'moment'
 import { useContext, useState } from 'react'
 import {
@@ -41,9 +42,9 @@ import { BookingContext } from '..'
 import { genderOptions, ServicesRadioOptions } from '../types'
 
 export const PatientInfo = () => {
+	const navigate = useNavigate()
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
 	const { bookingTime, bookingDate } = useContext(BookingContext)
-	const navigate = useNavigate()
 
 	const { patientDetail, setPatientDetail, bookingInfo } =
 		useContext(BookingContext)
@@ -56,7 +57,7 @@ export const PatientInfo = () => {
 		howDidYouHearAboutThisService: Yup.string()
 			.required('Please select an option')
 			.nullable(),
-		patient: Yup.array().of(
+		personalInfo: Yup.array().of(
 			Yup.object().shape({
 				firstName: Yup.string()
 					.required('First Name is required')
@@ -78,13 +79,13 @@ export const PatientInfo = () => {
 				email: Yup.string()
 					.required('Email address is required')
 					.email('Must be a valid email address'),
-				guardiansFirstName: Yup.string().when('birthdate', {
+				guardianFirstName: Yup.string().when('birthdate', {
 					is: (value: number) => checkIfLegalAge(value) === false,
 					then: Yup.string()
 						.required("Guardian's First Name is required")
 						.nullable(),
 				}),
-				guardiansLastName: Yup.string().when('birthdate', {
+				guardianLastName: Yup.string().when('birthdate', {
 					is: (value: number) => checkIfLegalAge(value) === false,
 					then: Yup.string()
 						.required("Guardian's Last Name is required")
@@ -109,7 +110,7 @@ export const PatientInfo = () => {
 
 	const { fields, append, remove } = useFieldArray({
 		control,
-		name: 'patient',
+		name: 'personalInfo',
 	})
 
 	const handleAppend = (value: {
@@ -121,9 +122,9 @@ export const PatientInfo = () => {
 		birthdate: string
 		email: string
 		phoneNumber: string
-		guardiansFirstName: string
-		guardiansLastName: string
-		couponCode: ''
+		guardianFirstName: string
+		guardianLastName: string
+		couponCode: string
 	}) => {
 		append(value)
 	}
@@ -192,10 +193,10 @@ export const PatientInfo = () => {
 										<Row>
 											<Col lg={2}>
 												{/* <FormField
-													name={`patient[${i}].patientPhoto`}
+													name={`personalInfo[${i}].patientPhoto`}
 												>
 													<FormFileUpload
-														name={`patient[${i}].patientPhoto`}
+														name={`personalInfo[${i}].patientPhoto`}
 														register={register}
 														value={getValues(item.patientPhoto)}
 														hasPhotoPreview
@@ -206,11 +207,11 @@ export const PatientInfo = () => {
 												<Row>
 													<Col lg>
 														{/* <FormField
-															name={`patient[${i}].id`}
+															name={`personalInfo[${i}].id`}
 															className="mb-0"
 														>
 															<FormTextInput
-																name={`patient[${i}].id`}
+																name={`personalInfo[${i}].id`}
 																register={
 																	register
 																}
@@ -219,22 +220,22 @@ export const PatientInfo = () => {
 															/>
 														</FormField> */}
 														<FormField
-															name={`patient[${i}].firstName`}
+															name={`personalInfo[${i}].firstName`}
 														>
 															<FormTextInput
 																placeholder="First Name"
-																name={`patient[${i}].firstName`}
+																name={`personalInfo[${i}].firstName`}
 																register={
 																	register
 																}
 															/>
 														</FormField>
 														<FormField
-															name={`patient[${i}].middleName`}
+															name={`personalInfo[${i}].middleName`}
 														>
 															<FormTextInput
 																placeholder="Middle Name (Optional)"
-																name={`patient[${i}].middleName`}
+																name={`personalInfo[${i}].middleName`}
 																register={
 																	register
 																}
@@ -243,11 +244,11 @@ export const PatientInfo = () => {
 													</Col>
 													<Col lg>
 														<FormField
-															name={`patient[${i}].lastName`}
+															name={`personalInfo[${i}].lastName`}
 														>
 															<FormTextInput
 																placeholder="Last Name"
-																name={`patient[${i}].lastName`}
+																name={`personalInfo[${i}].lastName`}
 																register={
 																	register
 																}
@@ -258,10 +259,10 @@ export const PatientInfo = () => {
 												<Row className="mt-4">
 													<Col lg>
 														<FormField
-															name={`patient[${i}].gender`}
+															name={`personalInfo[${i}].gender`}
 														>
 															<FormSearchSelect
-																name={`patient[${i}].gender`}
+																name={`personalInfo[${i}].gender`}
 																register={
 																	register
 																}
@@ -277,15 +278,13 @@ export const PatientInfo = () => {
 													</Col>
 													<Col lg>
 														<FormField
-															name={`patient[${i}].birthdate`}
+															name={`personalInfo[${i}].birthdate`}
 														>
 															<Controller
 																control={
 																	control
 																}
-																name={
-																	`patient[${i}].birthdate` as any
-																}
+																name={`personalInfo[${i}].birthdate`}
 																render={({
 																	field,
 																}) => (
@@ -294,16 +293,18 @@ export const PatientInfo = () => {
 																		placeholderText="Birthday"
 																		onChange={(
 																			e: any
-																		) =>
+																		) => {
 																			field.onChange(
 																				e
 																			)
-																		}
+																		}}
 																		selected={
 																			field.value
 																		}
 																		maxDate={moment().toDate()}
 																		dateFormat="MM/dd/yyyy"
+																		inputFormat="YYYY-MM-DD"
+																		format="YYYY-MM-DD"
 																	/>
 																)}
 															/>
@@ -313,7 +314,7 @@ export const PatientInfo = () => {
 												<Row>
 													{!watchBirthday(
 														watch(
-															`patient[${i}].birthdate` as any
+															`personalInfo[${i}].birthdate` as any
 														)
 													).includes('Invalid') ? (
 														<>
@@ -324,7 +325,7 @@ export const PatientInfo = () => {
 																{!checkIfLegalAge(
 																	watchBirthday(
 																		watch(
-																			`patient[${i}].birthdate` as any
+																			`personalInfo[${i}].birthdate` as any
 																		)
 																	)
 																) && (
@@ -338,11 +339,11 @@ export const PatientInfo = () => {
 																				lg
 																			>
 																				<FormField
-																					name={`patient[${i}].guardiansFirstName`}
+																					name={`personalInfo[${i}].guardianFirstName`}
 																				>
 																					<FormTextInput
 																						placeholder="Guardian's First Name"
-																						name={`patient[${i}].guardiansFirstName`}
+																						name={`personalInfo[${i}].guardianFirstName`}
 																						register={
 																							register
 																						}
@@ -353,11 +354,11 @@ export const PatientInfo = () => {
 																				lg
 																			>
 																				<FormField
-																					name={`patient[${i}].guardiansLastName`}
+																					name={`personalInfo[${i}].guardianLastName`}
 																				>
 																					<FormTextInput
 																						placeholder="Guardian's Last Name"
-																						name={`patient[${i}].guardiansLastName`}
+																						name={`personalInfo[${i}].guardianLastName`}
 																						register={
 																							register
 																						}
@@ -372,21 +373,21 @@ export const PatientInfo = () => {
 																<Row>
 																	<Col lg>
 																		<FormField
-																			name={`patient[${i}].email`}
+																			name={`personalInfo[${i}].email`}
 																		>
 																			<FormTextInput
 																				placeholder={`${
 																					!checkIfLegalAge(
 																						watchBirthday(
 																							watch(
-																								`patient[${i}].birthdate` as any
+																								`personalInfo[${i}].birthdate` as any
 																							)
 																						)
 																					)
 																						? "Guardian's "
 																						: ''
 																				}Email Address`}
-																				name={`patient[${i}].email`}
+																				name={`personalInfo[${i}].email`}
 																				register={
 																					register
 																				}
@@ -395,7 +396,7 @@ export const PatientInfo = () => {
 																	</Col>
 																	<Col lg>
 																		<FormField
-																			name={`patient[${i}].phoneNumber`}
+																			name={`personalInfo[${i}].phoneNumber`}
 																			className="form-group"
 																		>
 																			<Controller
@@ -403,7 +404,7 @@ export const PatientInfo = () => {
 																					control
 																				}
 																				name={
-																					`patient[${i}].phoneNumber` as any
+																					`personalInfo[${i}].phoneNumber` as any
 																				}
 																				render={({
 																					field: {
@@ -419,7 +420,7 @@ export const PatientInfo = () => {
 																							!checkIfLegalAge(
 																								watchBirthday(
 																									watch(
-																										`patient[${i}].birthdate` as any
+																										`personalInfo[${i}].birthdate` as any
 																									)
 																								)
 																							)
@@ -451,11 +452,11 @@ export const PatientInfo = () => {
 																<Row className="mt-4">
 																	<Col lg={6}>
 																		<FormField
-																			name={`patient[${i}].couponCode`}
+																			name={`personalInfo[${i}].couponCode`}
 																		>
 																			<FormTextInput
 																				placeholder="Coupon Code (Optional)"
-																				name={`patient[${i}].couponCode`}
+																				name={`personalInfo[${i}].couponCode`}
 																				register={
 																					register
 																				}
@@ -488,8 +489,8 @@ export const PatientInfo = () => {
 										birthdate: '',
 										email: '',
 										phoneNumber: '',
-										guardiansFirstName: '',
-										guardiansLastName: '',
+										guardianFirstName: '',
+										guardianLastName: '',
 										couponCode: '',
 									})
 								}

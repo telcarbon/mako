@@ -97,6 +97,7 @@ export const Appointment = () => {
 					bookingTime: null,
 					name: m.name,
 					price: m.price,
+					duration: m.duration,
 				})
 				apptId++
 			}

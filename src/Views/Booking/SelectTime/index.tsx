@@ -1,4 +1,4 @@
-import { ContentHeader, SubmitButton } from 'components'
+import { ContentHeader, LoadingMaskWrap, SubmitButton } from 'components'
 import { Container } from 'react-bootstrap'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -30,6 +30,7 @@ export const SelectTime = () => {
 
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState(false)
+	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [availableTime, setAvailableTime] = useState<any[]>()
 	const [currentAccordion, setCurrentAccordion] = useState<any>({
 		id: null,
@@ -39,7 +40,13 @@ export const SelectTime = () => {
 	const [minBookingTime, setMinBookingTime] = useState<string>()
 
 	const handleSubmit = async () => {
-		navigate('../patient-info')
+		setIsSubmitting(true)
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate('../patient-info')
+				setIsSubmitting(false)
+			}, 500)
+		})
 	}
 
 	const getAvailableTimeRequest = () => {
@@ -167,16 +174,17 @@ export const SelectTime = () => {
 
 			<div className="footer w-75">
 				<SubmitButton
-					pending={false}
+					pending={isSubmitting}
 					pendingText="Saving"
 					className="col-lg-auto pull-right"
 					onClick={handleSubmit}
-					disabled={checkAllBooking()}
+					disabled={checkAllBooking() || isSubmitting}
 					type="button"
 				>
 					Next
 				</SubmitButton>
 			</div>
+			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
 	)
 }

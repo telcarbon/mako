@@ -38,6 +38,8 @@ interface BookingContextProps {
 	setBookingInfo: any
 	patientDetail: any
 	setPatientDetail: any
+	isSuccess: any
+	setIsSuccess: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -63,6 +65,8 @@ export const BookingContext = createContext<BookingContextProps>({
 	setBookingInfo: () => {},
 	patientDetail: null,
 	setPatientDetail: () => {},
+	isSuccess: null,
+	setIsSuccess: () => {},
 })
 
 export const Booking = () => {
@@ -86,10 +90,11 @@ export const Booking = () => {
 	const [bookingTime, setBookingTime] = useState()
 	const [bookingInfo, setBookingInfo] = useState<any[]>()
 	const [bookingId, setBookingId] = useState<string>('')
+	const [isSuccess, setIsSuccess] = useState<boolean>(true)
 	const [serviceDetail, setServiceDetail] = useState<any>()
 	const [partnerDetail, setPartnerDetail] = useState<any>()
 	const [patientDetail, setPatientDetail] = useState<IPatient>({
-		patient: [
+		personalInfo: [
 			{
 				firstName: '',
 				lastName: '',
@@ -98,13 +103,11 @@ export const Booking = () => {
 				birthdate: '',
 				email: '',
 				phoneNumber: '',
-				guardiansFirstName: '',
-				guardiansLastName: '',
-				patientPhoto: '',
+				guardianFirstName: '',
+				guardianLastName: '',
 				couponCode: '',
 			},
 		],
-		couponCode: '',
 		howDidYouHearAboutThisService: '',
 		others: '',
 	})
@@ -127,26 +130,7 @@ export const Booking = () => {
 				)
 
 				// const patient = findDataById(formValues[key], patientDetail.patient)
-				const patient = patientDetail.patient[formValues[key] - 1]
-
-				const patientDetails = {
-					firstName: patient?.firstName,
-					middleName: patient?.middleName || null,
-					lastName: patient?.lastName,
-					gender: patient?.gender,
-					birthdate: moment(patient?.birthdate).format('YYYY-MM-DD'),
-					guardianFirstName: patient?.guardiansFirstName || null,
-					guardianLastName: patient?.guardiansLastName || null,
-					email: patient?.email,
-					phoneNumber: patient?.phoneNumber,
-					couponCode: patient?.couponCode || null,
-					howDidYouHearAboutThisService:
-						patientDetail?.howDidYouHearAboutThisService.includes(
-							'Other'
-						)
-							? patientDetail?.others
-							: patientDetail?.howDidYouHearAboutThisService,
-				}
+				const patient = patientDetail.personalInfo[formValues[key] - 1]
 
 				const appointment = {
 					partner: partnerDetail.id,
@@ -157,8 +141,20 @@ export const Booking = () => {
 					notes: 'test',
 				}
 
+				const newPatient = {
+					...convertFieldsToSnakeCase(patient),
+					// birthdate: patient.birthdate,
+					birthdate: moment(patient.birthdate).format('YYYY-MM-DD'),
+					how_did_you_hear_about_this_service:
+						patientDetail?.howDidYouHearAboutThisService.includes(
+							'Other'
+						)
+							? patientDetail.others
+							: patientDetail.howDidYouHearAboutThisService,
+				}
+
 				const params = {
-					patient: convertFieldsToSnakeCase(patient),
+					patient: newPatient,
 					...convertFieldsToSnakeCase(appointment),
 				}
 				console.log('params', params)
@@ -168,7 +164,7 @@ export const Booking = () => {
 
 		const formData = new FormData()
 
-		formData.append('data', JSON.stringify({appointments:[...payload] }))
+		formData.append('data', JSON.stringify({ appointments: [...payload] }))
 		// formData.append('patient_photo', patientInfo.patientPhoto[0])
 
 		const headers = {
@@ -181,13 +177,14 @@ export const Booking = () => {
 				headers,
 			})
 			.then((response) => {
+				setIsSuccess(true)
 				if (response.data.data) {
 					console.log(response.data.data.id)
 					setBookingId(response.data.data.id)
 				}
 			})
 			.catch((err) => {
-				console.log(err, 'error')
+				setIsSuccess(false)
 			})
 		// }
 	}
@@ -227,6 +224,8 @@ export const Booking = () => {
 					setBookingInfo,
 					patientDetail,
 					setPatientDetail,
+					setIsSuccess,
+					isSuccess,
 				}}
 			>
 				<Routes>
@@ -238,7 +237,12 @@ export const Booking = () => {
 						path="confirm-appointment"
 						element={<ConfirmAppointment />}
 					/>
-					<Route path="details" element={<BookingDetails />} />
+					<Route
+						path={
+							`${isSuccess}` ? 'details/success' : 'details/error'
+						}
+						element={<BookingDetails />}
+					/>
 					<Route
 						path="cancel-appointment/:id"
 						element={<CancelAppointment />}

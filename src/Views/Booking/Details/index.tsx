@@ -1,10 +1,13 @@
+import { faHome } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
+import classNames from 'classnames'
 import setBodyClass, { getStartAndEndTime } from 'common/Util'
 import { ContentHeader, SubmitButton } from 'components'
 import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
@@ -27,6 +30,9 @@ export const BookingDetails = () => {
 		setServiceDetail,
 		setPartnerDetail,
 		setBookingId,
+		isSuccess,
+		bookingInfo,
+		setBookingInfo,
 	} = useContext(BookingContext)
 
 	const [bookingDetail, setBookingDetail] = useState<BookingDetail>()
@@ -62,69 +68,103 @@ export const BookingDetails = () => {
 		setServiceDetail({})
 		setPartnerDetail({})
 		setBookingId({})
+		setBookingInfo({})
 		navigate('../')
 		window.location.reload()
 	}
 
 	return (
-		<Container fluid className="pt-5 mt-3">
-			<ContentHeader title="Here are your booking details" />
-			<Row className="my-4 justify-content-center ">
-				<Col lg={7}>
-					<p className="pb-4 text-center">
-						You will receive an e-mail at{' '}
-						<strong className="text-secondary">
-							{bookingDetail?.patient?.email}
-						</strong>{' '}
-						regarding <br />
-						your appointment.
-					</p>
-					<AppointmentDetailsCard
-						service={serviceDetail?.name}
-						price={serviceDetail?.price}
-						reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
-						partner={partnerDetail?.name}
-						location={`${partnerDetail.street}${
-							partnerDetail.unit_floor_building === null
-								? ''
-								: ` ${partnerDetail.unit_floor_building}`
-						}, ${partnerDetail.city}, NC, ${
-							partnerDetail.zip_code
-						}`}
-						time={getStartAndEndTime(
-							bookingTime,
-							serviceDetail?.duration
-						)}
-						date={moment(bookingDate).format('dddd, MMMM DD, YYYY')}
-						isConfirmed
-					/>
-					<p className="py-4 text-center">
-						Payment for the services booked will be settled at the
-						pharmacy / clinic.
-						<br /> Forms of payment available will depend on the
-						pharmacy / clinic.
-					</p>
-					<div className="text-center">
-						<p>
-							<strong>
-								{partnerDetail?.name} Contact Details
-							</strong>
-							<br />
-							{partnerDetail?.phone_number}
-						</p>
+		<Container
+			fluid
+			className={classNames({
+				'v-middle': !isSuccess,
+				'pt-5 mt-3': isSuccess,
+			})}
+		>
+			{isSuccess ? (
+				<>
+					<ContentHeader title="Here are your booking details" />
+					<Row className="my-4 justify-content-center ">
+						<Col lg={7}>
+							<p className="pb-4 text-center">
+								Please check your e-mail for your booking
+								confirmation and appointment QR code.
+							</p>
+							{bookingInfo &&
+								bookingInfo.map((info: any, i: number) => (
+									<AppointmentDetailsCard
+										key={i}
+										service={info.name}
+										price={info.price}
+										reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
+										partner={partnerDetail?.name}
+										location={`${partnerDetail.street}${
+											partnerDetail.unit_floor_building ===
+											null
+												? ''
+												: ` ${partnerDetail.unit_floor_building}`
+										}, ${partnerDetail.city}, NC, ${
+											partnerDetail.zip_code
+										}`}
+										time={getStartAndEndTime(
+											info.bookingTime,
+											info.duration
+										)}
+										date={moment(info.bookingDate).format(
+											'dddd, MMMM DD, YYYY'
+										)}
+										isConfirmed
+									/>
+								))}
+							<p className="py-4 text-center">
+								Payment for the services booked will be settled
+								at the pharmacy / clinic.
+								<br /> Forms of payment available will depend on
+								the pharmacy / clinic.
+							</p>
+							<div className="text-center">
+								<p>
+									<strong>
+										{partnerDetail?.name} Contact Details
+									</strong>
+									<br />
+									{partnerDetail?.phone_number}
+								</p>
+							</div>
+						</Col>
+					</Row>
+					<div className="my-4 mx-auto text-center">
+						<SubmitButton
+							pending={false}
+							pendingText="Saving"
+							className="col-lg-auto"
+							onClick={backToBooking}
+						>
+							Back to Booking
+						</SubmitButton>
 					</div>
-				</Col>
-			</Row>
-			<div className="my-4 mx-auto text-center">
-				<SubmitButton
-					pending={false}
-					pendingText="Saving"
-					className="col-lg-auto"
-					onClick={backToBooking}
-				>
-					Back to Booking
-				</SubmitButton>
-			</div>
+				</>
+			) : (
+				<Row className="justify-content-center align-items-center vh-100 text-center">
+					<Col lg={7}>
+						<h3 className="mb-4 text-danger">
+							Something went wrong
+						</h3>
+						<p className='pb-3'>
+							We apologize for the inconvenience. <br />
+							Please try again.
+						</p>
+						<Link
+							className="link-secondary h6 text-decoration-none"
+							to={'..'}
+							onClick={backToBooking}
+						>
+							<FontAwesomeIcon icon={faHome} className="me-2" />
+							Back to Home
+						</Link>
+					</Col>
+				</Row>
+			)}
 		</Container>
 	)
 }

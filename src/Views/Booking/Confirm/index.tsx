@@ -1,6 +1,11 @@
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { formatDate, getMinBookingTime, getStartAndEndTime } from 'common/Util'
+import {
+	capitalizeFirst,
+	formatDate,
+	getMinBookingTime,
+	getStartAndEndTime,
+} from 'common/Util'
 import {
 	ContentHeader,
 	Form,
@@ -21,7 +26,6 @@ import { BASE_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import { UnselectedPatientModal } from '../components/UnselectedPatientModal'
-import { genderOptions } from '../types'
 
 export const ConfirmAppointment = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
@@ -35,6 +39,7 @@ export const ConfirmAppointment = () => {
 		serviceCounters,
 		bookingInfo,
 		patientDetail,
+		isSuccess,
 	} = useContext(BookingContext)
 	const navigate = useNavigate()
 
@@ -79,7 +84,7 @@ export const ConfirmAppointment = () => {
 			.map((m: any) => formValues[`appointment_${m.id}`])
 			.filter((f: any) => f !== undefined)
 
-		// patientDetail.patient.map((m: any, i: number) => {
+		// patientDetail.personalInfo.map((m: any, i: number) => {
 		// 	if (!appts.includes(m.id)) {
 		// 		unselected.push({
 		// 			id: m.id,
@@ -88,7 +93,7 @@ export const ConfirmAppointment = () => {
 		// 	}
 		// })
 
-		patientDetail.patient.map((m: any, i: number) => {
+		patientDetail.personalInfo.map((m: any, i: number) => {
 			if (!appts.includes(i + 1)) {
 				unselected.push({
 					id: i + 1,
@@ -104,11 +109,13 @@ export const ConfirmAppointment = () => {
 		// const pastTime = checkIfPastTime()
 		// if (!pastTime) {
 		// 	handleSubmitAll(formValues)
-		// 	return new Promise(() => {
-		// 		setTimeout(() => {
-		// 			navigate('../details')
-		// 		}, 2000)
-		// 	})
+		return new Promise(() => {
+			setTimeout(() => {
+				navigate(
+					`${isSuccess}` ? '../details/success' : '../details/error'
+				)
+			}, 500)
+		})
 		// }
 	}
 
@@ -116,8 +123,6 @@ export const ConfirmAppointment = () => {
 	// 	'termsOfUse',
 	// 	'consentToTreatment',
 	// ]).includes(false)
-
-	console.log(patientDetail.patient, 'info')
 
 	return (
 		<Container fluid>
@@ -148,64 +153,57 @@ export const ConfirmAppointment = () => {
 						<h5>Who are these appointments for?</h5>
 						{bookingInfo &&
 							bookingInfo.map((info: any, i: number) => (
-								// <AppointmentDetailsCard
-								// 	key={i}
-								// 	title="Appointment Details"
-								// 	service={serviceCounters?.name}
-								// 	price={serviceCounters?.price}
-								// 	// description={'This is a sample description'}
-								// 	partner={partnerDetail?.name}
-								// 	// partner={`${partnerDetail?.name} - ${partnerDetail?.type?.name}`}
-								// 	location={`${partnerDetail.street}${
-								// 		partnerDetail.unit_floor_building ===
-								// 		null
-								// 			? ''
-								// 			: ` ${partnerDetail.unit_floor_building}`
-								// 	}, ${partnerDetail.city}, NC, ${
-								// 		partnerDetail.zip_code
-								// 	}`}
-								// 	// time={getStartAndEndTime(
-								// 	// 	bookingTime,
-								// 	// 	serviceDetail?.duration
-								// 	// )}
-								// 	// date={moment(bookingDate).format(
-								// 	// 	'dddd, MMMM DD, YYYY'
-								// 	// )}
-								// />
 								<AppointmentDetailsCard
 									key={i}
 									service={info.name}
 									price={info.price}
-									//description={'This is a sample description'}
-									partner={`Clinic A`}
-									location={`3429, Beacon St., NC`}
-									time={'9:30 AM - 10:00 AM '}
-									date={'Wednesday, June 23, 2022'}
+									partner={partnerDetail?.name}
+									location={`${partnerDetail.street}${
+										partnerDetail.unit_floor_building ===
+										null
+											? ''
+											: ` ${partnerDetail.unit_floor_building}`
+									}, ${partnerDetail.city}, NC, ${
+										partnerDetail.zip_code
+									}`}
+									time={getStartAndEndTime(
+										info.bookingTime,
+										info.duration
+									)}
+									date={moment(info.bookingDate).format(
+										'dddd, MMMM DD, YYYY'
+									)}
 								>
 									<FormField name="patientName">
 										<FormSearchSelect
 											name={`appointment_${info.id}`}
 											register={register}
 											placeholder="Patient Name"
-											options={patientDetail.patient.map(
+											options={patientDetail.personalInfo.map(
 												(patient: any, i: number) => {
 													return {
 														label: [
-															patient.firstName,
-															patient.lastName,
+															capitalizeFirst(
+																patient.firstName
+															),
+															capitalizeFirst(
+																patient.lastName
+															),
 														].join(' '),
 														// value: patient.id,
 														value: i + 1,
 													}
 												}
 											)}
-											{...(patientDetail.patient
+											{...(patientDetail.personalInfo
 												.length === 1 && {
 												defaultValue: {
 													label: [
-														patientDetail.patient[0]
+														patientDetail
+															.personalInfo[0]
 															.firstName,
-														patientDetail.patient[0]
+														patientDetail
+															.personalInfo[0]
 															.lastName,
 													].join(' '),
 													// value: patientDetail
@@ -214,8 +212,8 @@ export const ConfirmAppointment = () => {
 												},
 											})}
 											disabled={
-												patientDetail.patient.length ===
-												1
+												patientDetail.personalInfo
+													.length === 1
 											}
 										/>
 									</FormField>
@@ -224,7 +222,7 @@ export const ConfirmAppointment = () => {
 
 						<>
 							<div className="mt-5 d-flex justify-content-center">
-								<FormField name="terms">
+								{/* <FormField name="terms">
 									<FormCheckBox
 										name="consentToTreatment"
 										register={register}
@@ -256,7 +254,7 @@ export const ConfirmAppointment = () => {
 										</a>
 										.
 									</FormCheckBox>
-								</FormField>
+								</FormField> */}
 								<div className="footer">
 									<SubmitButton
 										pending={isSubmitting}
@@ -287,13 +285,13 @@ export const ConfirmAppointment = () => {
 					</Col>
 				</Row>
 			</Form>
-			{isSubmitting && <LoadingMaskWrap />}
 			<UnselectedPatientModal
 				show={showUnselectedPatientModal}
 				setShow={setShowUnselectedPatientModal}
 				name={unselectedPatient}
-				// onClick
+				onClick={handleSubmitAll}
 			/>
+			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
 	)
 }

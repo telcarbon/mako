@@ -232,6 +232,10 @@ export const disableUrlType = (
 	}
 }
 
+export const capitalizeFirst = (text: string) => {
+	return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
 export const findDataById = (id: any, list: any) => {
 	return list.find((f: any) => f.id === id)
 }
