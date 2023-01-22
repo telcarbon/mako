@@ -4,8 +4,9 @@ import { Col, Modal, Row } from 'react-bootstrap'
 interface RemoveServiceModalProps {
 	show: boolean
 	setShow: (show: boolean) => void
-	onClick?: () => void
+	onClick?: any
 	name: any[]
+	setValue?: any
 }
 
 export const UnselectedPatientModal = ({
@@ -13,6 +14,7 @@ export const UnselectedPatientModal = ({
 	setShow,
 	onClick,
 	name,
+	setValue,
 }: RemoveServiceModalProps) => {
 	return (
 		<Modal
@@ -34,16 +36,25 @@ export const UnselectedPatientModal = ({
 							</strong>
 							to any of the appointments you are booking.
 						</h5>
-						<p className='mt-4 pb-3 text-center'>
+						<p className="mt-4 pb-3 text-center">
 							Do you still want to proceed with this booking?
 						</p>
 						<div className="mt-4 d-flex justify-content-center">
-							<Button className="mx-3" onClick={onClick}>
+							<Button
+								className="mx-3"
+								onClick={() => {
+									setValue('isModal', true)
+									onClick && onClick()
+								}}
+							>
 								Yes, proceed
 							</Button>
 							<Button
 								className="mx-2"
-								onClick={() => setShow(false)}
+								onClick={() => {
+									setValue('isModal', false)
+									setShow(false)
+								}}
 							>
 								Review Appointments
 							</Button>

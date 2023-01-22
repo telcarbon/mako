@@ -71,11 +71,6 @@ export const SelectBranch = () => {
 		})
 	}
 
-	const totalPrice = () =>
-		serviceCounters.reduce((acc: any, obj: any) => {
-			return acc + obj.price * obj.counter
-		}, 0)
-
 	const {
 		getValues,
 		register,

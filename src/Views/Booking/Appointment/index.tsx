@@ -86,11 +86,12 @@ export const Appointment = () => {
 			setServiceDetail(selectedServices)
 		}
 
-		let info: any = []
+		let container: any = []
 		let apptId: number = 1
-		serviceCounters.map((m: any) => {
-			for (let i = 1; i <= m.counter; i++) {
-				info.push({
+
+		const pushNewInfo = (ctr: number, m: any) => {
+			for (let i = 1; i <= ctr; i++) {
+				container.push({
 					id: apptId,
 					serviceId: m.id,
 					bookingDate: null,
@@ -101,8 +102,45 @@ export const Appointment = () => {
 				})
 				apptId++
 			}
+		}
+
+		const pushOldInfo = (list: any) => {
+			list.map((om: any) => {
+				container.push({ ...om, id: apptId })
+				apptId++
 		})
-		setBookingInfo(info)
+		}
+
+		serviceCounters.map((m: any) => {
+			const oldServ = findDataById(m.id, oldServiceCounters)
+			if (oldServiceCounters.length > 0 && oldServ) {
+				const getBookInfo = bookingInfo.filter(
+					(f: any) => f.serviceId === m.id
+				)
+				if (getBookInfo.length > 0) {
+					if (m.counter === oldServ.counter) {
+						pushOldInfo(getBookInfo)
+					} else if (m.counter > oldServ.counter) {
+						const newCounter = m.counter - oldServ.counter
+						pushOldInfo(getBookInfo)
+						pushNewInfo(newCounter, m)
+					} else if (m.counter < oldServ.counter) {
+						const newCounter = oldServ.counter - m.counter
+						for (let i = 1; i <= newCounter; i++) {
+							const info = getBookInfo[i - 1]
+							container.push({
+								id: apptId,
+								...info,
+							})
+							apptId++
+						}
+					}
+				}
+			} else {
+				pushNewInfo(m.counter, m)
+			}
+		})
+		setBookingInfo(container)
 		return new Promise(() => {
 			setTimeout(() => {
 				navigate('select-branch')

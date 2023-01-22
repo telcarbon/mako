@@ -26,11 +26,14 @@ export const SelectTime = () => {
 		setServiceCounters,
 		appointmentInfo,
 		setAppointmentInfo,
+		oldServiceCounters,
+		setOldServiceCounters,
 	} = useContext(BookingContext)
 
 	const navigate = useNavigate()
 	const [isLoading, setIsLoading] = useState(false)
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [hasCopy, setHasCopy] = useState(false)
 	const [availableTime, setAvailableTime] = useState<any[]>()
 	const [currentAccordion, setCurrentAccordion] = useState<any>({
 		id: null,
@@ -99,6 +102,18 @@ export const SelectTime = () => {
 		}
 	}, [currentAccordion])
 
+	const handleCopyServiceCounters = (list: any, bypass = false) => {
+		if (!hasCopy || bypass) {
+			const copy: any[] = []
+			list.map((m: any) => {
+				const c = cloneDeep(m)
+				copy.push(c)
+			})
+
+			setOldServiceCounters(copy)
+		}
+	}
+
 	const setDate = (id: number, serviceId: number, bookingDate: any): void => {
 		setCurrentAccordion({ id, bookingDate, serviceId })
 		setBookingInfo(
@@ -106,6 +121,8 @@ export const SelectTime = () => {
 				m.id === id ? { ...m, bookingDate } : m
 			)
 		)
+		handleCopyServiceCounters(serviceCounters)
+		setHasCopy(true)
 	}
 
 	const setTime = (id: number, bookingTime: any): void => {
@@ -121,21 +138,27 @@ export const SelectTime = () => {
 			(f: any) => f != String(serviceId)
 		)
 		setAppointmentInfo({ ...appointmentInfo, multiServices: newMulti })
-		return newService
 	}
 
 	const deleteAppt = (id: number, serviceId: number): void => {
 		setBookingInfo(filterDataNotEqualToId(id, bookingInfo))
 
-		setServiceCounters(
-			serviceCounters.map((m: any) =>
-				m.id === serviceId
-					? m.counter === 1
-						? { ...deleteService(m, serviceId) }
-						: { ...m, counter: m.counter - 1 }
-					: m
-			)
-		)
+		const newCtr: any[] = []
+		serviceCounters.map((m: any) => {
+			if (m.id === serviceId) {
+				if (m.counter === 1) {
+					deleteService(m, serviceId)
+				} else {
+					newCtr.push({ ...m, counter: m.counter - 1 })
+				}
+			} else {
+				newCtr.push(m)
+			}
+		})
+
+		setServiceCounters(newCtr)
+
+		handleCopyServiceCounters(newCtr, true)
 	}
 
 	const checkAllBooking = (): boolean => {

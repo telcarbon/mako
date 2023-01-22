@@ -38,6 +38,8 @@ interface BookingContextProps {
 	setBookingInfo: any
 	patientDetail: any
 	setPatientDetail: any
+	oldServiceCounters: any
+	setOldServiceCounters: any
 	isSuccess: any
 	formPayload: any
 }
@@ -65,6 +67,8 @@ export const BookingContext = createContext<BookingContextProps>({
 	setBookingInfo: () => {},
 	patientDetail: null,
 	setPatientDetail: () => {},
+	oldServiceCounters: null,
+	setOldServiceCounters: () => {},
 	isSuccess: null,
 	formPayload: null,
 })
@@ -78,6 +82,7 @@ export const Booking = () => {
 	// 	navigate('/error-404')
 	// }
 	const [serviceCounters, setServiceCounters] = useState<any[]>([])
+	const [oldServiceCounters, setOldServiceCounters] = useState<any[]>([])
 	const [appointmentInfo, setAppointmentInfo] = useState<IAppointment>({
 		state: 'North Carolina',
 		city: '',
@@ -175,16 +180,11 @@ export const Booking = () => {
 				}
 
 				detailPayload.push(storePayload)
-
-				console.log('params', params)
 				payload.push(params)
 			}
 		})
 
 		setFormPayload(detailPayload)
-
-		console.log(detailPayload, 'detailPayload')
-		console.log(partnerDetail, 'detail')
 
 		const formData = new FormData()
 
@@ -206,9 +206,13 @@ export const Booking = () => {
 					console.log(response.data.data.id)
 					setBookingId(response.data.data.id)
 				}
+				setTimeout(() => {
+					navigate('../details/success')
+				}, 500)
 			})
 			.catch((err) => {
 				setIsSuccess(false)
+				navigate('../details/error')
 			})
 		// }
 	}
@@ -248,6 +252,8 @@ export const Booking = () => {
 					setBookingInfo,
 					patientDetail,
 					setPatientDetail,
+					oldServiceCounters,
+					setOldServiceCounters,
 					isSuccess,
 					formPayload,
 				}}

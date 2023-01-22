@@ -9,7 +9,6 @@ import {
 import {
 	ContentHeader,
 	Form,
-	FormCheckBox,
 	FormField,
 	FormSearchSelect,
 	LoadingMaskWrap,
@@ -22,7 +21,6 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { useForm } from 'react-hook-form'
 import 'react-phone-number-input/style.css'
 import { Link, useNavigate } from 'react-router-dom'
-import { BASE_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import { UnselectedPatientModal } from '../components/UnselectedPatientModal'
@@ -47,10 +45,12 @@ export const ConfirmAppointment = () => {
 		defaultValues: {
 			termsOfUse: false,
 			consentToTreatment: false,
+			isModal: false,
 		},
 	})
 	const {
 		getValues,
+		setValue,
 		register,
 		formState: { isSubmitting },
 		watch,
@@ -83,7 +83,6 @@ export const ConfirmAppointment = () => {
 		const appts: number[] = bookingInfo
 			.map((m: any) => formValues[`appointment_${m.id}`])
 			.filter((f: any) => f !== undefined)
-
 		// patientDetail.personalInfo.map((m: any, i: number) => {
 		// 	if (!appts.includes(m.id)) {
 		// 		unselected.push({
@@ -108,27 +107,12 @@ export const ConfirmAppointment = () => {
 		// if (!pastTime) {
 		// 	handleSubmitAll(formValues)
 
-		if (unselectedPatient.length === 0) {
+		if (unselected.length === 0 || formValues['isModal']) {
 			handleSubmitAll(formValues)
-
-			return new Promise(() => {
-				setTimeout(() => {
-					navigate(
-						`${isSuccess}`
-							? '../details/success'
-							: '../details/error'
-					)
-				}, 500)
-			})
 		}
 
 		// }
 	}
-
-	// const allTermsHasFalse = watch([
-	// 	'termsOfUse',
-	// 	'consentToTreatment',
-	// ]).includes(false)
 
 	return (
 		<Container fluid>
@@ -295,7 +279,8 @@ export const ConfirmAppointment = () => {
 				show={showUnselectedPatientModal}
 				setShow={setShowUnselectedPatientModal}
 				name={unselectedPatient}
-				onClick={handleSubmitAll}
+				setValue={setValue}
+				onClick={handleSubmit}
 			/>
 			{isSubmitting && <LoadingMaskWrap />}
 		</Container>
