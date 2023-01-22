@@ -176,7 +176,7 @@ export const TimeAccordion = ({
 											? [
 													getStartAndEndTime(
 														data.bookingTime,
-														data?.duration
+														data.duration
 													),
 													moment(
 														data.bookingDate
@@ -277,7 +277,7 @@ export const TimeAccordion = ({
 															>
 																{getStartAndEndTime(
 																	item.time,
-																	serviceDetail?.duration
+																	data.duration
 																)}
 															</div>
 														</li>

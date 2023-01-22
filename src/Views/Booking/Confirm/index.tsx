@@ -76,7 +76,7 @@ export const ConfirmAppointment = () => {
 		}
 	}, [unselectedPatient])
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (isModal: boolean) => {
 		const formValues: any = getValues()
 		let unselected: any = []
 
@@ -104,18 +104,24 @@ export const ConfirmAppointment = () => {
 
 		setUnselectedPatient(unselected)
 
-		handleSubmitAll(formValues)
-
 		// const pastTime = checkIfPastTime()
 		// if (!pastTime) {
 		// 	handleSubmitAll(formValues)
-		return new Promise(() => {
-			setTimeout(() => {
-				navigate(
-					`${isSuccess}` ? '../details/success' : '../details/error'
-				)
-			}, 500)
-		})
+
+		if (unselectedPatient.length === 0) {
+			handleSubmitAll(formValues)
+
+			return new Promise(() => {
+				setTimeout(() => {
+					navigate(
+						`${isSuccess}`
+							? '../details/success'
+							: '../details/error'
+					)
+				}, 500)
+			})
+		}
+
 		// }
 	}
 
@@ -174,7 +180,7 @@ export const ConfirmAppointment = () => {
 										'dddd, MMMM DD, YYYY'
 									)}
 								>
-									<FormField name="patientName">
+									<FormField name={`appointment_${info.id}`}>
 										<FormSearchSelect
 											name={`appointment_${info.id}`}
 											register={register}

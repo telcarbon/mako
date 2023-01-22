@@ -33,6 +33,7 @@ export const BookingDetails = () => {
 		isSuccess,
 		bookingInfo,
 		setBookingInfo,
+		formPayload,
 	} = useContext(BookingContext)
 
 	const [bookingDetail, setBookingDetail] = useState<BookingDetail>()
@@ -90,29 +91,23 @@ export const BookingDetails = () => {
 								Please check your e-mail for your booking
 								confirmation and appointment QR code.
 							</p>
-							{bookingInfo &&
-								bookingInfo.map((info: any, i: number) => (
+							{formPayload &&
+								formPayload.map((payload: any, i: number) => (
 									<AppointmentDetailsCard
 										key={i}
-										service={info.name}
-										price={info.price}
+										service={payload.serviceName}
+										price={payload.servicePrice}
 										reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
-										partner={partnerDetail?.name}
-										location={`${partnerDetail.street}${
-											partnerDetail.unit_floor_building ===
-											null
-												? ''
-												: ` ${partnerDetail.unit_floor_building}`
-										}, ${partnerDetail.city}, NC, ${
-											partnerDetail.zip_code
-										}`}
+										partner={payload.partnerName}
+										location={payload.partnerLocation}
 										time={getStartAndEndTime(
-											info.bookingTime,
-											info.duration
+											payload.scheduledTime,
+											payload.serviceDuration
 										)}
-										date={moment(info.bookingDate).format(
-											'dddd, MMMM DD, YYYY'
-										)}
+										patientName={`${payload.patient.firstName} ${payload.patient.lastName}`}
+										date={moment(
+											payload.scheduledDate
+										).format('dddd, MMMM DD, YYYY')}
 										isConfirmed
 									/>
 								))}
@@ -150,7 +145,7 @@ export const BookingDetails = () => {
 						<h3 className="mb-4 text-danger">
 							Something went wrong
 						</h3>
-						<p className='pb-3'>
+						<p className="pb-3">
 							We apologize for the inconvenience. <br />
 							Please try again.
 						</p>

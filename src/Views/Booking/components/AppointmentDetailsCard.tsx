@@ -4,6 +4,8 @@ import {
 	faClock,
 	faCalendar,
 	faDollar,
+	faPerson,
+	faUser,
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import classNames from 'classnames'
@@ -22,6 +24,7 @@ interface AppointmentDetailsCardProps {
 	isConfirmed?: boolean
 	hasPatient?: boolean
 	children?: ReactNode
+	patientName?: any
 }
 
 export const AppointmentDetailsCard = ({
@@ -37,6 +40,7 @@ export const AppointmentDetailsCard = ({
 	isConfirmed,
 	hasPatient,
 	children,
+	patientName,
 }: AppointmentDetailsCardProps) => {
 	return (
 		<>
@@ -82,29 +86,31 @@ export const AppointmentDetailsCard = ({
 					</p>
 				)}
 
-				<div className="d-lg-flex">
-					<div className="equal-width">
-						<FontAwesomeIcon
-							icon={faLocationDot}
-							className="text-secondary me-2"
-							size="1x"
-						/>
-						<span>
-							<strong className="pe-2">{partner}</strong>
-							<small className="pe-2">{location}</small>
-						</span>
+				{isConfirmed && (
+					<div className="d-lg-flex">
+						<div className="equal-width">
+							<FontAwesomeIcon
+								icon={faUser}
+								className="text-secondary me-2"
+								size="1x"
+							/>
+							<span>
+								<strong className="text-capitalize">
+									{patientName}
+								</strong>
+							</span>
+						</div>
+						<div className="equal-width mt-md-0 mt-2">
+							<FontAwesomeIcon
+								icon={faDollar}
+								className="text-secondary me-2"
+								size="1x"
+							/>
+							<span className="ps-1">{price}</span>
+						</div>
 					</div>
-					<div className="equal-width mt-md-0 mt-2">
-						<FontAwesomeIcon
-							icon={faClock}
-							className="text-secondary me-2 "
-							size="1x"
-						/>
-						<span>
-							<strong>{time}</strong>
-						</span>
-					</div>
-				</div>
+				)}
+
 				<div className="d-lg-flex mt-2">
 					<div className="equal-width">
 						<FontAwesomeIcon
@@ -116,16 +122,30 @@ export const AppointmentDetailsCard = ({
 							<strong>{date}</strong>
 						</span>
 					</div>
-					{isConfirmed && (
-						<div className="equal-width mt-md-0 mt-2">
-							<FontAwesomeIcon
-								icon={faDollar}
-								className="text-secondary me-1"
-								size="1x"
-							/>
-							<span>{price}</span>
-						</div>
-					)}
+					<div className="equal-width mt-md-0 mt-2">
+						<FontAwesomeIcon
+							icon={faClock}
+							className="text-secondary me-2"
+							size="1x"
+						/>
+						<span>
+							<strong>{time}</strong>
+						</span>
+					</div>
+				</div>
+
+				<div className="d-lg-flex mt-2">
+					<div className="equal-width">
+						<FontAwesomeIcon
+							icon={faLocationDot}
+							className="text-secondary me-2"
+							size="1x"
+						/>
+						<span>
+							<strong className="pe-2">{partner}</strong>
+							<small>{location}</small>
+						</span>
+					</div>
 				</div>
 			</div>
 		</>

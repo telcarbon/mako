@@ -39,7 +39,7 @@ interface BookingContextProps {
 	patientDetail: any
 	setPatientDetail: any
 	isSuccess: any
-	setIsSuccess: any
+	formPayload: any
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -66,7 +66,7 @@ export const BookingContext = createContext<BookingContextProps>({
 	patientDetail: null,
 	setPatientDetail: () => {},
 	isSuccess: null,
-	setIsSuccess: () => {},
+	formPayload: null,
 })
 
 export const Booking = () => {
@@ -93,6 +93,7 @@ export const Booking = () => {
 	const [isSuccess, setIsSuccess] = useState<boolean>(true)
 	const [serviceDetail, setServiceDetail] = useState<any>()
 	const [partnerDetail, setPartnerDetail] = useState<any>()
+	const [formPayload, setFormPayload] = useState<any>()
 	const [patientDetail, setPatientDetail] = useState<IPatient>({
 		personalInfo: [
 			{
@@ -119,6 +120,7 @@ export const Booking = () => {
 
 	const handleSubmitAll = (formValues: any) => {
 		let payload: any[] = []
+		let detailPayload: any[] = []
 
 		Object.keys(formValues).forEach((key) => {
 			if (key.match(/appointment/g) && formValues[key] !== undefined) {
@@ -157,10 +159,32 @@ export const Booking = () => {
 					patient: newPatient,
 					...convertFieldsToSnakeCase(appointment),
 				}
+
+				const storePayload = {
+					patient,
+					...appointment,
+					serviceName: booking.name,
+					servicePrice: booking.price,
+					serviceDuration: booking.duration,
+					partnerLocation: `${partnerDetail.street}${
+						partnerDetail.unit_floor_building === null
+							? ''
+							: ` ${partnerDetail.unit_floor_building}`
+					}, ${partnerDetail.city}, NC, ${partnerDetail.zip_code}`,
+					partnerName: partnerDetail.name,
+				}
+
+				detailPayload.push(storePayload)
+
 				console.log('params', params)
 				payload.push(params)
 			}
 		})
+
+		setFormPayload(detailPayload)
+
+		console.log(detailPayload, 'detailPayload')
+		console.log(partnerDetail, 'detail')
 
 		const formData = new FormData()
 
@@ -224,8 +248,8 @@ export const Booking = () => {
 					setBookingInfo,
 					patientDetail,
 					setPatientDetail,
-					setIsSuccess,
 					isSuccess,
+					formPayload,
 				}}
 			>
 				<Routes>

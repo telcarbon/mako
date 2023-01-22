@@ -6,6 +6,7 @@ import {
 	useRoutes,
 } from 'react-router-dom'
 import { Booking } from 'Views/Booking'
+import Checkout from 'Views/Checkout'
 import { NotFound } from 'Views/NotFound'
 import { Registration } from 'Views/Registration'
 import { User } from 'Views/User'
@@ -17,6 +18,7 @@ function AppRoutes() {
 		{ path: '/*', element: <Registration /> },
 		{ path: '/user/*', element: <User /> },
 		{ path: '/booking/*', element: <Booking /> },
+		{ path: '/checkout', element: <Checkout /> },
 		{ path: '/page-not-found', element: <NotFound /> },
 	])
 	return routes

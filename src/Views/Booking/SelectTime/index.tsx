@@ -145,7 +145,7 @@ export const SelectTime = () => {
 				(s: any) => s.bookingDate === null || s.bookingTime === null
 			)
 		)
-	}
+	}	
 
 	return (
 		<Container fluid>
