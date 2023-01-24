@@ -46,6 +46,8 @@ export const Appointment = () => {
 		serviceCounters,
 		setServiceCounters,
 		setBookingInfo,
+		oldServiceCounters,
+		bookingInfo,
 	} = useContext(BookingContext)
 
 	const [services, setServices] = useState<IServicesPricing[]>()
@@ -108,7 +110,7 @@ export const Appointment = () => {
 			list.map((om: any) => {
 				container.push({ ...om, id: apptId })
 				apptId++
-		})
+			})
 		}
 
 		serviceCounters.map((m: any) => {

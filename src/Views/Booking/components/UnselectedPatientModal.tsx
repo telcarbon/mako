@@ -7,6 +7,7 @@ interface RemoveServiceModalProps {
 	onClick?: any
 	name: any[]
 	setValue?: any
+	disableProceed: boolean
 }
 
 export const UnselectedPatientModal = ({
@@ -15,13 +16,16 @@ export const UnselectedPatientModal = ({
 	onClick,
 	name,
 	setValue,
+	disableProceed = false,
 }: RemoveServiceModalProps) => {
+
+	console.log("test modal");
+	
 	return (
 		<Modal
 			show={show}
 			onHide={() => setShow(false)}
 			centered
-			// size={'lg'}
 			backdrop="static"
 		>
 			<Modal.Body>
@@ -44,8 +48,10 @@ export const UnselectedPatientModal = ({
 								className="mx-3"
 								onClick={() => {
 									setValue('isModal', true)
+									setShow(false)
 									onClick && onClick()
 								}}
+								disabled={disableProceed}
 							>
 								Yes, proceed
 							</Button>

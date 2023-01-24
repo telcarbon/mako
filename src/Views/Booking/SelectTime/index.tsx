@@ -13,6 +13,7 @@ import axios from 'axios'
 import { API_URL } from 'shared/config'
 import { slotMockdata } from '../mockData'
 import { TimeAccordion } from '../components/TimeAccordion'
+import { cloneDeep } from 'lodash'
 
 export const SelectTime = () => {
 	const {
@@ -168,7 +169,7 @@ export const SelectTime = () => {
 				(s: any) => s.bookingDate === null || s.bookingTime === null
 			)
 		)
-	}	
+	}
 
 	return (
 		<Container fluid>

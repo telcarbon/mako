@@ -37,7 +37,7 @@ export const ConfirmAppointment = () => {
 		serviceCounters,
 		bookingInfo,
 		patientDetail,
-		isSuccess,
+		isLoading,
 	} = useContext(BookingContext)
 	const navigate = useNavigate()
 
@@ -80,35 +80,40 @@ export const ConfirmAppointment = () => {
 		const formValues: any = getValues()
 		let unselected: any = []
 
-		const appts: number[] = bookingInfo
-			.map((m: any) => formValues[`appointment_${m.id}`])
-			.filter((f: any) => f !== undefined)
-		// patientDetail.personalInfo.map((m: any, i: number) => {
-		// 	if (!appts.includes(m.id)) {
-		// 		unselected.push({
-		// 			id: m.id,
-		// 			name: `${m.firstName} ${m.lastName}`,
-		// 		})
-		// 	}
-		// })
+		if (patientDetail.personalInfo.length > 1) {
+			const appts: number[] = bookingInfo
+				.map((m: any) => formValues[`appointment_${m.id}`])
+				.filter((f: any) => f !== undefined)
+			// patientDetail.personalInfo.map((m: any, i: number) => {
+			// 	if (!appts.includes(m.id)) {
+			// 		unselected.push({
+			// 			id: m.id,
+			// 			name: `${m.firstName} ${m.lastName}`,
+			// 		})
+			// 	}
+			// })
 
-		patientDetail.personalInfo.map((m: any, i: number) => {
-			if (!appts.includes(i + 1)) {
-				unselected.push({
-					id: i + 1,
-					name: `${m.firstName} ${m.lastName}`,
-				})
-			}
-		})
+			patientDetail.personalInfo.map((m: any, i: number) => {
+				if (!appts.includes(i + 1)) {
+					unselected.push({
+						id: i + 1,
+						name: `${m.firstName} ${m.lastName}`,
+					})
+				}
+			})
 
-		setUnselectedPatient(unselected)
+			setUnselectedPatient(unselected)
+		} else {
+			formValues['appointment_1'] = patientDetail.personalInfo.length
+		}
 
 		// const pastTime = checkIfPastTime()
 		// if (!pastTime) {
 		// 	handleSubmitAll(formValues)
 
 		if (unselected.length === 0 || formValues['isModal']) {
-			handleSubmitAll(formValues)
+			setShowUnselectedPatientModal(false)
+			// handleSubmitAll(formValues)
 		}
 
 		// }
@@ -281,8 +286,12 @@ export const ConfirmAppointment = () => {
 				name={unselectedPatient}
 				setValue={setValue}
 				onClick={handleSubmit}
+				disableProceed={
+					unselectedPatient.length ===
+					patientDetail.personalInfo.length
+				}
 			/>
-			{isSubmitting && <LoadingMaskWrap />}
+			{isLoading && <LoadingMaskWrap />}
 		</Container>
 	)
 }

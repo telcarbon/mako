@@ -42,6 +42,7 @@ interface BookingContextProps {
 	setOldServiceCounters: any
 	isSuccess: any
 	formPayload: any
+	isLoading: boolean
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -71,6 +72,7 @@ export const BookingContext = createContext<BookingContextProps>({
 	setOldServiceCounters: () => {},
 	isSuccess: null,
 	formPayload: null,
+	isLoading: false,
 })
 
 export const Booking = () => {
@@ -92,6 +94,7 @@ export const Booking = () => {
 		partner: 0,
 	})
 	const [bookingDate, setBookingDate] = useState()
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 	const [bookingTime, setBookingTime] = useState()
 	const [bookingInfo, setBookingInfo] = useState<any[]>()
 	const [bookingId, setBookingId] = useState<string>('')
@@ -126,6 +129,7 @@ export const Booking = () => {
 	const handleSubmitAll = (formValues: any) => {
 		let payload: any[] = []
 		let detailPayload: any[] = []
+		setIsLoading(true)
 
 		Object.keys(formValues).forEach((key) => {
 			if (key.match(/appointment/g) && formValues[key] !== undefined) {
@@ -150,7 +154,6 @@ export const Booking = () => {
 
 				const newPatient = {
 					...convertFieldsToSnakeCase(patient),
-					// birthdate: patient.birthdate,
 					birthdate: moment(patient.birthdate).format('YYYY-MM-DD'),
 					how_did_you_hear_about_this_service:
 						patientDetail?.howDidYouHearAboutThisService.includes(
@@ -207,12 +210,13 @@ export const Booking = () => {
 					setBookingId(response.data.data.id)
 				}
 				setTimeout(() => {
-					navigate('../details/success')
+					setIsLoading(false)
+					navigate('details/success')
 				}, 500)
 			})
 			.catch((err) => {
 				setIsSuccess(false)
-				navigate('../details/error')
+				navigate('details/error')
 			})
 		// }
 	}
@@ -256,6 +260,7 @@ export const Booking = () => {
 					setOldServiceCounters,
 					isSuccess,
 					formPayload,
+					isLoading,
 				}}
 			>
 				<Routes>

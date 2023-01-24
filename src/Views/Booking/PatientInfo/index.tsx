@@ -150,7 +150,7 @@ export const PatientInfo = () => {
 		return new Promise(() => {
 			setTimeout(() => {
 				navigate('../confirm-appointment')
-			}, 500)
+			}, 250)
 		})
 	}
 
