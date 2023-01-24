@@ -18,9 +18,6 @@ export const UnselectedPatientModal = ({
 	setValue,
 	disableProceed = false,
 }: RemoveServiceModalProps) => {
-
-	console.log("test modal");
-	
 	return (
 		<Modal
 			show={show}

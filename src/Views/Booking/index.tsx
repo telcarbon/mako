@@ -212,7 +212,7 @@ export const Booking = () => {
 				setTimeout(() => {
 					setIsLoading(false)
 					navigate('details/success')
-				}, 500)
+				}, 1000)
 			})
 			.catch((err) => {
 				setIsSuccess(false)

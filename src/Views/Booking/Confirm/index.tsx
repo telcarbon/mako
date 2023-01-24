@@ -76,6 +76,12 @@ export const ConfirmAppointment = () => {
 		}
 	}, [unselectedPatient])
 
+	useEffect(() => {
+		if (isLoading) {
+			setShowUnselectedPatientModal(false)
+		}
+	}, [isLoading])
+
 	const handleSubmit = async (isModal: boolean) => {
 		const formValues: any = getValues()
 		let unselected: any = []
@@ -113,7 +119,7 @@ export const ConfirmAppointment = () => {
 
 		if (unselected.length === 0 || formValues['isModal']) {
 			setShowUnselectedPatientModal(false)
-			// handleSubmitAll(formValues)
+			handleSubmitAll(formValues)
 		}
 
 		// }
@@ -252,10 +258,10 @@ export const ConfirmAppointment = () => {
 								</FormField> */}
 								<div className="footer">
 									<SubmitButton
-										pending={isSubmitting}
+										pending={isLoading}
 										pendingText="Submitting"
 										className="text-center"
-										disabled={isSubmitting}
+										disabled={isLoading}
 									>
 										Submit
 									</SubmitButton>
