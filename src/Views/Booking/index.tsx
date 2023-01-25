@@ -11,6 +11,7 @@ import { CancelAppointmentSuccess } from './CancelAppointmentSuccess'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
 import { PatientInfo } from './PatientInfo'
+import { Payment } from './Payment'
 import { SelectBranch } from './SelectBranch'
 import { SelectTime } from './SelectTime'
 import { IAppointment, IPartner, IPatient } from './types'
@@ -115,6 +116,7 @@ export const Booking = () => {
 				guardianFirstName: '',
 				guardianLastName: '',
 				couponCode: '',
+				patientPhoto: '',
 			},
 		],
 		howDidYouHearAboutThisService: '',
@@ -272,6 +274,7 @@ export const Booking = () => {
 						path="confirm-appointment"
 						element={<ConfirmAppointment />}
 					/>
+					<Route path="payment" element={<Payment />} />
 					<Route
 						path={
 							`${isSuccess}` ? 'details/success' : 'details/error'

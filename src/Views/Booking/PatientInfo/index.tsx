@@ -125,6 +125,7 @@ export const PatientInfo = () => {
 		guardianFirstName: string
 		guardianLastName: string
 		couponCode: string
+		patientPhoto: string
 	}) => {
 		append(value)
 	}
@@ -192,16 +193,18 @@ export const PatientInfo = () => {
 										</h5>
 										<Row>
 											<Col lg={2}>
-												{/* <FormField
+												<FormField
 													name={`personalInfo[${i}].patientPhoto`}
 												>
 													<FormFileUpload
 														name={`personalInfo[${i}].patientPhoto`}
 														register={register}
-														value={getValues(item.patientPhoto)}
+														value={getValues(
+															`personalInfo[${i}].patientPhoto`
+														)}
 														hasPhotoPreview
 													/>
-												</FormField> */}
+												</FormField>
 											</Col>
 											<Col lg={10}>
 												<Row>
@@ -480,7 +483,7 @@ export const PatientInfo = () => {
 								disabled={bookingInfo?.length === fields.length}
 								onClick={() =>
 									handleAppend({
-										// patientPhoto: '',
+										patientPhoto: '',
 										// id: 1,
 										firstName: '',
 										lastName: '',

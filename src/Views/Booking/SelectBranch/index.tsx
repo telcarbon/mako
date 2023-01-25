@@ -26,6 +26,7 @@ import { useForm } from 'react-hook-form'
 import { Link, useNavigate } from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
+import { ServicesSummaryTable } from '../components/ServicesSummaryTable'
 import { mockPartner } from '../mockData'
 import { IPartners } from '../types'
 
@@ -257,31 +258,12 @@ export const SelectBranch = () => {
 									</Row>
 									<Row className="mt-4 mb-5">
 										<Col>
-											<h5>Selected Tests and Services</h5>
-											<Card className="border border-2 border-dark py-1 px-4 mt-3">
-												<Table
-													responsive
-													className="test-table"
-												>
-													<tbody>
-														{servicesSummaryArray()}
-													</tbody>
-
-													<tfoot className="fw-bold">
-														<tr>
-															<td className="border-0 text-start">
-																Total
-															</td>
-															<td className="border-0 text-end">
-																$
-																{totalAmount.toFixed(
-																	2
-																)}
-															</td>
-														</tr>
-													</tfoot>
-												</Table>
-											</Card>
+											<ServicesSummaryTable
+												title="Selected Tests and Services"
+												serviceCounters={
+													serviceCounters
+												}
+											/>
 										</Col>
 									</Row>
 								</>

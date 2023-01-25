@@ -23,6 +23,7 @@ export interface IPersonalInfo {
 	couponCode: string
 	// howDidYouHearAboutThisService: string
 	// others: string
+	patientPhoto: string
 }
 
 export interface IPatient {
