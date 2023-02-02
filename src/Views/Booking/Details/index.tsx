@@ -3,18 +3,28 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import axios from 'axios'
 import classNames from 'classnames'
 import setBodyClass, { getStartAndEndTime } from 'common/Util'
-import { ContentHeader, SubmitButton } from 'components'
+import { ContentHeader, LoadingMaskWrap, SubmitButton } from 'components'
 import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
-import { Link, useNavigate } from 'react-router-dom'
+import {
+	Link,
+	useNavigate,
+	NavigationType,
+	useNavigationType,
+} from 'react-router-dom'
 import { API_URL } from 'shared/config'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import { BookingDetail } from '../types'
+import { Action } from 'history'
 
 export const BookingDetails = () => {
 	const navigate = useNavigate()
+	const navType: NavigationType = useNavigationType()
+	const checkoutSessionId = localStorage.getItem('checkoutSessionId')
+	// const checkoutSessionId =
+	// 	'cs_test_a1iKUf4JtSb30nw6l1UKizZDjB0BiRDnrNtevuqY7irdUgKisxg7wjnMkX'
 
 	const {
 		headers,
@@ -36,7 +46,8 @@ export const BookingDetails = () => {
 		formPayload,
 	} = useContext(BookingContext)
 
-	const [bookingDetail, setBookingDetail] = useState<BookingDetail>()
+	const [bookingDetail, setBookingDetail] = useState<BookingDetail[]>()
+	const [isLoading, setIsLoading] = useState<boolean>(false)
 
 	setBodyClass(['full-width'])
 
@@ -61,6 +72,18 @@ export const BookingDetails = () => {
 		}
 	}, [bookingId])
 
+	useEffect(() => {
+		getCheckoutData()
+	}, [])
+
+	// useEffect(() => {
+	// 	return () => {
+	// 		if (navType === Action.Pop) {
+	// 			navigate('..')
+	// 		}
+	// 	}
+	// }, [navType])
+
 	const backToBooking = () => {
 		setAppointmentInfo({})
 		setPartnerInfo({})
@@ -70,8 +93,34 @@ export const BookingDetails = () => {
 		setPartnerDetail({})
 		setBookingId({})
 		setBookingInfo({})
-		navigate('../')
+		navigate('..')
+		localStorage.setItem('checkoutSessionId', '')
 		window.location.reload()
+	}
+
+	const getCheckoutData = async () => {
+		setIsLoading(true)
+		const payloadId = await axios
+			.get(
+				`https://makorxbackend.cmdev.cloud/api/temporary_booking/?checkout_session=${checkoutSessionId}`,
+				// `${API_URL}/temporary_booking/?checkout_session=${checkoutSessionId}`,
+				{ headers }
+			)
+			.then((response) => {
+				return response.data.results[0].payload.data.id
+			})
+
+		const appointments = await axios
+			.get(
+				`https://makorxbackend.cmdev.cloud/api/booking/${payloadId}?expand=appointments.service,appointments.partner.services,appointments.patient`,
+				{ headers }
+			)
+			.then((response) => {
+				setIsLoading(false)
+				setBookingDetail(response.data.appointments)
+			})
+
+		return appointments
 	}
 
 	return (
@@ -91,39 +140,66 @@ export const BookingDetails = () => {
 								Please check your e-mail for your booking
 								confirmation and appointment QR code.
 							</p>
-							{formPayload &&
-								formPayload.map((payload: any, i: number) => (
-									<AppointmentDetailsCard
-										key={i}
-										service={payload.serviceName}
-										price={payload.servicePrice}
-										reference={`Reference No. ${bookingDetail?.appointments[0]?.reference_number}`}
-										partner={payload.partnerName}
-										location={payload.partnerLocation}
-										time={getStartAndEndTime(
-											payload.scheduledTime,
-											payload.serviceDuration
-										)}
-										patientName={`${payload.patient.firstName} ${payload.patient.lastName}`}
-										date={moment(
-											payload.scheduledDate
-										).format('dddd, MMMM DD, YYYY')}
-										isConfirmed
-									/>
-								))}
+							{bookingDetail &&
+								bookingDetail.map((item: any, i: number) => {
+									const servicePrice =
+										item.partner.services.find(
+											(data: any) => {
+												if (
+													data.service ===
+													item.service.id
+												) {
+													return data.price
+												}
+											}
+										)
+
+									return (
+										<AppointmentDetailsCard
+											key={i}
+											service={item.service.name}
+											price={servicePrice.price}
+											reference={`Reference No. ${item?.reference_number}`}
+											partner={item.partner.name}
+											location={`${item.partner.street}${
+												item.partner
+													.unit_floor_building ===
+												null
+													? ''
+													: ` ${item.partner.unit_floor_building}`
+											}, ${item.partner.city}, NC, ${
+												item.partner.zip_code
+											}`}
+											time={getStartAndEndTime(
+												item.scheduled_time,
+												item.service.duration
+											)}
+											patientName={`${item.patient.first_name} ${item.patient.last_name}`}
+											date={moment(
+												item.scheduled_date
+											).format('dddd, MMMM DD, YYYY')}
+											isConfirmed
+										/>
+									)
+								})}
 							<p className="py-4 text-center">
-								Payment for the services booked will be settled
-								at the pharmacy / clinic.
-								<br /> Forms of payment available will depend on
-								the pharmacy / clinic.
+								Please contact the pharmacy/clinic if you don't
+								receive a confirmation email
+								<br /> within the next 30 minutes.
 							</p>
 							<div className="text-center">
 								<p>
 									<strong>
-										{partnerDetail?.name} Contact Details
+										{bookingDetail &&
+											bookingDetail[0]?.partner.name}{' '}
+										Contact Details
 									</strong>
 									<br />
-									{partnerDetail?.phone_number}
+									{bookingDetail &&
+										bookingDetail[0]?.partner.phone_number}
+									<br />
+									{bookingDetail &&
+										bookingDetail[0]?.partner.email}
 								</p>
 							</div>
 						</Col>
@@ -160,6 +236,7 @@ export const BookingDetails = () => {
 					</Col>
 				</Row>
 			)}
+			{isLoading && <LoadingMaskWrap />}
 		</Container>
 	)
 }

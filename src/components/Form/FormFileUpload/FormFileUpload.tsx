@@ -92,10 +92,18 @@ export const FormFileUpload = ({
 				<button
 					type="button"
 					onClick={(e) => {
-						setSelectedFile('')
-						setSelectedFilename('')
-						e.preventDefault()
+						if (selectedFilename && !hasPhotoPreview) {
+							setSelectedFile('')
+							setSelectedFilename('')
+							e.preventDefault()
+						}
 					}}
+					{...(selectedFilename &&
+						hasPhotoPreview && {
+							style: {
+								display: 'unset',
+							},
+						})}
 					className="d-block bg-transparent border-0 m-auto py-0"
 				>
 					{!hasPhotoPreview ? (

@@ -19,11 +19,7 @@ export interface IPersonalInfo {
 	phoneNumber: string
 	guardianFirstName: string
 	guardianLastName: string
-	// patientPhoto: any
-	couponCode: string
-	// howDidYouHearAboutThisService: string
-	// others: string
-	patientPhoto: string
+	photo: string
 }
 
 export interface IPatient {
@@ -54,6 +50,9 @@ export interface IPartners {
 	zip_code: string
 	partner_configuration: any[]
 	type: TypeOfLocation
+	services: IServicesPricing
+	phone_number: string
+	email: string
 }
 
 export interface IAvailableTime {
@@ -63,15 +62,11 @@ export interface IAvailableTime {
 }
 
 export interface BookingDetail {
-	appointments: [
-		{
-			reference_number: string
-		}
-	]
-
-	patient: {
-		email: string
-	}
+	reference_number: string
+	partner: IPartners
+	service: IServicesPricing
+	scheduled_date: string
+	scheduled_time: string
 }
 
 export enum AppointmentStatus {

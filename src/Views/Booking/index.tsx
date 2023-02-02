@@ -11,7 +11,6 @@ import { CancelAppointmentSuccess } from './CancelAppointmentSuccess'
 import { ConfirmAppointment } from './Confirm'
 import { BookingDetails } from './Details'
 import { PatientInfo } from './PatientInfo'
-import { Payment } from './Payment'
 import { SelectBranch } from './SelectBranch'
 import { SelectTime } from './SelectTime'
 import { IAppointment, IPartner, IPatient } from './types'
@@ -115,8 +114,7 @@ export const Booking = () => {
 				phoneNumber: '',
 				guardianFirstName: '',
 				guardianLastName: '',
-				couponCode: '',
-				patientPhoto: '',
+				photo: '',
 			},
 		],
 		howDidYouHearAboutThisService: '',
@@ -131,6 +129,9 @@ export const Booking = () => {
 	const handleSubmitAll = (formValues: any) => {
 		let payload: any[] = []
 		let detailPayload: any[] = []
+		let totalAmount = 0
+		let description: any[] = []
+		let productName: any[] = []
 		setIsLoading(true)
 
 		Object.keys(formValues).forEach((key) => {
@@ -141,6 +142,10 @@ export const Booking = () => {
 					parseFloat(servCounterId),
 					bookingInfo
 				)
+
+				totalAmount += parseFloat(booking.price)
+				description.push(booking.description)
+				productName.push(booking.name)
 
 				// const patient = findDataById(formValues[key], patientDetail.patient)
 				const patient = patientDetail.personalInfo[formValues[key] - 1]
@@ -163,6 +168,7 @@ export const Booking = () => {
 						)
 							? patientDetail.others
 							: patientDetail.howDidYouHearAboutThisService,
+					coupon_code: '',
 				}
 
 				const params = {
@@ -194,7 +200,16 @@ export const Booking = () => {
 		const formData = new FormData()
 
 		formData.append('data', JSON.stringify({ appointments: [...payload] }))
-		// formData.append('patient_photo', patientInfo.patientPhoto[0])
+
+		formData.append(
+			'details',
+			JSON.stringify({
+				amount: parseFloat(totalAmount.toFixed(2)),
+				product_name: productName.map((m) => m).join(', '),
+				description: description.map((m) => m).join(', '),
+			})
+		)
+		// formData.append('patient_photo', patientInfo.photo[0])
 
 		const headers = {
 			'Content-Type': 'multipart/data',
@@ -202,25 +217,27 @@ export const Booking = () => {
 		}
 
 		axios
-			.post(`${API_URL}/booking/`, formData, {
+			.post(`https://makorxbackend.cmdev.cloud/api/checkout/`, formData, {
 				headers,
 			})
+			// .post(`${API_URL}/checkout/`, formData, {
+			// 	headers,
+			// })
 			.then((response) => {
-				setIsSuccess(true)
-				if (response.data.data) {
-					console.log(response.data.data.id)
-					setBookingId(response.data.data.id)
+				if (response.data.checkout_url) {
+					setIsSuccess(true)
+					localStorage.setItem(
+						'checkoutSessionId',
+						response.data.checkout_session_id
+					)
+					setTimeout(() => {
+						setIsLoading(false)
+						window.location.href = response.data.checkout_url
+					}, 250)
+				} else {
+					setIsSuccess(false)
 				}
-				setTimeout(() => {
-					setIsLoading(false)
-					navigate('details/success')
-				}, 1000)
 			})
-			.catch((err) => {
-				setIsSuccess(false)
-				navigate('details/error')
-			})
-		// }
 	}
 
 	return (
@@ -274,7 +291,6 @@ export const Booking = () => {
 						path="confirm-appointment"
 						element={<ConfirmAppointment />}
 					/>
-					<Route path="payment" element={<Payment />} />
 					<Route
 						path={
 							`${isSuccess}` ? 'details/success' : 'details/error'

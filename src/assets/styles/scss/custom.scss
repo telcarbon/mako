@@ -50,6 +50,10 @@ body {
 	background-color: transparent;
 	border: 0;
 	padding: 0 0.5rem;
+
+	&:hover {
+		opacity: 0.85;
+	}
 }
 
 .banking-info {
@@ -468,8 +472,10 @@ input[type='file'] {
 		height: 100px;
 		width: 100px;
 		border-radius: 50%;
+		pointer-events: none;
 		img {
 			transform: scale(1);
+			
 		}
 	}
 }

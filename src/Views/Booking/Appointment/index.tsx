@@ -101,6 +101,7 @@ export const Appointment = () => {
 					name: m.name,
 					price: m.price,
 					duration: m.duration,
+					description: m.description,
 				})
 				apptId++
 			}
@@ -143,6 +144,7 @@ export const Appointment = () => {
 			}
 		})
 		setBookingInfo(container)
+
 		return new Promise(() => {
 			setTimeout(() => {
 				navigate('select-branch')
@@ -186,7 +188,7 @@ export const Appointment = () => {
 						<p>${price}</p>
 					</div>
 					<div className="d-flex justify-content-between">
-						{description && <p className="small">{description}</p>}
+						<p className="small">{description && description}</p>
 						<div
 							className={`d-flex justify-content-end ${
 								notSelected && 'd-none'
@@ -404,7 +406,11 @@ export const Appointment = () => {
 								) : // <LoadingMaskWrap />
 								services?.length !== 0 ? (
 									<>
-										<h5>Select an appointment</h5>
+										<h5>Select Your Tests and Services</h5>
+										<p className="bg-primary p-2 mb-4">
+											Choose multiple tests and services
+											for everyone going to the pharmacy.
+										</p>
 										<Row>
 											<Col lg={12}>
 												{/* <FormField

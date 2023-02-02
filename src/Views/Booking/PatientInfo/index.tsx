@@ -1,6 +1,11 @@
-import { faCircleExclamation, faPlus } from '@fortawesome/free-solid-svg-icons'
+import {
+	faCircleExclamation,
+	faCircleXmark,
+	faPlus,
+} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { yupResolver } from '@hookform/resolvers/yup'
+import axios from 'axios'
 import {
 	checkIfLegalAge,
 	formatDate,
@@ -36,7 +41,7 @@ import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { Link, useNavigate } from 'react-router-dom'
-import { BASE_URL } from 'shared/config'
+import { API_URL, BASE_URL } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
 import { genderOptions, ServicesRadioOptions } from '../types'
@@ -46,7 +51,7 @@ export const PatientInfo = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
 	const { bookingTime, bookingDate } = useContext(BookingContext)
 
-	const { patientDetail, setPatientDetail, bookingInfo } =
+	const { patientDetail, setPatientDetail, bookingInfo, headers } =
 		useContext(BookingContext)
 
 	const validationSchema = Yup.object().shape({
@@ -106,6 +111,7 @@ export const PatientInfo = () => {
 		formState: { isSubmitting, isDirty },
 		watch,
 		control,
+		setValue,
 	} = useFormInstance
 
 	const { fields, append, remove } = useFieldArray({
@@ -124,10 +130,13 @@ export const PatientInfo = () => {
 		phoneNumber: string
 		guardianFirstName: string
 		guardianLastName: string
-		couponCode: string
-		patientPhoto: string
+		photo: string
 	}) => {
 		append(value)
+	}
+
+	const handleRemove = (index: number | number[] | undefined) => {
+		remove(index)
 	}
 
 	const checkIfPastTime = () => {
@@ -153,6 +162,23 @@ export const PatientInfo = () => {
 				navigate('../confirm-appointment')
 			}, 500)
 		})
+	}
+
+	const uploadPhoto = () => {
+		const formData = new FormData()
+
+		formData.append('file_url', getValues().photo)
+
+		axios
+			.post(`${API_URL}/upload/`, formData, {
+				headers,
+			})
+			.then((response) => {
+				console.log(response, 'upload')
+			})
+			.catch((err) => {
+				console.log(err, 'error')
+			})
 	}
 
 	const watchBirthday = (watchBirthdate: any) =>
@@ -188,40 +214,53 @@ export const PatientInfo = () => {
 							{fields.map((item, i) => {
 								return (
 									<div key={i}>
-										<h5 className="mb-4">
-											Patient # {i + 1}
-										</h5>
+										<div className="d-flex justify-content-between">
+											<h5 className="mb-4">
+												Patient # {i + 1}
+											</h5>
+											{fields.length > 1 && (
+												<div>
+													<button
+														type="button"
+														className="icon-only p-0"
+														onClick={() =>
+															handleRemove(i)
+														}
+													>
+														<FontAwesomeIcon
+															icon={faCircleXmark}
+															fontSize={'1.75rem'}
+															className="text-secondary"
+														/>
+													</button>
+												</div>
+											)}
+										</div>
+
 										<Row>
 											<Col lg={2}>
 												<FormField
-													name={`personalInfo[${i}].patientPhoto`}
+													name={`personalInfo[${i}].photo`}
 												>
 													<FormFileUpload
-														name={`personalInfo[${i}].patientPhoto`}
+														name={`personalInfo[${i}].photo`}
 														register={register}
 														value={getValues(
-															`personalInfo[${i}].patientPhoto`
+															`personalInfo[${i}].photo`
 														)}
 														hasPhotoPreview
 													/>
 												</FormField>
+												{/* <button
+													type="button"
+													onClick={uploadPhoto}
+												>
+													upload
+												</button> */}
 											</Col>
 											<Col lg={10}>
 												<Row>
 													<Col lg>
-														{/* <FormField
-															name={`personalInfo[${i}].id`}
-															className="mb-0"
-														>
-															<FormTextInput
-																name={`personalInfo[${i}].id`}
-																register={
-																	register
-																}
-																value={i + 2}
-																type="hidden"
-															/>
-														</FormField> */}
 														<FormField
 															name={`personalInfo[${i}].firstName`}
 														>
@@ -452,21 +491,7 @@ export const PatientInfo = () => {
 																		</FormField>
 																	</Col>
 																</Row>
-																<Row className="mt-4">
-																	<Col lg={6}>
-																		<FormField
-																			name={`personalInfo[${i}].couponCode`}
-																		>
-																			<FormTextInput
-																				placeholder="Coupon Code (Optional)"
-																				name={`personalInfo[${i}].couponCode`}
-																				register={
-																					register
-																				}
-																			/>
-																		</FormField>
-																	</Col>
-																</Row>
+
 															</Col>
 														</>
 													) : null}
@@ -483,7 +508,7 @@ export const PatientInfo = () => {
 								disabled={bookingInfo?.length === fields.length}
 								onClick={() =>
 									handleAppend({
-										patientPhoto: '',
+										photo: '',
 										// id: 1,
 										firstName: '',
 										lastName: '',
@@ -493,8 +518,7 @@ export const PatientInfo = () => {
 										email: '',
 										phoneNumber: '',
 										guardianFirstName: '',
-										guardianLastName: '',
-										couponCode: '',
+										guardianLastName: ''
 									})
 								}
 							>
