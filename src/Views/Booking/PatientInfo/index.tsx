@@ -41,17 +41,15 @@ import { Controller, useForm, useFieldArray } from 'react-hook-form'
 import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { Link, useNavigate } from 'react-router-dom'
-import { API_URL, BASE_URL } from 'shared/config'
+import { API_URL, BASE_URL, TOKEN } from 'shared/config'
 import * as Yup from 'yup'
 import { BookingContext } from '..'
 import { genderOptions, ServicesRadioOptions } from '../types'
 
 export const PatientInfo = () => {
 	const navigate = useNavigate()
-	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
-	const { bookingTime, bookingDate } = useContext(BookingContext)
 
-	const { patientDetail, setPatientDetail, bookingInfo, headers } =
+	const { patientDetail, setPatientDetail, bookingInfo } =
 		useContext(BookingContext)
 
 	const validationSchema = Yup.object().shape({
@@ -114,7 +112,7 @@ export const PatientInfo = () => {
 		setValue,
 	} = useFormInstance
 
-	const { fields, append, remove } = useFieldArray({
+	const { fields, append, remove, update } = useFieldArray({
 		control,
 		name: 'personalInfo',
 	})
@@ -130,6 +128,7 @@ export const PatientInfo = () => {
 		phoneNumber: string
 		guardianFirstName: string
 		guardianLastName: string
+		photoFile: string
 		photo: string
 	}) => {
 		append(value)
@@ -137,19 +136,6 @@ export const PatientInfo = () => {
 
 	const handleRemove = (index: number | number[] | undefined) => {
 		remove(index)
-	}
-
-	const checkIfPastTime = () => {
-		const today = new Date()
-		var todayMoment = formatDate(today)
-		const currentTime = getMinBookingTime()
-
-		let hasPassed = false
-		if (bookingDate === todayMoment) {
-			hasPassed = bookingTime <= currentTime
-		}
-		setShowBookingTimeError(hasPassed)
-		return hasPassed
 	}
 
 	const handleSubmit = async () => {
@@ -164,10 +150,16 @@ export const PatientInfo = () => {
 		})
 	}
 
-	const uploadPhoto = () => {
+	const uploadPhoto = (index: number) => {
+		const patients = getValues('personalInfo')
+		const patient = patients[index]
 		const formData = new FormData()
+		formData.append('file', patient.photoFile[0])
 
-		formData.append('file_url', getValues().photo)
+		const headers = {
+			'Content-Type': 'multipart/data',
+			Authorization: `Token ${TOKEN}`,
+		}
 
 		axios
 			.post(`${API_URL}/upload/`, formData, {
@@ -175,6 +167,8 @@ export const PatientInfo = () => {
 			})
 			.then((response) => {
 				console.log(response, 'upload')
+				patient.photo = response.data.file_url
+				update(index, patient)
 			})
 			.catch((err) => {
 				console.log(err, 'error')
@@ -193,7 +187,7 @@ export const PatientInfo = () => {
 			/>
 			<Form useFormInstance={useFormInstance} onSubmit={handleSubmit}>
 				<Row className="justify-content-center">
-					<Col lg={10}>
+					<Col md={10}>
 						<div className="bg-primary p-4">
 							<FontAwesomeIcon
 								icon={faCircleExclamation}
@@ -209,7 +203,7 @@ export const PatientInfo = () => {
 					</Col>
 				</Row>
 				<Row className="my-5 justify-content-center">
-					<Col lg={8}>
+					<Col md={8}>
 						<div>
 							{fields.map((item, i) => {
 								return (
@@ -238,29 +232,47 @@ export const PatientInfo = () => {
 										</div>
 
 										<Row>
-											<Col lg={2}>
+											<Col
+												md={2}
+												className="d-flex flex-column justify-content-center mb-3"
+											>
 												<FormField
-													name={`personalInfo[${i}].photo`}
+													name={`personalInfo[${i}].photoFile`}
 												>
 													<FormFileUpload
-														name={`personalInfo[${i}].photo`}
+														name={`personalInfo[${i}].photoFile`}
 														register={register}
 														value={getValues(
-															`personalInfo[${i}].photo`
+															`personalInfo[${i}].photoFile`
 														)}
+														photoName={i}
 														hasPhotoPreview
 													/>
 												</FormField>
-												{/* <button
-													type="button"
-													onClick={uploadPhoto}
-												>
-													upload
-												</button> */}
+												{watch(
+													`personalInfo[${i}].photoFile`
+												) && (
+													<Button
+														type="button"
+														onClick={() =>
+															uploadPhoto(i)
+														}
+														className="btn-upload btn-sm"
+														disabled={watch(
+															`personalInfo[${i}].photo`
+														)}
+													>
+														{watch(
+															`personalInfo[${i}].photo`
+														)
+															? 'Uploaded'
+															: 'Upload'}
+													</Button>
+												)}
 											</Col>
-											<Col lg={10}>
+											<Col md={10}>
 												<Row>
-													<Col lg>
+													<Col md>
 														<FormField
 															name={`personalInfo[${i}].firstName`}
 														>
@@ -284,7 +296,7 @@ export const PatientInfo = () => {
 															/>
 														</FormField>
 													</Col>
-													<Col lg>
+													<Col md>
 														<FormField
 															name={`personalInfo[${i}].lastName`}
 														>
@@ -299,7 +311,7 @@ export const PatientInfo = () => {
 													</Col>
 												</Row>
 												<Row className="mt-4">
-													<Col lg>
+													<Col md>
 														<FormField
 															name={`personalInfo[${i}].gender`}
 														>
@@ -318,7 +330,7 @@ export const PatientInfo = () => {
 															/>
 														</FormField>
 													</Col>
-													<Col lg>
+													<Col md>
 														<FormField
 															name={`personalInfo[${i}].birthdate`}
 														>
@@ -361,7 +373,7 @@ export const PatientInfo = () => {
 													).includes('Invalid') ? (
 														<>
 															<Col
-																lg
+																md
 																className="mt-2"
 															>
 																{!checkIfLegalAge(
@@ -378,7 +390,7 @@ export const PatientInfo = () => {
 																		</h6>
 																		<Row>
 																			<Col
-																				lg
+																				md
 																			>
 																				<FormField
 																					name={`personalInfo[${i}].guardianFirstName`}
@@ -393,7 +405,7 @@ export const PatientInfo = () => {
 																				</FormField>
 																			</Col>
 																			<Col
-																				lg
+																				md
 																			>
 																				<FormField
 																					name={`personalInfo[${i}].guardianLastName`}
@@ -413,7 +425,7 @@ export const PatientInfo = () => {
 																)}
 
 																<Row>
-																	<Col lg>
+																	<Col md>
 																		<FormField
 																			name={`personalInfo[${i}].email`}
 																		>
@@ -436,7 +448,7 @@ export const PatientInfo = () => {
 																			/>
 																		</FormField>
 																	</Col>
-																	<Col lg>
+																	<Col md>
 																		<FormField
 																			name={`personalInfo[${i}].phoneNumber`}
 																			className="form-group"
@@ -491,7 +503,6 @@ export const PatientInfo = () => {
 																		</FormField>
 																	</Col>
 																</Row>
-
 															</Col>
 														</>
 													) : null}
@@ -508,7 +519,7 @@ export const PatientInfo = () => {
 								disabled={bookingInfo?.length === fields.length}
 								onClick={() =>
 									handleAppend({
-										photo: '',
+										photoFile: '',
 										// id: 1,
 										firstName: '',
 										lastName: '',
@@ -518,7 +529,8 @@ export const PatientInfo = () => {
 										email: '',
 										phoneNumber: '',
 										guardianFirstName: '',
-										guardianLastName: ''
+										guardianLastName: '',
+										photo: '',
 									})
 								}
 							>
@@ -541,7 +553,7 @@ export const PatientInfo = () => {
 										register={register}
 										value={option.label}
 										key={index}
-										labelClassname="d-flex mb-2"
+										labelClassname="radio-default-label mb-2"
 										className="radio-default me-3 ms-2"
 									>
 										{option.label}
@@ -552,7 +564,7 @@ export const PatientInfo = () => {
 								'Other' && (
 								<FormField
 									name="others"
-									className="col-lg-5 ms-4 ps-3"
+									className="col-md-5 ms-4 ps-3"
 								>
 									<FormTextInput
 										placeholder="Other"
@@ -568,7 +580,7 @@ export const PatientInfo = () => {
 					<SubmitButton
 						pending={isSubmitting}
 						pendingText="Submitting"
-						className="col-lg-auto pull-right"
+						className="col-md-auto pull-right"
 						disabled={!isDirty}
 					>
 						Next

@@ -24,15 +24,11 @@ export const BookingDetails = () => {
 	const navType: NavigationType = useNavigationType()
 	const checkoutSessionId = localStorage.getItem('checkoutSessionId')
 	// const checkoutSessionId =
-	// 	'cs_test_a1iKUf4JtSb30nw6l1UKizZDjB0BiRDnrNtevuqY7irdUgKisxg7wjnMkX'
+	// 	'cs_test_a1WBRSsS7eglCpFVkGPXeK8Hz3q0IBSfhCTNCnDrgp0gtNz5ye7IlFCHRO'
+	const hasSessionId = checkoutSessionId !== null
 
 	const {
 		headers,
-		bookingId,
-		bookingTime,
-		serviceDetail,
-		bookingDate,
-		partnerDetail,
 		setAppointmentInfo,
 		setPartnerInfo,
 		setBookingDate,
@@ -40,10 +36,7 @@ export const BookingDetails = () => {
 		setServiceDetail,
 		setPartnerDetail,
 		setBookingId,
-		isSuccess,
-		bookingInfo,
 		setBookingInfo,
-		formPayload,
 	} = useContext(BookingContext)
 
 	const [bookingDetail, setBookingDetail] = useState<BookingDetail[]>()
@@ -51,30 +44,9 @@ export const BookingDetails = () => {
 
 	setBodyClass(['full-width'])
 
-	const getAppointmentDetails = () => {
-		axios
-			.get(
-				`${API_URL}/booking/${bookingId}/?expand=patient,appointments`,
-				{
-					headers,
-				}
-			)
-			.then((response) => {
-				if (response.data) {
-					setBookingDetail(response.data)
-				}
-			})
-	}
-
-	useEffect(() => {
-		if (bookingId) {
-			getAppointmentDetails()
-		}
-	}, [bookingId])
-
 	useEffect(() => {
 		getCheckoutData()
-	}, [])
+	}, [hasSessionId])
 
 	// useEffect(() => {
 	// 	return () => {
@@ -94,7 +66,7 @@ export const BookingDetails = () => {
 		setBookingId({})
 		setBookingInfo({})
 		navigate('..')
-		localStorage.setItem('checkoutSessionId', '')
+		localStorage.removeItem('checkoutSessionId')
 		window.location.reload()
 	}
 
@@ -102,17 +74,19 @@ export const BookingDetails = () => {
 		setIsLoading(true)
 		const payloadId = await axios
 			.get(
-				`https://makorxbackend.cmdev.cloud/api/temporary_booking/?checkout_session=${checkoutSessionId}`,
-				// `${API_URL}/temporary_booking/?checkout_session=${checkoutSessionId}`,
+				// `https://makorxbackend.cmdev.cloud/api/temporary_booking/?checkout_session=${checkoutSessionId}`,
+				`${API_URL}/temporary_booking/?checkout_session=${checkoutSessionId}`,
 				{ headers }
 			)
 			.then((response) => {
-				return response.data.results[0].payload.data.id
+				if (response && response.data.results) {
+					return response.data.results[0].payload.data.id
+				}
 			})
 
 		const appointments = await axios
 			.get(
-				`https://makorxbackend.cmdev.cloud/api/booking/${payloadId}?expand=appointments.service,appointments.partner.services,appointments.patient`,
+				`${API_URL}/booking/${payloadId}/?expand=appointments.service,appointments.partner.services,appointments.patient`,
 				{ headers }
 			)
 			.then((response) => {
@@ -127,11 +101,11 @@ export const BookingDetails = () => {
 		<Container
 			fluid
 			className={classNames({
-				'v-middle': !isSuccess,
-				'pt-5 mt-3': isSuccess,
+				'v-middle': !hasSessionId,
+				'pt-5 mt-5': hasSessionId,
 			})}
 		>
-			{isSuccess ? (
+			{hasSessionId ? (
 				<>
 					<ContentHeader title="Here are your booking details" />
 					<Row className="my-4 justify-content-center ">
@@ -197,9 +171,6 @@ export const BookingDetails = () => {
 									<br />
 									{bookingDetail &&
 										bookingDetail[0]?.partner.phone_number}
-									<br />
-									{bookingDetail &&
-										bookingDetail[0]?.partner.email}
 								</p>
 							</div>
 						</Col>
@@ -236,7 +207,7 @@ export const BookingDetails = () => {
 					</Col>
 				</Row>
 			)}
-			{isLoading && <LoadingMaskWrap />}
+			{isLoading && hasSessionId && <LoadingMaskWrap />}
 		</Container>
 	)
 }

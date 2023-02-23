@@ -1,9 +1,10 @@
 import axios from 'axios'
 import { convertFieldsToSnakeCase, findDataById } from 'common/Util'
 import { SideNav } from 'components'
+import _ from 'lodash'
 import moment from 'moment'
 import { createContext, useEffect, useState } from 'react'
-import { Route, Routes, useNavigate } from 'react-router-dom'
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom'
 import { API_URL, TOKEN } from 'shared/config'
 import { Appointment } from './Appointment'
 import { CancelAppointment } from './CancelAppointment'
@@ -40,9 +41,8 @@ interface BookingContextProps {
 	setPatientDetail: any
 	oldServiceCounters: any
 	setOldServiceCounters: any
-	isSuccess: any
 	formPayload: any
-	isLoading: boolean
+	isConfirmPageLoading: boolean
 }
 
 export const BookingContext = createContext<BookingContextProps>({
@@ -70,9 +70,8 @@ export const BookingContext = createContext<BookingContextProps>({
 	setPatientDetail: () => {},
 	oldServiceCounters: null,
 	setOldServiceCounters: () => {},
-	isSuccess: null,
 	formPayload: null,
-	isLoading: false,
+	isConfirmPageLoading: false,
 })
 
 export const Booking = () => {
@@ -94,11 +93,11 @@ export const Booking = () => {
 		partner: 0,
 	})
 	const [bookingDate, setBookingDate] = useState()
-	const [isLoading, setIsLoading] = useState<boolean>(false)
+	const [isConfirmPageLoading, setIsConfirmPageLoading] =
+		useState<boolean>(false)
 	const [bookingTime, setBookingTime] = useState()
 	const [bookingInfo, setBookingInfo] = useState<any[]>()
 	const [bookingId, setBookingId] = useState<string>('')
-	const [isSuccess, setIsSuccess] = useState<boolean>(true)
 	const [serviceDetail, setServiceDetail] = useState<any>()
 	const [partnerDetail, setPartnerDetail] = useState<any>()
 	const [formPayload, setFormPayload] = useState<any>()
@@ -115,6 +114,7 @@ export const Booking = () => {
 				guardianFirstName: '',
 				guardianLastName: '',
 				photo: '',
+				photoFile: '',
 			},
 		],
 		howDidYouHearAboutThisService: '',
@@ -126,13 +126,13 @@ export const Booking = () => {
 		Authorization: `Token ${TOKEN}`,
 	}
 
-	const handleSubmitAll = (formValues: any) => {
+	const handleSubmitAll = async (formValues: any) => {
 		let payload: any[] = []
 		let detailPayload: any[] = []
 		let totalAmount = 0
 		let description: any[] = []
 		let productName: any[] = []
-		setIsLoading(true)
+		setIsConfirmPageLoading(true)
 
 		Object.keys(formValues).forEach((key) => {
 			if (key.match(/appointment/g) && formValues[key] !== undefined) {
@@ -170,9 +170,10 @@ export const Booking = () => {
 							: patientDetail.howDidYouHearAboutThisService,
 					coupon_code: '',
 				}
+				const { photo_file: _, ...newPatientObject } = newPatient
 
 				const params = {
-					patient: newPatient,
+					patient: newPatientObject,
 					...convertFieldsToSnakeCase(appointment),
 				}
 
@@ -204,12 +205,13 @@ export const Booking = () => {
 		formData.append(
 			'details',
 			JSON.stringify({
-				amount: parseFloat(totalAmount.toFixed(2)),
+				amount: totalAmount.toFixed(2),
 				product_name: productName.map((m) => m).join(', '),
-				description: description.map((m) => m).join(', '),
+				description:
+					description.map((m) => m).join(', ') ||
+					productName.map((m) => m).join(', '),
 			})
 		)
-		// formData.append('patient_photo', patientInfo.photo[0])
 
 		const headers = {
 			'Content-Type': 'multipart/data',
@@ -217,26 +219,30 @@ export const Booking = () => {
 		}
 
 		axios
-			.post(`https://makorxbackend.cmdev.cloud/api/checkout/`, formData, {
-				headers,
-			})
-			// .post(`${API_URL}/checkout/`, formData, {
+			// .post(`https://makorxbackend.cmdev.cloud/api/checkout/`, formData, {
 			// 	headers,
 			// })
+			.post(`${API_URL}/checkout/`, formData, {
+				headers,
+			})
 			.then((response) => {
-				if (response.data.checkout_url) {
-					setIsSuccess(true)
+				if (response && response.data.checkout_url) {
 					localStorage.setItem(
 						'checkoutSessionId',
 						response.data.checkout_session_id
 					)
 					setTimeout(() => {
-						setIsLoading(false)
+						setIsConfirmPageLoading(false)
 						window.location.href = response.data.checkout_url
-					}, 250)
+					}, 500)
 				} else {
-					setIsSuccess(false)
+					localStorage.removeItem('checkoutSessionId')
 				}
+			})
+			.catch((err) => {
+				localStorage.removeItem('checkoutSessionId')
+				setIsConfirmPageLoading(false)
+				navigate('details/error')
 			})
 	}
 
@@ -277,9 +283,8 @@ export const Booking = () => {
 					setPatientDetail,
 					oldServiceCounters,
 					setOldServiceCounters,
-					isSuccess,
 					formPayload,
-					isLoading,
+					isConfirmPageLoading,
 				}}
 			>
 				<Routes>
@@ -292,9 +297,11 @@ export const Booking = () => {
 						element={<ConfirmAppointment />}
 					/>
 					<Route
-						path={
-							`${isSuccess}` ? 'details/success' : 'details/error'
-						}
+						path={'details/success'}
+						element={<BookingDetails />}
+					/>
+					<Route
+						path={'details/error'}
 						element={<BookingDetails />}
 					/>
 					<Route
@@ -305,6 +312,10 @@ export const Booking = () => {
 						path="cancel-appointment-success"
 						element={<CancelAppointmentSuccess />}
 					/>
+					{/* <Route
+						path="*"
+						element={<Navigate to="/page-not-found" replace />}
+					/> */}
 				</Routes>
 			</BookingContext.Provider>
 		</>

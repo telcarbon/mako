@@ -17,6 +17,7 @@ type InputFileProps = {
 	onClear?: any
 	value?: any
 	hasPhotoPreview?: boolean
+	photoName?: any
 }
 
 const displayIcon = (icon: any, handleDelete?: any) => {
@@ -44,6 +45,7 @@ export const FormFileUpload = ({
 	onClear,
 	value,
 	hasPhotoPreview,
+	photoName,
 }: InputFileProps) => {
 	const [selectedFile, setSelectedFile] = useState<any>('')
 	const [selectedFilename, setSelectedFilename] = useState<string>('')
@@ -70,9 +72,17 @@ export const FormFileUpload = ({
 						}`}
 						{...register(name)}
 						onChange={(event) => {
-							const fileName = event.target.value.split('\\')
+							const names = event.target.value.split('\\')
+							let fileName = names[names.length - 1]
+							const getExt = fileName.split('.')
+							const fileExt = getExt[getExt.length - 1]
+
+							if (photoName) {
+								fileName = `${photoName}.${fileExt}`
+							}
+
 							setSelectedFile(event.target.files)
-							setSelectedFilename(fileName[fileName.length - 1])
+							setSelectedFilename(fileName)
 							onChange(event)
 						}}
 					/>

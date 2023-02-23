@@ -54,6 +54,12 @@ export const Appointment = () => {
 	const [availableCity, setAvailableCity] = useState<any[]>()
 	const [isLoading, setIsLoading] = useState(false)
 
+	useEffect(() => {
+		if (localStorage.getItem('checkoutSessionId')) {
+			localStorage.removeItem('checkoutSessionId')
+		}
+	}, [])
+
 	const validationSchema = Yup.object().shape({
 		city: Yup.string().required('City is required').nullable(),
 		// service: Yup.number()
@@ -155,21 +161,6 @@ export const Appointment = () => {
 	const cityWatch: string = watch('city')
 	const stateWatch: string = watch('state')
 	const watchMultiServices = watch('multiServices')
-
-	const appointmentOptionComponent = (
-		id: number,
-		name: string,
-		price: string
-		// description: string
-	) => (
-		<div className="radio-card-wrap" key={id}>
-			<div className="d-flex justify-content-between">
-				<strong>{name}</strong>
-				<p>${price}</p>
-			</div>
-			{/* {description && <p className="small">{description}</p>} */}
-		</div>
-	)
 
 	const appointmentOptionComponents = (
 		name: string,

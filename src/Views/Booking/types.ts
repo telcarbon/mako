@@ -20,6 +20,7 @@ export interface IPersonalInfo {
 	guardianFirstName: string
 	guardianLastName: string
 	photo: string
+	photoFile: string
 }
 
 export interface IPatient {

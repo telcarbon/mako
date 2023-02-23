@@ -46,6 +46,12 @@ body {
 	}
 }
 
+.btn-upload {
+	min-width: 65px;
+	padding: 0.25rem 0.5rem;
+	font-weight: 400;
+}
+
 .icon-only {
 	background-color: transparent;
 	border: 0;
@@ -292,8 +298,15 @@ input[type='radio'] {
 	&.radio-default {
 		accent-color: $navy-blue;
 		transform: scale(1.5);
+		pointer-events: fill;
 	}
 }
+.radio-default-label {
+	display: inline-flex;
+	max-width: fit-content;
+	max-width: -moz-fit-content;
+}
+
 .box {
 	width: 85px;
 	height: 35px;
@@ -475,7 +488,6 @@ input[type='file'] {
 		pointer-events: none;
 		img {
 			transform: scale(1);
-			
 		}
 	}
 }
@@ -717,5 +729,5 @@ input[type='file'] {
 }
 
 .modal-backdrop {
-	width: 100%!important;
+	width: 100% !important;
 }

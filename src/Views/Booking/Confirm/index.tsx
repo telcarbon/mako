@@ -14,6 +14,7 @@ import {
 	LoadingMaskWrap,
 	SubmitButton,
 } from 'components'
+import * as Yup from 'yup'
 import moment from 'moment'
 import { useContext, useEffect, useState } from 'react'
 import { Alert, Col, Container, Row } from 'react-bootstrap'
@@ -24,51 +25,46 @@ import { Link, useNavigate } from 'react-router-dom'
 import { BookingContext } from '..'
 import { AppointmentDetailsCard } from '../components/AppointmentDetailsCard'
 import { UnselectedPatientModal } from '../components/UnselectedPatientModal'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 export const ConfirmAppointment = () => {
 	const [showBookingTimeError, setShowBookingTimeError] = useState(false)
+	const [passedBooking, setPassedBooking] = useState<any[]>([])
 	const [unselectedPatient, setUnselectedPatient] = useState<any[]>([])
 	const [showUnselectedPatientModal, setShowUnselectedPatientModal] =
 		useState<boolean>(false)
 	const {
 		handleSubmitAll,
-		serviceDetail,
 		partnerDetail,
-		serviceCounters,
 		bookingInfo,
 		patientDetail,
-		isLoading,
+		isConfirmPageLoading,
 	} = useContext(BookingContext)
-	const navigate = useNavigate()
+
+	const validationSchema = Yup.lazy((value) => {
+		const shapes: any = {}
+		const DATA_OBJ_KEYS = Object.keys(value)
+
+		DATA_OBJ_KEYS.forEach((parameter: any) => {
+			if (parameter.includes('appointment_')) {
+				shapes[parameter] = Yup.string()
+					.required('Please select a patient.')
+					.nullable()
+			}
+		})
+
+		return Yup.object().shape(shapes)
+	})
 
 	const useFormInstance = useForm({
+		...(patientDetail.personalInfo.length > 1 && {
+			resolver: yupResolver(validationSchema),
+		}),
 		defaultValues: {
-			termsOfUse: false,
-			consentToTreatment: false,
 			isModal: false,
 		},
 	})
-	const {
-		getValues,
-		setValue,
-		register,
-		formState: { isSubmitting },
-		watch,
-		control,
-	} = useFormInstance
-
-	// const checkIfPastTime = () => {
-	// 	const today = new Date()
-	// 	var todayMoment = formatDate(today)
-	// 	const currentTime = getMinBookingTime()
-
-	// 	let hasPassed = false
-	// 	if (bookingDate === todayMoment) {
-	// 		hasPassed = bookingTime <= currentTime
-	// 	}
-	// 	setShowBookingTimeError(hasPassed)
-	// 	return hasPassed
-	// }
+	const { getValues, setValue, register } = useFormInstance
 
 	useEffect(() => {
 		if (unselectedPatient.length > 0) {
@@ -77,27 +73,45 @@ export const ConfirmAppointment = () => {
 	}, [unselectedPatient])
 
 	useEffect(() => {
-		if (isLoading) {
+		if (isConfirmPageLoading) {
 			setShowUnselectedPatientModal(false)
 		}
-	}, [isLoading])
+	}, [isConfirmPageLoading])
 
-	const handleSubmit = async (isModal: boolean) => {
+	useEffect(() => {
+		if (passedBooking.length > 0) {
+			setShowBookingTimeError(true)
+		}
+	}, [passedBooking])
+
+	const checkIfPastTime = (info: any) => {
+		const today = new Date()
+		var todayMoment = formatDate(today)
+		const currentTime = getMinBookingTime()
+
+		let hasPassed = false
+		if (info?.bookingDate === todayMoment) {
+			hasPassed = info.bookingTime <= currentTime
+		}
+		return hasPassed
+	}
+
+	const checkPassedBooks = (info: any, arr: any) => {
+		const passedTime = checkIfPastTime(info)
+		if (passedTime) {
+			arr.push(info.name)
+		}
+	}
+
+	const handleSubmit = (isModal: boolean) => {
 		const formValues: any = getValues()
 		let unselected: any = []
+		let passedBook: any = []
 
 		if (patientDetail.personalInfo.length > 1) {
 			const appts: number[] = bookingInfo
 				.map((m: any) => formValues[`appointment_${m.id}`])
 				.filter((f: any) => f !== undefined)
-			// patientDetail.personalInfo.map((m: any, i: number) => {
-			// 	if (!appts.includes(m.id)) {
-			// 		unselected.push({
-			// 			id: m.id,
-			// 			name: `${m.firstName} ${m.lastName}`,
-			// 		})
-			// 	}
-			// })
 
 			patientDetail.personalInfo.map((m: any, i: number) => {
 				if (!appts.includes(i + 1)) {
@@ -108,21 +122,27 @@ export const ConfirmAppointment = () => {
 				}
 			})
 
+			appts.map((m) => {
+				const info = bookingInfo[m]
+				checkPassedBooks(info, passedBook)
+			})
+
 			setUnselectedPatient(unselected)
 		} else {
-			formValues['appointment_1'] = patientDetail.personalInfo.length
+			checkPassedBooks(bookingInfo[0], passedBook)
 		}
 
-		// const pastTime = checkIfPastTime()
-		// if (!pastTime) {
-		// 	handleSubmitAll(formValues)
+		if (passedBook.length > 0) {
+			setPassedBooking(passedBook)
+		}
 
 		if (unselected.length === 0 || formValues['isModal']) {
 			setShowUnselectedPatientModal(false)
-			handleSubmitAll(formValues)
-		}
 
-		// }
+			if (passedBook.length === 0) {
+				handleSubmitAll(formValues)
+			}
+		}
 	}
 
 	return (
@@ -191,7 +211,6 @@ export const ConfirmAppointment = () => {
 																patient.lastName
 															),
 														].join(' '),
-														// value: patient.id,
 														value: i + 1,
 													}
 												}
@@ -207,10 +226,9 @@ export const ConfirmAppointment = () => {
 															.personalInfo[0]
 															.lastName,
 													].join(' '),
-													// value: patientDetail
-													// 	.patient[0].id,
-													value: i + 1,
+													value: 1,
 												},
+												setToDefaultValue: true,
 											})}
 											disabled={
 												patientDetail.personalInfo
@@ -223,45 +241,12 @@ export const ConfirmAppointment = () => {
 
 						<>
 							<div className="mt-5 d-flex justify-content-center">
-								{/* <FormField name="terms">
-									<FormCheckBox
-										name="consentToTreatment"
-										register={register}
-										value={'consentToTreatment'}
-									>
-										I agree with{' '}
-										<a
-											className="link-secondary"
-											href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_ConsentToTreatment_10.13.22.pdf`}
-											target="_blank"
-										>
-											Consent to Treatment
-										</a>
-										.
-									</FormCheckBox>
-									<FormCheckBox
-										name="termsOfUse"
-										register={register}
-										value={'termsOfUse'}
-										className="my-2"
-									>
-										I agree with the{' '}
-										<a
-											className="link-secondary"
-											href={`${BASE_URL}/static/pdf/MakoRx_CareConnect_TermsAndConditions_10.13.22.pdf`}
-											target="_blank"
-										>
-											Terms and Conditions
-										</a>
-										.
-									</FormCheckBox>
-								</FormField> */}
 								<div className="footer">
 									<SubmitButton
-										pending={isLoading}
+										pending={isConfirmPageLoading}
 										pendingText="Submitting"
 										className="text-center"
-										disabled={isLoading}
+										disabled={isConfirmPageLoading}
 									>
 										Submit
 									</SubmitButton>
@@ -297,7 +282,7 @@ export const ConfirmAppointment = () => {
 					patientDetail.personalInfo.length
 				}
 			/>
-			{isLoading && <LoadingMaskWrap />}
+			{isConfirmPageLoading && <LoadingMaskWrap />}
 		</Container>
 	)
 }
